@@ -70,7 +70,7 @@ public class CustomClientDetails extends User implements ClientDetails {
 
     @Override
     public Integer getAccessTokenValiditySeconds() {
-        return null;
+        return 200;
     }
 
     @Override

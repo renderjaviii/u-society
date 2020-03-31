@@ -1,12 +1,17 @@
 package company.businessmanager.app.config;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -23,37 +28,33 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private static final String SIGNING_KEY = "123";
-    private static final String VERIFIER_KEY = "321";
 
-    private final AuthenticationManager authenticationManager;
     private final ClientDetailsService customClientDetails;
+    private final UserDetailsService customUserDetails;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public AuthorizationServerConfig(AuthenticationManager authenticationManager,
-                                     ClientDetailsService customClientDetails) {
-        this.authenticationManager = authenticationManager;
+    public AuthorizationServerConfig(ClientDetailsService customClientDetails,
+                                     UserDetailsService customUserDetails,
+                                     AuthenticationManager authenticationManager,
+                                     PasswordEncoder passwordEncoder) {
         this.customClientDetails = customClientDetails;
+        this.customUserDetails = customUserDetails;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints
+    public void configure(AuthorizationServerEndpointsConfigurer configurer) throws Exception {
+        configurer
+                .authenticationManager(authenticationManager)
+                .userDetailsService(customUserDetails)
+                .tokenServices(tokenServices())
                 .tokenStore(tokenStore())
                 .accessTokenConverter(accessTokenConverter())
-                .authenticationManager(authenticationManager)
-                .setClientDetailsService(customClientDetails);
-    }
-
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
-        oauthServer
-                .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
+        ;
     }
 
     @Override
@@ -61,12 +62,28 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         clients.withClientDetails(customClientDetails);
     }
 
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
+        oauthServer
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()")
+                .passwordEncoder(passwordEncoder);
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(accessTokenConverter());
+    }
+
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(SIGNING_KEY);
-        converter.setVerifierKey(SIGNING_KEY);
-        return converter;
+        //See signer key
+        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setVerifierKey("123");
+        jwtAccessTokenConverter.setSigningKey("123");
+
+        return jwtAccessTokenConverter;
+
     }
 
     @Bean
@@ -74,9 +91,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public DefaultTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setTokenStore(tokenStore());
+
         defaultTokenServices.setSupportRefreshToken(TRUE);
-        defaultTokenServices.setAccessTokenValiditySeconds(1);
+        defaultTokenServices.setRefreshTokenValiditySeconds(1234 * 2);
+        defaultTokenServices.setReuseRefreshToken(FALSE);
+        defaultTokenServices.setAccessTokenValiditySeconds(1234);
+
         defaultTokenServices.setClientDetailsService(customClientDetails);
+        defaultTokenServices.setAuthenticationManager(authenticationManager);
         return defaultTokenServices;
     }
 

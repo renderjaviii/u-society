@@ -3,12 +3,14 @@ package company.businessmanager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,9 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(path = "services/users")
 public class UserController {
+
+    @Resource(name = "tokenStore")
+    TokenStore tokenStore;
 
     private final UserService userService;
 
@@ -71,6 +76,5 @@ public class UserController {
     public ResponseEntity<UserApi> get(@PathVariable(value = "userId") final Long userId) throws GenericException {
         return ResponseEntity.ok(userService.get(userId));
     }
-
 
 }
