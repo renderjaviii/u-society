@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,8 +64,10 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/login/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> login(@Valid @RequestBody final UserLogin request) {
-        return new ResponseEntity<>(userService.login(request), OK);
+    public ResponseEntity<Authentication> login(@Valid @RequestBody final UserLogin request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        return new ResponseEntity<>(auth, OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
