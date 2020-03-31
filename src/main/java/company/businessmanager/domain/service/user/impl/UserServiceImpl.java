@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void create(CreateUserRequest request) throws GenericException {
-        validateUser(request);
+        //  validateUser(request);
 
         Credential currentCredential = credentialRepository.save(Credential.newBuilder()
                 .password(passwordEncoder.encode(request.getPassword()))
