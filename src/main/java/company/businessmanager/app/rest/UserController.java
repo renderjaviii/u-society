@@ -66,7 +66,7 @@ public class UserController {
         return new ResponseEntity<>(userService.login(request), OK);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
     @ApiOperation(value = "Get User.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),

@@ -1,8 +1,8 @@
 package company.businessmanager.domain.service.oauth;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +20,7 @@ public class CustomUserDetails extends User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authoritiesList = new LinkedList<>();
+        Set<SimpleGrantedAuthority> authoritiesList = new HashSet<>();
         for (Role role : super.getRoles()) {
             for (Privilege privilege : role.getPrivileges()) {
                 authoritiesList.add(new SimpleGrantedAuthority(privilege.getName()));

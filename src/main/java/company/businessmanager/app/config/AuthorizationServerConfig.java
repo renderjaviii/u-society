@@ -1,10 +1,5 @@
 package company.businessmanager.app.config;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,34 +22,29 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    private static final String SIGNING_KEY = "123";
-
     private final ClientDetailsService customClientDetails;
-    private final UserDetailsService customUserDetails;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final UserDetailsService customUserDetailsService;
 
     @Autowired
     public AuthorizationServerConfig(ClientDetailsService customClientDetails,
-                                     UserDetailsService customUserDetails,
                                      AuthenticationManager authenticationManager,
-                                     PasswordEncoder passwordEncoder) {
+                                     PasswordEncoder passwordEncoder,
+                                     UserDetailsService customUserDetailsService) {
         this.customClientDetails = customClientDetails;
-        this.customUserDetails = customUserDetails;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer configurer) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer configurer) {
         configurer
                 .authenticationManager(authenticationManager)
-                .userDetailsService(customUserDetails)
-                .tokenServices(tokenServices())
+                .userDetailsService(customUserDetailsService)
                 .tokenStore(tokenStore())
-                .accessTokenConverter(accessTokenConverter())
-        ;
+                .accessTokenConverter(accessTokenConverter());
     }
 
     @Override
@@ -77,11 +67,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-        //See signer key
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setVerifierKey("123");
         jwtAccessTokenConverter.setSigningKey("123");
-
+        jwtAccessTokenConverter.setVerifierKey("123");
         return jwtAccessTokenConverter;
 
     }
@@ -92,9 +80,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setTokenStore(tokenStore());
 
-        defaultTokenServices.setSupportRefreshToken(TRUE);
+        defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setRefreshTokenValiditySeconds(1234 * 2);
-        defaultTokenServices.setReuseRefreshToken(FALSE);
+        defaultTokenServices.setReuseRefreshToken(false);
         defaultTokenServices.setAccessTokenValiditySeconds(1234);
 
         defaultTokenServices.setClientDetailsService(customClientDetails);

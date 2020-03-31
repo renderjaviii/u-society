@@ -33,7 +33,7 @@ public class CustomClientDetails extends User implements ClientDetails {
     public Collection<GrantedAuthority> getAuthorities() {
         return super.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CustomClientDetails extends User implements ClientDetails {
 
     @Override
     public boolean isScoped() {
-        return false;
+        return true;
     }
 
     @Override
@@ -70,12 +70,12 @@ public class CustomClientDetails extends User implements ClientDetails {
 
     @Override
     public Integer getAccessTokenValiditySeconds() {
-        return 200;
+        return 2000;
     }
 
     @Override
     public Integer getRefreshTokenValiditySeconds() {
-        return null;
+        return 2000 * 2;
     }
 
     @Override
