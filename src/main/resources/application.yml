@@ -1,0 +1,38 @@
+server:
+  servlet:
+    context-path: '/manager'
+  port: 8080
+spring:
+  profiles:
+    active: dev
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: TRACE
+    org.springframework.web-security: TRACE
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+security:
+  oauth2:
+    resource.filter-order: 3
+config:
+  table: managerConfig
+
+---
+spring:
+  profiles: dev, qa
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/company_database?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${PROJECT_TIME_ZONE:#{'GMT'}}
+    username: root
+    password: Password123
+    platform: mysql
+    initialization-mode: never
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+config:
+  timezone: 'GMT'

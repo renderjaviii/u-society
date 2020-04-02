@@ -10,6 +10,10 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +31,13 @@ import company.businessmanager.domain.repository.UserRepository;
 import company.businessmanager.domain.service.user.UserService;
 
 @Service
+@Configuration
+@EnableConfigurationProperties
+@ConfigurationProperties
 public class UserServiceImpl implements UserService {
+
+    @Value("${config.timezone:email@email.com}")
+    private String email;
 
     public static final String WEB_SCOPE = "WEB";
     public static final String GRANT_TYPES = "authorization_code,refresh_token,password,client_credentials";
@@ -54,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void create(CreateUserRequest request) throws GenericException {
-        //  validateUser(request);
+        validateUser(request);
 
         Credential currentCredential = credentialRepository.save(Credential.newBuilder()
                 .password(passwordEncoder.encode(request.getPassword()))
