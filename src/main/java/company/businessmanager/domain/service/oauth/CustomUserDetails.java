@@ -20,13 +20,13 @@ public class CustomUserDetails extends User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<SimpleGrantedAuthority> authoritiesList = new HashSet<>();
+        Set<SimpleGrantedAuthority> authoritiesSet = new HashSet<>();
         for (Role role : super.getRoles()) {
             for (Privilege privilege : role.getPrivileges()) {
-                authoritiesList.add(new SimpleGrantedAuthority(privilege.getName()));
+                authoritiesSet.add(new SimpleGrantedAuthority(privilege.getName()));
             }
         }
-        return authoritiesList;
+        return authoritiesSet;
     }
 
     @Override

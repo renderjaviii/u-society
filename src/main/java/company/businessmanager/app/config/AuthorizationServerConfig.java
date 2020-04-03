@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -24,17 +25,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     private final ClientDetailsService customClientDetails;
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
     private final UserDetailsService customUserDetailsService;
 
     @Autowired
     public AuthorizationServerConfig(ClientDetailsService customClientDetails,
                                      AuthenticationManager authenticationManager,
-                                     PasswordEncoder passwordEncoder,
                                      UserDetailsService customUserDetailsService) {
         this.customClientDetails = customClientDetails;
         this.authenticationManager = authenticationManager;
-        this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
     }
 
@@ -44,6 +42,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authenticationManager)
                 .userDetailsService(customUserDetailsService)
                 .tokenStore(tokenStore())
+                //.tokenServices(tokenServices())
                 .accessTokenConverter(accessTokenConverter());
     }
 
@@ -57,7 +56,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         oauthServer
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()")
-                .passwordEncoder(passwordEncoder);
+                .passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(5);
     }
 
     @Bean
@@ -69,9 +73,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
         jwtAccessTokenConverter.setSigningKey("123");
-        jwtAccessTokenConverter.setVerifierKey("123");
         return jwtAccessTokenConverter;
-
     }
 
     @Bean
