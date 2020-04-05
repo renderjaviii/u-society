@@ -1,6 +1,7 @@
 package common.manager.app.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -22,6 +23,17 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    @Value("${jwt.clientId:clientId}")
+    private String clientId;
+    @Value("${jwt.client-secret:clientSecret}")
+    private String clientSecret;
+    @Value("${jwt.signing-key:123}")
+    private String jwtSigningKey;
+    @Value("${jwt.accessTokenValidititySeconds:43200}") // 12 hours
+    private int accessTokenValiditySeconds;
+    @Value("${jwt.refreshTokenValiditySeconds:86400}") // 1 day
+    private int refreshTokenValiditySeconds;
 
     private final ClientDetailsService customClientDetails;
     private final AuthenticationManager authenticationManager;

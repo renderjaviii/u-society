@@ -19,6 +19,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 public class CommonManager {
 
+    private static final String BASE_PACKAGE = "common.manager";
+
     public static void main(String[] args) {
         SpringApplication.run(CommonManager.class, args);
     }
@@ -36,7 +38,7 @@ public class CommonManager {
                 .groupName(title)
                 .select()
                 .paths(regex("/services/users/*.*"))
-                .apis(RequestHandlerSelectors.basePackage("company.businessmanager"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
                 .build()
                 .apiInfo(buildApiInfo(title))
                 .pathMapping("/");
@@ -44,10 +46,9 @@ public class CommonManager {
 
     private ApiInfo buildApiInfo(String title) {
         return new ApiInfoBuilder()
-                .title(String.format("Rest Business Manager - %s.", title))
-                .description("REST Middleware Business Manager Company.")
-                .license("Apache License Version 2.0")
-                .version("2.0")
+                .title(String.format("Rest Manager Base - %s.", title))
+                .description("REST Middleware Manager Base.")
+                .version("1.0")
                 .build();
     }
 
