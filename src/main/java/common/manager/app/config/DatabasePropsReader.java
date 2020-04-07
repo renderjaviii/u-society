@@ -26,15 +26,14 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "application")
 public class DatabasePropsReader implements BeanPostProcessor {
 
+    @Value("${config.table}")
     private String configTableName;
 
     private final ConfigurableEnvironment environment;
 
     @Autowired
-    public DatabasePropsReader(ConfigurableEnvironment environment,
-                               @Value("${config.table}") String configTableName) {
+    public DatabasePropsReader(ConfigurableEnvironment environment) {
         this.environment = environment;
-        this.configTableName = configTableName;
     }
 
     @Override
