@@ -14,11 +14,6 @@ logging:
 security:
   oauth2:
     resource.filter-order: 3
-  client:
-    registration:
-      google:
-        client-id: googleId
-        client-secret: secret
 
 config:
   table: managerConfig
