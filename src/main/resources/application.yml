@@ -14,9 +14,8 @@ logging:
 security:
   oauth2:
     resource.filter-order: 3
-
 config:
-  table: managerConfig
+  table: config
 
 ---
 spring:

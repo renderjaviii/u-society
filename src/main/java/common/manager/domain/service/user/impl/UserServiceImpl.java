@@ -36,11 +36,10 @@ import common.manager.domain.service.user.UserService;
 @ConfigurationProperties
 public class UserServiceImpl implements UserService {
 
-    @Value("${config.timezone:email@email.com}")
-    private String email;
-
-    public static final String WEB_SCOPE = "WEB";
-    public static final String GRANT_TYPES = "authorization_code,refresh_token,password,client_credentials";
+    @Value("${config.scope}")
+    private String scope;
+    @Value("${config.grant.types}")
+    private String grantTypes;
 
     private final UserRepository userRepository;
     private final CredentialRepository credentialRepository;
@@ -70,8 +69,8 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .username(request.getUsername())
                 .clientId(request.getDocumentNumber())
-                .grantType(GRANT_TYPES)
-                .scope(WEB_SCOPE)
+                .grantType(grantTypes)
+                .scope(scope)
                 .createdAt(LocalDate.now(clock))
                 .clientSecret("secret")
                 .build());
