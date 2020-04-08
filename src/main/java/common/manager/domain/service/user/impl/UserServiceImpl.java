@@ -11,12 +11,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
-import common.manager.app.rest.request.UserLogin;
 import common.manager.domain.converter.Converter;
 import common.manager.domain.exception.GenericException;
 import common.manager.domain.model.Credential;
@@ -91,8 +92,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(UserLogin request) {
-        return null;
+    public Authentication getTokenInfo() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     @Override

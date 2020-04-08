@@ -22,8 +22,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableConfigurationProperties
-@ConfigurationProperties(prefix = "application")
 public class DatabasePropsReader implements BeanPostProcessor {
 
     @Value("${config.table}")
