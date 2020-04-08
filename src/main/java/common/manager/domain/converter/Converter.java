@@ -9,6 +9,7 @@ public class Converter {
         return UserApi.newBuilder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .documentNumber(user.getDocumentNumber())
                 .birthDate(user.getBirthDate())
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
@@ -19,6 +20,7 @@ public class Converter {
     public static User converUser(UserApi user) {
         return User.newBuilder()
                 .firstName(user.getFirstName())
+                .documentNumber(user.getDocumentNumber())
                 .lastName(user.getLastName())
                 .birthDate(user.getBirthDate())
                 .gender(user.getGender())

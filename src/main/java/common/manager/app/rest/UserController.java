@@ -74,7 +74,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{userId}",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserApi> get(@NotNull @PathVariable(value = "userId") final Long userId)
+    public ResponseEntity<UserApi> get(@Valid @NotNull @PathVariable(value = "userId") final Long userId)
             throws GenericException {
         return ResponseEntity.ok(userService.get(userId));
     }

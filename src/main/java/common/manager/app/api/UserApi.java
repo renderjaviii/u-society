@@ -1,5 +1,9 @@
 package common.manager.app.api;
 
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -32,6 +36,9 @@ public class UserApi {
     @ApiModelProperty(value = "phoneNumber")
     private String phoneNumber;
 
+    @ApiModelProperty(value = "documentNumber")
+    private String documentNumber;
+
     @ApiModelProperty(value = "lastAccessAt")
     private LocalDateTime lastAccessAt;
 
@@ -47,6 +54,7 @@ public class UserApi {
         gender = builder.gender;
         phoneNumber = builder.phoneNumber;
         lastAccessAt = builder.lastAccessAt;
+        documentNumber = builder.documentNumber;
     }
 
     public String getUsername() {
@@ -77,6 +85,25 @@ public class UserApi {
         return lastAccessAt;
     }
 
+    public String getDocumentNumber() {
+        return documentNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        return reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return reflectionEquals(this, o);
+    }
+
+    @Override
+    public String toString() {
+        return reflectionToString(this);
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -89,6 +116,7 @@ public class UserApi {
         private LocalDate birthDate;
         private String gender;
         private String phoneNumber;
+        private String documentNumber;
         private LocalDateTime lastAccessAt;
 
         private Builder() {
@@ -122,6 +150,11 @@ public class UserApi {
 
         public Builder phoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder documentNumber(String documentNumber) {
+            this.documentNumber = documentNumber;
             return this;
         }
 
