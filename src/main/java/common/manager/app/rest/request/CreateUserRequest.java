@@ -28,35 +28,30 @@ public class CreateUserRequest {
     private String password;
 
     @ApiModelProperty(notes = "First name", required = true)
-    @NotBlank
     @JsonProperty(value = "firstName")
     private String firstName;
 
     @ApiModelProperty(notes = "Last name", required = true)
-    @NotBlank
     @JsonProperty(value = "lastName")
     private String lastName;
 
     @ApiModelProperty(notes = "Birth Date", required = true)
-    //@NotNull
     @JsonProperty(value = "birthDate")
     private LocalDate birthDate;
 
     @ApiModelProperty(notes = "Gender", required = true)
-    @NotNull
     @JsonProperty(value = "gender")
     @Size(min = 1, max = 1)
     private String gender;
 
     @ApiModelProperty(notes = "Phone Number", required = true)
-    @NotBlank
     @Size(max = 10)
     @JsonProperty(value = "phoneNumber")
     private String phoneNumber;
 
     @ApiModelProperty(notes = "Document Number", required = true)
     @NotBlank
-    @Size(max = 10)
+    @Size(min = 8, max = 10)
     @JsonProperty(value = "documentNumber")
     private String documentNumber;
 

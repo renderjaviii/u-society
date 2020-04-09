@@ -5,6 +5,9 @@ server:
 spring:
   profiles:
     active: dev
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
 logging:
   level:
     root: DEBUG

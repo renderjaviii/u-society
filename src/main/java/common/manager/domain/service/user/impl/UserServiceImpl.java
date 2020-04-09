@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ import common.manager.domain.repository.UserRepository;
 import common.manager.domain.service.user.UserService;
 
 @Service
+@EnableConfigurationProperties
 public class UserServiceImpl implements UserService {
 
     @Value("${config.scope}")

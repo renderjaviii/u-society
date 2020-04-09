@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import common.manager.app.api.ApiError;
+import common.manager.app.api.ErrorApi;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.exception.GenericException;
@@ -47,8 +47,8 @@ public class UserController {
 
     @ApiOperation(value = "Create user.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User created."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+            @ApiResponse(code = 400, message = "Input data error.", response = ErrorApi.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ErrorApi.class) })
     @PostMapping(path = "/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateUserRequest request)
@@ -59,8 +59,8 @@ public class UserController {
 
     @ApiOperation(value = "Token info user logged in.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User logged in."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+            @ApiResponse(code = 400, message = "Input data error.", response = ErrorApi.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ErrorApi.class) })
     @GetMapping(path = "/token-info/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Authentication> getTokenInfo() {
@@ -70,8 +70,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
     @ApiOperation(value = "Get user.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+            @ApiResponse(code = 400, message = "Input data error.", response = ErrorApi.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ErrorApi.class) })
     @GetMapping(path = "/{userId}",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> get(@Valid @NotNull @PathVariable(value = "userId") final Long userId)
