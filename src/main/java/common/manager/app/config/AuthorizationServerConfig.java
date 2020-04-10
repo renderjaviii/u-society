@@ -1,5 +1,10 @@
 package common.manager.app.config;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +21,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -24,15 +30,11 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Value("${jwt.clientId:clientId}")
-    private String clientId;
-    @Value("${jwt.client-secret:clientSecret}")
-    private String clientSecret;
-    @Value("${jwt.signing-key:123}")
+    @Value("${config.access-token.signing-key}")
     private String jwtSigningKey;
-    @Value("${jwt.accessTokenValidititySeconds:43200}") // 12 hours
+    @Value("${config.access-token.validitity-seconds}")
     private int accessTokenValiditySeconds;
-    @Value("${jwt.refreshTokenValiditySeconds:86400}") // 1 day
+    @Value("${config.refresh-token.validitity-seconds}")
     private int refreshTokenValiditySeconds;
 
     private final ClientDetailsService customClientDetails;
@@ -54,7 +56,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authenticationManager)
                 .userDetailsService(customUserDetailsService)
                 .tokenStore(tokenStore())
-                //.tokenServices(tokenServices())
+                .tokenServices(tokenServices())
                 .accessTokenConverter(accessTokenConverter());
     }
 
@@ -84,7 +86,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("123");
+        jwtAccessTokenConverter.setSigningKey(jwtSigningKey);
         return jwtAccessTokenConverter;
     }
 
@@ -94,10 +96,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setTokenStore(tokenStore());
 
-        defaultTokenServices.setSupportRefreshToken(true);
-        defaultTokenServices.setRefreshTokenValiditySeconds(1234 * 2);
-        defaultTokenServices.setReuseRefreshToken(false);
-        defaultTokenServices.setAccessTokenValiditySeconds(1234);
+        defaultTokenServices.setAccessTokenValiditySeconds(accessTokenValiditySeconds);
+        defaultTokenServices.setSupportRefreshToken(TRUE);
+        defaultTokenServices.setRefreshTokenValiditySeconds(refreshTokenValiditySeconds);
+        defaultTokenServices.setReuseRefreshToken(FALSE);
+
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Collections.singletonList(accessTokenConverter()));
+        defaultTokenServices.setTokenEnhancer(tokenEnhancerChain);
 
         defaultTokenServices.setClientDetailsService(customClientDetails);
         defaultTokenServices.setAuthenticationManager(authenticationManager);

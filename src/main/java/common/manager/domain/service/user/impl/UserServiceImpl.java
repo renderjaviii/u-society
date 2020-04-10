@@ -27,11 +27,12 @@ import common.manager.domain.model.User;
 import common.manager.domain.repository.CredentialRepository;
 import common.manager.domain.repository.RoleRepository;
 import common.manager.domain.repository.UserRepository;
+import common.manager.domain.service.common.CommonServiceImpl;
 import common.manager.domain.service.user.UserService;
 
 @Service
 @EnableConfigurationProperties
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     @Value("${config.scope}")
     private String scope;

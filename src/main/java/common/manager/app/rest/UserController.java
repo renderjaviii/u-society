@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiResponses;
 @Validated
 @RestController
 @RequestMapping(path = "services/users")
-public class UserController {
+public class UserController extends CommonController {
 
     @Resource(name = "tokenStore")
     TokenStore tokenStore;
@@ -63,7 +63,10 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ErrorApi.class) })
     @GetMapping(path = "/token-info/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Authentication> getTokenInfo() {
+    public ResponseEntity<Authentication> getTokenInfo() throws GenericException {
+        String user = getUser();
+        validateUser("username");
+
         return new ResponseEntity<>(userService.getTokenInfo(), OK);
     }
 
