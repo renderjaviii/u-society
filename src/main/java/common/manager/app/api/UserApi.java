@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "User Api.")
+@ApiModel(value = "User Api")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName(value = "user")
 public class UserApi {

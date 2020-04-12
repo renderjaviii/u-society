@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 public class CommonManager {
 
-    private static final String BASE_PACKAGE = "common.manager";
+    private static final String BASE_PACKAGE = CommonManager.class.getPackage().getName();
 
     public static void main(String[] args) {
         SpringApplication.run(CommonManager.class, args);

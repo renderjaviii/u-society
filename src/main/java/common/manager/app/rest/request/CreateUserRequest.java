@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @CreateUserRequestConstraint
-@ApiModel(value = "Request to create user.")
+@ApiModel(value = "Request to create user")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserRequest {
 
