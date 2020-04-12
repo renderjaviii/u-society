@@ -65,9 +65,8 @@ public class UserController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/token-info/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Authentication> getTokenInfo(@ApiParam(value = "Username")
-                                                       @NotNull @RequestParam(value = "username") final String username)
-            throws GenericException {
+    public ResponseEntity<Authentication> getTokenInfo(
+            @ApiParam(value = "Username") @NotNull @RequestParam(value = "username") final String username) {
         validateUser(username);
         return new ResponseEntity<>(userService.getTokenInfo(), OK);
     }

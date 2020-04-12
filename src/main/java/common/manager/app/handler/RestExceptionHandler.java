@@ -1,7 +1,5 @@
 package common.manager.app.handler;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -89,9 +87,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), "MISSING_REQUEST_PARAMETER"), status);
     }
 
-    @ExceptionHandler(Exception.class)
+  /*  @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGlobal(Exception ex) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), "INTERNAL_SERVER_ERROR"), INTERNAL_SERVER_ERROR);
     }
-
+*/
 }

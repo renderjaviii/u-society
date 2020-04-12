@@ -2,8 +2,8 @@ package common.manager.app.rest;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import common.manager.domain.exception.GenericException;
+import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public abstract class CommonController {
 
@@ -12,10 +12,11 @@ public abstract class CommonController {
         return authentication.getPrincipal().toString();
     }
 
-    protected void validateUser(String username) throws GenericException {
+    protected void validateUser(String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!authentication.getPrincipal().toString().equals(username)) {
-            throw new GenericException("Invalid credentials.", "FORBIDDEN");
+        if (!((OAuth2Authentication) authentication).isClientOnly() ||
+                !authentication.getPrincipal().toString().equals(username)) {
+            throw new UnapprovedClientAuthenticationException("Invalid credentials.");
         }
     }
 
