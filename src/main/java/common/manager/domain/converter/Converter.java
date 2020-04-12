@@ -5,8 +5,13 @@ import common.manager.domain.model.User;
 
 public class Converter {
 
-    public static UserApi converUser(User user) {
+    private Converter() {
+        super();
+    }
+
+    public static UserApi user(User user) {
         return UserApi.newBuilder()
+                .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .documentNumber(user.getDocumentNumber())
@@ -17,8 +22,9 @@ public class Converter {
                 .build();
     }
 
-    public static User converUser(UserApi user) {
+    public static User user(UserApi user) {
         return User.newBuilder()
+                .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .documentNumber(user.getDocumentNumber())
                 .lastName(user.getLastName())

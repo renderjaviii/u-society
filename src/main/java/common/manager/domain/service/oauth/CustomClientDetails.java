@@ -8,44 +8,31 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import common.manager.domain.model.User;
+import common.manager.domain.model.Credential;
 
-public class CustomClientDetails extends User implements ClientDetails {
+public class CustomClientDetails extends Credential implements ClientDetails {
 
-    public CustomClientDetails(User user) {
-        super(user);
-    }
-
-    @Override
-    public String getClientId() {
-        return super.getCredential().getClientId();
-    }
-
-    @Override
-    public String getClientSecret() {
-        return super.getCredential().getPassword();
+    public CustomClientDetails(Credential credential) {
+        super(credential);
     }
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return super.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
+        return Collections.emptySet();
     }
 
     @Override
     public Set<String> getScope() {
-        String[] scopes = super.getCredential().getScope().split(",");
-        return Arrays.stream(scopes).collect(Collectors.toSet());
+        return Arrays.stream(super.getScopes().split(","))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> getAuthorizedGrantTypes() {
-        String[] grantTypes = super.getCredential().getGrantType().split(",");
-        return Arrays.stream(grantTypes).collect(Collectors.toSet());
+        return Arrays.stream(super.getGrantTypes().split(","))
+                .collect(Collectors.toSet());
     }
 
     @Override

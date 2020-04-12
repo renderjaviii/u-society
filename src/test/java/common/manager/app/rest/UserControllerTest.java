@@ -8,8 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import common.manager.app.api.ErrorApi;
+import common.manager.app.api.ApiError;
 import common.manager.app.api.UserApi;
 import common.manager.app.handler.RestExceptionHandler;
 import common.manager.app.rest.request.CreateUserRequest;
@@ -48,7 +46,7 @@ public class UserControllerTest {
 
     private MockMvc mockMvc;
 
-    private final Long userId = 123456789L;
+    private final String userName = "username";
     private UserApi user;
 
     @Before
@@ -72,7 +70,7 @@ public class UserControllerTest {
                         .username("username")
                         .password("password")
                         .documentNumber("docNumber")
-                        .userRoles(Collections.singletonList("ROLE"))
+                        .userRole("ROLE")
                         .build())))
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -87,13 +85,13 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(CreateUserRequest.newBuilder()
                         .password("password")
                         .documentNumber("docNumber")
-                        .userRoles(Collections.singletonList("ROLE"))
+                        .userRole("ROLE")
                         .build())))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
-        ErrorApi errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorApi.class);
-        assertEquals(ErrorApi.newBuilder()
+        ApiError errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiError.class);
+        assertEquals(ApiError.newBuilder()
                         .description("Fields validation failed: username must not be blank")
                         .statusCode("BAD_REQUEST")
                         .build(),
@@ -102,9 +100,9 @@ public class UserControllerTest {
 
     @Test
     public void shouldGetUserUsingTheCorrectData() throws Exception {
-        when(userService.get(userId)).thenReturn(user);
+        when(userService.get(userName)).thenReturn(user);
 
-        MvcResult mvcResult = mockMvc.perform(get(BASE_URL + "/" + userId)
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URL + "/" + userName)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -113,21 +111,21 @@ public class UserControllerTest {
         objectMapper.writeValueAsString(userResponse);
 
         assertEquals(user, userResponse);
-        verify(userService).get(userId);
+        verify(userService).get(userName);
     }
 
     @Test
     public void shouldThrowExceptionGettingUserIfNotExists() throws Exception {
-        when(userService.get(userId)).thenThrow(new GenericException("User not exists.", "USER_NOT_EXISTS"));
+        when(userService.get(userName)).thenThrow(new GenericException("User not exists.", "USER_NOT_EXISTS"));
 
-        MvcResult mvcResult = mockMvc.perform(get(BASE_URL + "/" + userId)
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URL + "/" + userName)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable())
                 .andReturn();
 
-        ErrorApi errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorApi.class);
+        ApiError errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiError.class);
 
-        assertEquals(ErrorApi.newBuilder()
+        assertEquals(ApiError.newBuilder()
                         .description("User not exists.")
                         .statusCode("USER_NOT_EXISTS")
                         .build(),

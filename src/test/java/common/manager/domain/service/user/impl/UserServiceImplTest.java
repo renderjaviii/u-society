@@ -28,7 +28,7 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl subject;
 
-    private final Long userId = 123456789L;
+    private final String userName = "username";
     private User user;
 
     @Before
@@ -42,9 +42,9 @@ public class UserServiceImplTest {
     public void shouldGetUserUsingTheCorrectData() throws GenericException {
         when(userRepository.getOne(any())).thenReturn(user);
 
-        UserApi executed = subject.get(userId);
-        assertEquals(Converter.converUser(user), executed);
-        verify(userRepository).getOne(userId);
+        UserApi executed = subject.get(userName);
+        assertEquals(Converter.user(user), executed);
+        verify(userRepository).findByUsername(userName);
     }
 
 }

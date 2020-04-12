@@ -12,6 +12,6 @@ public interface UserService {
 
     Authentication getTokenInfo();
 
-    UserApi get(Long userId) throws GenericException;
+    UserApi get(String username) throws GenericException;
 
 }

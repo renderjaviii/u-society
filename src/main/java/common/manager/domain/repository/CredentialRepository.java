@@ -10,6 +10,8 @@ import common.manager.domain.model.Credential;
 @Repository
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
 
+    Optional<Credential> findByClientId(String clientId);
+
     Optional<Credential> findByUsername(String username);
 
     Optional<Credential> findByUsernameOrClientId(String username,

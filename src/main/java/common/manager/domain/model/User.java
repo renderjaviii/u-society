@@ -4,7 +4,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -13,14 +12,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 @Entity
 @Table(name = "user")
@@ -31,65 +26,56 @@ public class User {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "document_number", unique = true, nullable = false, length = 10)
+    @Column(name = "document_number", unique = true, nullable = false)
     private String documentNumber;
 
-    @Column(name = "gender", length = 1, nullable = false)
+    @Column(name = "gender", length = 1)
     private String gender;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "phone_number", length = 10)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, columnDefinition = "DATE")
     private LocalDate createdAt;
 
-    @Column(name = "last_access_at", nullable = false)
+    @Column(name = "last_access_at", columnDefinition = "DATETIME")
     private LocalDateTime lastAccessAt;
 
     @Column(name = "account_locked", nullable = false, insertable = false, columnDefinition = "boolean default false")
-    private Boolean accountLocked;
-
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private boolean accountLocked;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "credential_id", referencedColumnName = "id")
-    private Credential credential;
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
 
     public User() {
         super();
     }
 
     public User(User user) {
-        this.id = user.id;
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
-        this.documentNumber = user.documentNumber;
-        this.gender = user.gender;
-        this.birthDate = user.birthDate;
-        this.phoneNumber = user.phoneNumber;
-        this.createdAt = user.createdAt;
-        this.lastAccessAt = user.lastAccessAt;
         this.accountLocked = user.accountLocked;
-        this.roles = user.roles;
-        this.credential = user.credential;
+        this.role = user.role;
     }
 
     private User(Builder builder) {
         id = builder.id;
+        username = builder.username;
+        password = builder.password;
         firstName = builder.firstName;
         lastName = builder.lastName;
         documentNumber = builder.documentNumber;
@@ -99,12 +85,23 @@ public class User {
         createdAt = builder.createdAt;
         lastAccessAt = builder.lastAccessAt;
         accountLocked = builder.accountLocked;
-        roles = builder.roles;
-        credential = builder.credential;
+        role = builder.role;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public String getFirstName() {
@@ -135,20 +132,20 @@ public class User {
         return createdAt;
     }
 
+    public void setLastAccessAt(LocalDateTime lastAccessAt) {
+        this.lastAccessAt = lastAccessAt;
+    }
+
     public LocalDateTime getLastAccessAt() {
         return lastAccessAt;
     }
 
-    public Boolean getAccountLocked() {
+    public boolean isAccountLocked() {
         return accountLocked;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public Credential getCredential() {
-        return credential;
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -173,13 +170,11 @@ public class User {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public static final class Builder {
 
         private Long id;
+        private String username;
+        private String password;
         private String firstName;
         private String lastName;
         private String documentNumber;
@@ -188,16 +183,24 @@ public class User {
         private String phoneNumber;
         private LocalDate createdAt;
         private LocalDateTime lastAccessAt;
-        private Boolean accountLocked;
-        private List<Role> roles;
-        private Credential credential;
+        private boolean accountLocked;
+        private Role role;
 
         private Builder() {
-            super();
         }
 
         public Builder id(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
             return this;
         }
 
@@ -241,18 +244,13 @@ public class User {
             return this;
         }
 
-        public Builder accountLocked(Boolean accountLocked) {
+        public Builder accountLocked(boolean accountLocked) {
             this.accountLocked = accountLocked;
             return this;
         }
 
-        public Builder roles(List<Role> roles) {
-            this.roles = roles;
-            return this;
-        }
-
-        public Builder credential(Credential credential) {
-            this.credential = credential;
+        public Builder role(Role role) {
+            this.role = role;
             return this;
         }
 

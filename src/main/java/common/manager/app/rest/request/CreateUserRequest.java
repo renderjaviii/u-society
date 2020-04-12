@@ -1,7 +1,6 @@
 package common.manager.app.rest.request;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -55,10 +54,10 @@ public class CreateUserRequest {
     @JsonProperty(value = "documentNumber")
     private String documentNumber;
 
-    @ApiModelProperty(notes = "User roles", required = true)
+    @ApiModelProperty(notes = "User role", required = true)
     @NotNull
-    @JsonProperty(value = "userRoles")
-    private List<String> userRoles;
+    @JsonProperty(value = "userRole")
+    private String userRole;
 
     public CreateUserRequest() {
         super();
@@ -73,7 +72,7 @@ public class CreateUserRequest {
         gender = builder.gender;
         phoneNumber = builder.phoneNumber;
         documentNumber = builder.documentNumber;
-        userRoles = builder.userRoles;
+        userRole = builder.userRole;
     }
 
     public String getUsername() {
@@ -108,8 +107,8 @@ public class CreateUserRequest {
         return documentNumber;
     }
 
-    public List<String> getUserRoles() {
-        return userRoles;
+    public String getUserRole() {
+        return userRole;
     }
 
     public static Builder newBuilder() {
@@ -126,7 +125,7 @@ public class CreateUserRequest {
         private String gender;
         private String phoneNumber;
         private String documentNumber;
-        private List<String> userRoles;
+        private String userRole;
 
         private Builder() {
             super();
@@ -172,8 +171,8 @@ public class CreateUserRequest {
             return this;
         }
 
-        public Builder userRoles(List<String> userRoles) {
-            this.userRoles = userRoles;
+        public Builder userRole(String userRole) {
+            this.userRole = userRole;
             return this;
         }
 

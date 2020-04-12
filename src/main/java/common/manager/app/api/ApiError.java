@@ -9,23 +9,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "Error Api.")
-public class ErrorApi {
+public class ApiError {
 
     @JsonProperty
     private String description;
     @JsonProperty
     private String statusCode;
 
-    public ErrorApi() {
+    public ApiError() {
         super();
     }
 
-    public ErrorApi(String description, String statusCode) {
+    public ApiError(String description, String statusCode) {
         this.description = description;
         this.statusCode = statusCode;
     }
 
-    private ErrorApi(Builder builder) {
+    private ApiError(Builder builder) {
         description = builder.description;
         statusCode = builder.statusCode;
     }
@@ -76,8 +76,8 @@ public class ErrorApi {
             return this;
         }
 
-        public ErrorApi build() {
-            return new ErrorApi(this);
+        public ApiError build() {
+            return new ApiError(this);
         }
 
     }
