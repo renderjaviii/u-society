@@ -29,12 +29,17 @@ public class PasswordManagerImpl implements PasswordManager {
     }
 
     @Override
+    public String encode(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
+    }
+
+    @Override
     public User checkPassword(User user, String rawPassword) {
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new BadCredentialsException("Bad credentials");
-        }
         if (user.isAccountLocked()) {
             throw new LockedException("Account locked");
+        }
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new BadCredentialsException("Bad credentials");
         }
         user.setLastAccessAt(LocalDateTime.now(clock));
         userRepository.saveAndFlush(user);

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import common.manager.app.api.UserApi;
@@ -21,6 +20,7 @@ import common.manager.domain.model.User;
 import common.manager.domain.repository.RoleRepository;
 import common.manager.domain.repository.UserRepository;
 import common.manager.domain.service.common.CommonServiceImpl;
+import common.manager.domain.service.oauth.PasswordManager;
 import common.manager.domain.service.user.UserService;
 
 @Service
@@ -33,17 +33,17 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordManager passwordManager;
     private final Clock clock;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder,
+                           PasswordManager passwordManager,
                            Clock clock) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordManager = passwordManager;
         this.clock = clock;
     }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
         validateUser(request);
 
         userRepository.save(User.newBuilder()
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(passwordManager.encode(request.getPassword()))
                 .username(request.getUsername())
                 .phoneNumber(request.getPhoneNumber())
                 .firstName(request.getFirstName())
