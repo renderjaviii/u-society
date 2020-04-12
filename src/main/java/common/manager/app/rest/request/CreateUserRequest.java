@@ -46,13 +46,11 @@ public class CreateUserRequest {
     private String gender;
 
     @ApiModelProperty(notes = "Phone Number", required = true)
-    @Size(max = 10)
     @JsonProperty(value = "phoneNumber")
     private String phoneNumber;
 
     @ApiModelProperty(notes = "Document Number", required = true)
     @NotBlank
-    @Size(min = 8, max = 10)
     @JsonProperty(value = "documentNumber")
     private String documentNumber;
 
