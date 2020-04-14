@@ -29,17 +29,17 @@ public class TestServiceImpl1 extends WebClientService implements TestService {
     }
 
     @Override
-    public void get() {
+    public void example() {
 
         getTokenUsingClientCredentials("clientId", "secret");
         Optional<Object> optional = checkAccessToken();
 
         MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
-        qParams.add("q", "1234");
+        qParams.add("description", "1234");
         Map<String, String> pParams = new HashMap<>();
         pParams.put("id", "1");
 
-        Test test = get(uriBuilder()
+        Test test = post(uriBuilder()
                         .pathSegment("/test")
                         .pathSegment("{id}")
                         .queryParams(qParams)

@@ -61,7 +61,7 @@ public class UserController extends CommonController {
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateUserRequest request)
             throws GenericException, URISyntaxException {
         //userService.create(request);
-        testService.get();
+        testService.example();
         return new ResponseEntity<>(CREATED);
     }
 
