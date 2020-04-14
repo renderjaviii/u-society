@@ -2,6 +2,7 @@ package common.manager.domain.service.web;
 
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
@@ -76,6 +78,31 @@ public class WebClientService {
                 setTcpClient(timeOut);
             }
         }
+    }
+
+    protected void getTokenUsingPassword(String clientId,
+                                         String clientSecret,
+                                         String username,
+                                         String password) {
+        token = webClient.post()
+                .uri(uriBuilder -> getLocalUriBuilder()
+                        .path("oauth/token")
+                        .queryParam("grant_type", "password")
+                        .build())
+                .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
+                .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
+                .bodyValue(BodyInserters.fromFormData("username", username).with("password", password))
+                .retrieve()
+                .bodyToMono(TokenApi.class)
+                .onErrorMap(e -> new WebException(e.getMessage()))
+                .block();
+
+        webClient = webClient.mutate()
+                .defaultHeaders(httpHeaders ->
+                        httpHeaders.setBearerAuth(token.getAccessToken()))
+                .build();
+
+        LOGGER.info("Access token saved successfully...");
     }
 
     protected void getTokenUsingClientCredentials(String clientId, String clientSecret) {
