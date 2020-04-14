@@ -37,6 +37,7 @@ public class WebClientService {
     private URI uri;
 
     private void setTcpClient(int timeOut) {
+        // TODO -> comprobar funcionalidad
         TcpClient tcpClient = TcpClient
                 .create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeOut)
@@ -56,6 +57,8 @@ public class WebClientService {
         if (webClient == null) {
             if (!StringUtil.isNullOrEmpty(url)) {
                 try {
+
+                    //TODO -> no usar Uri
                     uri = new URI(url);
                     webClient = WebClient.builder()
                             .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
@@ -122,12 +125,57 @@ public class WebClientService {
         return token;
     }
 
-    /*  private  <T> T get(UriBuilder uriBuilder){
-              webClient.get()
-                      .uri(uriBuilder::build)
-                      .retrieve();
-          }
-      */
+    protected <T> T get(UriBuilder uriBuilder, Class<T> responseClazz) {
+        return webClient.get()
+                .uri(uriBuilder::build)
+                .retrieve()
+                .bodyToMono(responseClazz)
+                .onErrorMap(e -> new WebException(e.getMessage()))
+                .block();
+    }
+
+    protected <T> T post(UriBuilder uriBuilder, Class<T> responseClazz) {
+        return post(uriBuilder, null, responseClazz);
+    }
+
+    protected <T> T post(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+        return webClient.post()
+                .uri(uriBuilder::build)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(responseClazz)
+                .onErrorMap(e -> new WebException(e.getMessage()))
+                .block();
+    }
+
+    protected <T> T put(UriBuilder uriBuilder, Class<T> responseClazz) {
+        return put(uriBuilder, null, responseClazz);
+    }
+
+    protected <T> T put(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+        return webClient.put()
+                .uri(uriBuilder::build)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(responseClazz)
+                .onErrorMap(e -> new WebException(e.getMessage()))
+                .block();
+    }
+
+    protected <T> T patch(UriBuilder uriBuilder, Class<T> responseClazz) {
+        return patch(uriBuilder, null, responseClazz);
+    }
+
+    protected <T> T patch(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+        return webClient.patch()
+                .uri(uriBuilder::build)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(responseClazz)
+                .onErrorMap(e -> new WebException(e.getMessage()))
+                .block();
+    }
+
     private void throwUrlException() {
         throw new UnsupportedOperationException("The base url is invalid.");
     }
