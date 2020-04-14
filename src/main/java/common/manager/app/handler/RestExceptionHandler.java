@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import common.manager.app.api.ApiError;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.exception.WebException;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -53,11 +54,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(errorMessage, BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(GenericException.class)
-    public ResponseEntity<ApiError> hnadleGeneric(GenericException ex) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.NOT_ACCEPTABLE);
-    }
-
     @ExceptionHandler( { ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(
             ConstraintViolationException ex, WebRequest request) {
@@ -85,6 +81,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           HttpStatus status,
                                                                           WebRequest request) {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), "MISSING_REQUEST_PARAMETER"), status);
+    }
+
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<ApiError> handleGeneric(GenericException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(WebException.class)
+    public ResponseEntity<ApiError> handleWeb(WebException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.I_AM_A_TEAPOT);
     }
 
   /*  @ExceptionHandler(Exception.class)
