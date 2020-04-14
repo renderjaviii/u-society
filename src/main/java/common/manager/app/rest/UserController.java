@@ -3,6 +3,8 @@ package common.manager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.net.URISyntaxException;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -26,6 +28,7 @@ import common.manager.app.api.ApiError;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.provider.test.TestService;
 import common.manager.domain.service.user.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -41,10 +44,12 @@ public class UserController extends CommonController {
     TokenStore tokenStore;
 
     private final UserService userService;
+    private final TestService testService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TestService testService) {
         this.userService = userService;
+        this.testService = testService;
     }
 
     @ApiOperation(value = "Create user.")
@@ -54,8 +59,9 @@ public class UserController extends CommonController {
     @PostMapping(path = "/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateUserRequest request)
-            throws GenericException {
-        userService.create(request);
+            throws GenericException, URISyntaxException {
+        //userService.create(request);
+        testService.get();
         return new ResponseEntity<>(CREATED);
     }
 

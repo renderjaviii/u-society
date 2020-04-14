@@ -1,5 +1,7 @@
 package common.manager.domain.provider.test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -7,6 +9,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import common.manager.domain.service.web.WebClientService;
 
@@ -30,14 +34,19 @@ public class TestServiceImpl1 extends WebClientService implements TestService {
         getTokenUsingClientCredentials("clientId", "secret");
         Optional<Object> optional = checkAccessToken();
 
-        getWebClient().get()
-                .uri(uriBuilder -> getLocalUriBuilder()
-                        .path("/test/{id}")
-                        .queryParam("description", "Perrazo")
-                        .build(101010))
-                .retrieve()
-                .bodyToMono(Test.class)
-                .block();
+        MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
+        qParams.add("q", "1234");
+        Map<String, String> pParams = new HashMap<>();
+        pParams.put("id", "1");
+
+        Test test = get(uriBuilder()
+                        .pathSegment("/test")
+                        .pathSegment("{id}")
+                        .queryParams(qParams)
+                        .build(pParams),
+                Test.class);
+
+        System.out.println(test);
 
     }
 

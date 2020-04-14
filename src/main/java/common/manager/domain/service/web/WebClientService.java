@@ -6,7 +6,6 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -33,10 +32,31 @@ public class WebClientService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
+    private WebClient webClient;
     private TokenApi token;
 
-    private WebClient webClient;
-    private URI uri;
+    protected void setUp(String url, int timeOut) {
+        LOGGER.info("Creating WebClient for host: {}", url);
+
+        if (webClient == null) {
+            if (!StringUtil.isNullOrEmpty(url)) {
+                buildWebClient(url);
+            } else {
+                throwUrlException();
+            }
+            if (timeOut != 0) {
+                setTcpClient(timeOut);
+            }
+        }
+    }
+
+    private void buildWebClient(String url) {
+        webClient = WebClient.builder()
+                .baseUrl(url)
+                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
+                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .build();
+    }
 
     private void setTcpClient(int timeOut) {
         // TODO -> comprobar funcionalidad
@@ -53,39 +73,12 @@ public class WebClientService {
                 .build();
     }
 
-    protected void setUp(String url, int timeOut) {
-        LOGGER.info("Creating WebClient for host: {}", url);
-
-        if (webClient == null) {
-            if (!StringUtil.isNullOrEmpty(url)) {
-                try {
-
-                    //TODO -> no usar Uri
-                    uri = new URI(url);
-                    webClient = WebClient.builder()
-                            .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                            .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                            .build();
-
-                } catch (URISyntaxException e) {
-                    throwUrlException();
-                }
-            } else {
-                throwUrlException();
-            }
-
-            if (timeOut != 0) {
-                setTcpClient(timeOut);
-            }
-        }
-    }
-
     protected void getTokenUsingPassword(String clientId,
                                          String clientSecret,
                                          String username,
                                          String password) {
         token = webClient.post()
-                .uri(uriBuilder -> getLocalUriBuilder()
+                .uri(uriBuilder -> uriBuilder()
                         .path("oauth/token")
                         .queryParam("grant_type", "password")
                         .build())
@@ -98,8 +91,7 @@ public class WebClientService {
                 .block();
 
         webClient = webClient.mutate()
-                .defaultHeaders(httpHeaders ->
-                        httpHeaders.setBearerAuth(token.getAccessToken()))
+                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
                 .build();
 
         LOGGER.info("Access token saved successfully...");
@@ -107,7 +99,7 @@ public class WebClientService {
 
     protected void getTokenUsingClientCredentials(String clientId, String clientSecret) {
         token = webClient.post()
-                .uri(uriBuilder -> getLocalUriBuilder()
+                .uri(uriBuilder -> uriBuilder()
                         .path("oauth/token")
                         .queryParam("grant_type", "client_credentials")
                         .build())
@@ -118,8 +110,7 @@ public class WebClientService {
                 .block();
 
         webClient = webClient.mutate()
-                .defaultHeaders(httpHeaders ->
-                        httpHeaders.setBearerAuth(token.getAccessToken()))
+                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
                 .build();
 
         LOGGER.info("Access token saved successfully...");
@@ -127,7 +118,7 @@ public class WebClientService {
 
     protected Optional<Object> checkAccessToken() {
         return getWebClient().get()
-                .uri(uriBuilder -> getLocalUriBuilder()
+                .uri(uriBuilder -> uriBuilder()
                         .path("oauth/check_token")
                         .queryParam("token", token.getAccessToken())
                         .build())
@@ -137,37 +128,34 @@ public class WebClientService {
                 .blockOptional();
     }
 
-    public UriBuilder getLocalUriBuilder() {
-        return new DefaultUriBuilderFactory().builder()
-                .scheme(uri.getScheme())
-                .host(uri.getHost())
-                .port(uri.getPort());
+    protected UriBuilder uriBuilder() {
+        return new DefaultUriBuilderFactory().builder();
     }
 
-    public WebClient getWebClient() {
+    protected WebClient getWebClient() {
         return webClient;
     }
 
-    public TokenApi getToken() {
+    protected TokenApi getToken() {
         return token;
     }
 
-    protected <T> T get(UriBuilder uriBuilder, Class<T> responseClazz) {
+    protected <T> T get(URI uri, Class<T> responseClazz) {
         return webClient.get()
-                .uri(uriBuilder::build)
+                .uri(uri.toString())
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
     }
 
-    protected <T> T post(UriBuilder uriBuilder, Class<T> responseClazz) {
-        return post(uriBuilder, null, responseClazz);
+    protected <T> T post(URI uri, Class<T> responseClazz) {
+        return post(uri, null, responseClazz);
     }
 
-    protected <T> T post(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+    protected <T> T post(URI uri, Object body, Class<T> responseClazz) {
         return webClient.post()
-                .uri(uriBuilder::build)
+                .uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -175,13 +163,13 @@ public class WebClientService {
                 .block();
     }
 
-    protected <T> T put(UriBuilder uriBuilder, Class<T> responseClazz) {
-        return put(uriBuilder, null, responseClazz);
+    protected <T> T put(URI uri, Class<T> responseClazz) {
+        return put(uri, null, responseClazz);
     }
 
-    protected <T> T put(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+    protected <T> T put(URI uri, Object body, Class<T> responseClazz) {
         return webClient.put()
-                .uri(uriBuilder::build)
+                .uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -189,13 +177,13 @@ public class WebClientService {
                 .block();
     }
 
-    protected <T> T patch(UriBuilder uriBuilder, Class<T> responseClazz) {
-        return patch(uriBuilder, null, responseClazz);
+    protected <T> T patch(URI uri, Class<T> responseClazz) {
+        return patch(uri, null, responseClazz);
     }
 
-    protected <T> T patch(UriBuilder uriBuilder, Object body, Class<T> responseClazz) {
+    protected <T> T patch(URI uri, Object body, Class<T> responseClazz) {
         return webClient.patch()
-                .uri(uriBuilder::build)
+                .uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
