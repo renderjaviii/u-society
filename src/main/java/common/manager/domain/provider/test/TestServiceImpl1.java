@@ -32,6 +32,7 @@ public class TestServiceImpl1 extends WebClientService implements TestService {
     public void example() {
 
         getTokenUsingClientCredentials("clientId", "secret");
+        //getTokenUsingPassword("clientId", "secret", "test", "test");
         Optional<Object> optional = checkAccessToken();
 
         MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
@@ -39,9 +40,8 @@ public class TestServiceImpl1 extends WebClientService implements TestService {
         Map<String, String> pParams = new HashMap<>();
         pParams.put("id", "1");
 
-        Test test = post(uriBuilder()
-                        .pathSegment("/test")
-                        .pathSegment("{id}")
+        Test test = get(uriBuilder()
+                        .path("/test/{id}")
                         .queryParams(qParams)
                         .build(pParams),
                 Test.class);

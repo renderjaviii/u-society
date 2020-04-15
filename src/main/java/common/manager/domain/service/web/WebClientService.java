@@ -2,6 +2,7 @@ package common.manager.domain.service.web;
 
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -29,6 +30,8 @@ import reactor.netty.tcp.TcpClient;
 
 @Service
 public class WebClientService {
+
+    private static final String OAUTH_URI = "/oauth/token";
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -77,14 +80,17 @@ public class WebClientService {
                                          String clientSecret,
                                          String username,
                                          String password) {
-        token = webClient.post()
-                .uri(uriBuilder -> uriBuilder()
-                        .path("oauth/token")
+        token = WebClient.builder()
+                .baseUrl("http://localhost:8079")
+                .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
+                .build()
+                .post()
+                .uri(uriBuilder()
+                        .path(OAUTH_URI)
                         .queryParam("grant_type", "password")
-                        .build())
-                .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-                .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
-                .bodyValue(BodyInserters.fromFormData("username", username).with("password", password))
+                        .build().toString())
+                .body(BodyInserters.fromFormData("username", username).with("password", password))
+                .headers(httpHeaders -> httpHeaders.setBasicAuth(clientId, clientSecret))
                 .retrieve()
                 .bodyToMono(TokenApi.class)
                 .onErrorMap(e -> new WebException(e.getMessage()))
@@ -98,11 +104,10 @@ public class WebClientService {
     }
 
     protected void getTokenUsingClientCredentials(String clientId, String clientSecret) {
-        token = webClient.post()
-                .uri(uriBuilder -> uriBuilder()
-                        .path("oauth/token")
-                        .queryParam("grant_type", "client_credentials")
-                        .build())
+        token = webClient.post().uri(uriBuilder()
+                .path(OAUTH_URI)
+                .queryParam("grant_type", "client_credentials")
+                .build().toString())
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
                 .retrieve()
                 .bodyToMono(TokenApi.class)
@@ -117,11 +122,11 @@ public class WebClientService {
     }
 
     protected Optional<Object> checkAccessToken() {
-        return getWebClient().get()
-                .uri(uriBuilder -> uriBuilder()
-                        .path("oauth/check_token")
-                        .queryParam("token", token.getAccessToken())
-                        .build())
+        return getWebClient().get().uri(uriBuilder()
+                .pathSegment("oauth")
+                .pathSegment("check_token")
+                .queryParam("token", token.getAccessToken())
+                .build().toString())
                 .retrieve()
                 .bodyToMono(Object.class)
                 .doOnError(error -> LOGGER.error(error.getMessage()))
@@ -141,8 +146,7 @@ public class WebClientService {
     }
 
     protected <T> T get(URI uri, Class<T> responseClazz) {
-        return webClient.get()
-                .uri(uri.toString())
+        return webClient.get().uri(uri.toString())
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .onErrorMap(e -> new WebException(e.getMessage()))
@@ -150,12 +154,11 @@ public class WebClientService {
     }
 
     protected <T> T post(URI uri, Class<T> responseClazz) {
-        return post(uri, null, responseClazz);
+        return post(uri, EMPTY, responseClazz);
     }
 
     protected <T> T post(URI uri, Object body, Class<T> responseClazz) {
-        return webClient.post()
-                .uri(uri.toString())
+        return webClient.post().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -164,12 +167,11 @@ public class WebClientService {
     }
 
     protected <T> T put(URI uri, Class<T> responseClazz) {
-        return put(uri, null, responseClazz);
+        return put(uri, EMPTY, responseClazz);
     }
 
     protected <T> T put(URI uri, Object body, Class<T> responseClazz) {
-        return webClient.put()
-                .uri(uri.toString())
+        return webClient.put().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -178,12 +180,11 @@ public class WebClientService {
     }
 
     protected <T> T patch(URI uri, Class<T> responseClazz) {
-        return patch(uri, null, responseClazz);
+        return patch(uri, EMPTY, responseClazz);
     }
 
     protected <T> T patch(URI uri, Object body, Class<T> responseClazz) {
-        return webClient.patch()
-                .uri(uri.toString())
+        return webClient.patch().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
