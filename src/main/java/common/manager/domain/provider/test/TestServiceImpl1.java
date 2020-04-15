@@ -19,20 +19,20 @@ import common.manager.domain.service.web.WebClientService;
 public class TestServiceImpl1 extends WebClientService implements TestService {
 
     @Value("${web-service.url:http://localhost:8079}")
-    private String url;
-    @Value("${web-service.time-out:5000}")
+    private String baseUrl;
+    @Value("${web-service.auth-url:/oauth/token}")
+    private String authUrl;
+    @Value("${web-service.time-out:5}")
     private int timeOut;
 
     @PostConstruct
     private void init() {
-        setUp(url, timeOut);
+        setUp(baseUrl, timeOut, authUrl);
     }
 
     @Override
     public void example() {
-
-        getTokenUsingClientCredentials("clientId", "secret");
-        //getTokenUsingPassword("clientId", "secret", "test", "test");
+        getTokenUsingPassword("clientId", "secret", "test", "test");
         Optional<Object> optional = checkAccessToken();
 
         MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();

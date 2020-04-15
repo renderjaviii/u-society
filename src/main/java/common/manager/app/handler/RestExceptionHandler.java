@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.google.common.base.Strings;
+
 import common.manager.app.api.ApiError;
 import common.manager.domain.exception.GenericException;
 import common.manager.domain.exception.WebException;
@@ -85,12 +87,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ApiError> handleGeneric(GenericException ex) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(WebException.class)
     public ResponseEntity<ApiError> handleWeb(WebException ex) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.I_AM_A_TEAPOT);
+        String description = Strings.isNullOrEmpty(ex.getMessage()) ? "Request Timeout." : ex.getMessage();
+        return new ResponseEntity<>(new ApiError(description, ex.getErrorCode()), HttpStatus.BAD_GATEWAY);
     }
 
   /*  @ExceptionHandler(Exception.class)

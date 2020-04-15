@@ -1,19 +1,17 @@
 package common.manager.domain.service.web;
 
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -23,56 +21,59 @@ import common.manager.app.api.TokenApi;
 import common.manager.domain.exception.WebException;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.netty.util.internal.StringUtil;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
-@Service
 public class WebClientService {
 
-    private static final String OAUTH_URI = "/oauth/token";
-
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final int TIME_OUT = 30;
 
     private WebClient webClient;
+
+    private String baseUrl;
+    private String authUri;
     private TokenApi token;
 
     protected void setUp(String url, int timeOut) {
-        LOGGER.info("Creating WebClient for host: {}", url);
-
-        if (webClient == null) {
-            if (!StringUtil.isNullOrEmpty(url)) {
-                buildWebClient(url);
-            } else {
-                throwUrlException();
-            }
-            if (timeOut != 0) {
-                setTcpClient(timeOut);
-            }
+        logger.info("Creating WebClient for host: {}", url);
+        if (StringUtil.isNullOrEmpty(url)) {
+            throw new UnsupportedOperationException("The base url is invalid.");
         }
+        init(url, timeOut, EMPTY);
     }
 
-    private void buildWebClient(String url) {
+    protected void setUp(String url, int timeOut, String authUrl) {
+        logger.info("Creating WebClient for host: {}", url);
+        if (StringUtil.isNullOrEmpty(url)) {
+            throw new UnsupportedOperationException("The base url is invalid.");
+        }
+        if (StringUtil.isNullOrEmpty(authUrl)) {
+            throw new UnsupportedOperationException("The auth url is invalid.");
+        }
+
+        init(url, timeOut, authUrl);
+    }
+
+    private void init(String url, int timeOut, String authUrl) {
+        baseUrl = url;
+        authUri = authUrl;
+        if (timeOut <= 0) {
+            timeOut = TIME_OUT;
+        }
+        buildWebClient(timeOut);
+    }
+
+    private void buildWebClient(int timeOut) {
+        HttpClient httpClient = HttpClient.create()
+                .tcpConfiguration(client -> client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                        .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))));
+
         webClient = WebClient.builder()
-                .baseUrl(url)
+                .baseUrl(baseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(true)))
                 .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .build();
-    }
-
-    private void setTcpClient(int timeOut) {
-        // TODO -> comprobar funcionalidad
-        TcpClient tcpClient = TcpClient
-                .create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeOut)
-                .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(timeOut, TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(timeOut, TimeUnit.MILLISECONDS));
-                });
-
-        webClient = webClient.mutate()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }
 
@@ -81,12 +82,11 @@ public class WebClientService {
                                          String username,
                                          String password) {
         token = WebClient.builder()
-                .baseUrl("http://localhost:8079")
+                .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
-                .post()
-                .uri(uriBuilder()
-                        .path(OAUTH_URI)
+                .post().uri(uriBuilder()
+                        .path(authUri)
                         .queryParam("grant_type", "password")
                         .build().toString())
                 .body(BodyInserters.fromFormData("username", username).with("password", password))
@@ -100,12 +100,12 @@ public class WebClientService {
                 .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
                 .build();
 
-        LOGGER.info("Access token saved successfully...");
+        logger.info("Access token saved successfully...");
     }
 
     protected void getTokenUsingClientCredentials(String clientId, String clientSecret) {
         token = webClient.post().uri(uriBuilder()
-                .path(OAUTH_URI)
+                .path(authUri)
                 .queryParam("grant_type", "client_credentials")
                 .build().toString())
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
@@ -118,7 +118,7 @@ public class WebClientService {
                 .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
                 .build();
 
-        LOGGER.info("Access token saved successfully...");
+        logger.info("Access token saved successfully...");
     }
 
     protected Optional<Object> checkAccessToken() {
@@ -129,7 +129,7 @@ public class WebClientService {
                 .build().toString())
                 .retrieve()
                 .bodyToMono(Object.class)
-                .doOnError(error -> LOGGER.error(error.getMessage()))
+                .doOnError(error -> logger.error(error.getMessage()))
                 .blockOptional();
     }
 
@@ -190,10 +190,6 @@ public class WebClientService {
                 .bodyToMono(responseClazz)
                 .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
-    }
-
-    private void throwUrlException() {
-        throw new UnsupportedOperationException("The base url is invalid.");
     }
 
 }

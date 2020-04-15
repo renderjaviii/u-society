@@ -14,6 +14,10 @@ logging:
     org.springframework.web: TRACE
     org.springframework.web-security: TRACE
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    reactor.ipc.netty:
+      channel.ContextHandler: debug
+      reactor.ipc.netty.http.client.HttpClient: debug
+
 security:
   oauth2:
     resource.filter-order: 3
