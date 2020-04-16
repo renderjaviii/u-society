@@ -25,6 +25,7 @@ import com.google.common.base.Strings;
 
 import common.manager.app.api.ApiError;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.exception.UserValidationException;
 import common.manager.domain.exception.WebException;
 
 @ControllerAdvice
@@ -94,6 +95,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleWeb(WebException ex) {
         String description = Strings.isNullOrEmpty(ex.getMessage()) ? "Request Timeout." : ex.getMessage();
         return new ResponseEntity<>(new ApiError(description, ex.getErrorCode()), HttpStatus.BAD_GATEWAY);
+    }
+
+    @ExceptionHandler(UserValidationException.class)
+    public ResponseEntity<ApiError> handUserValidation(UserValidationException ex) {
+        return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.FORBIDDEN);
     }
 
   /*  @ExceptionHandler(Exception.class)

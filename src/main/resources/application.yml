@@ -26,7 +26,7 @@ config:
 
 ---
 spring:
-  profiles: dev, qa
+  profiles: dev, prod
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/company_database?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${PROJECT_TIME_ZONE:#{'GMT'}}
     username: root

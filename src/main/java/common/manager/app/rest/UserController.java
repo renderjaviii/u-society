@@ -28,6 +28,7 @@ import common.manager.app.api.ApiError;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.exception.UserValidationException;
 import common.manager.domain.provider.test.TestService;
 import common.manager.domain.service.user.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -72,7 +73,8 @@ public class UserController extends CommonController {
     @GetMapping(path = "/token-info/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Authentication> getTokenInfo(
-            @ApiParam(value = "Username") @NotNull @RequestParam(value = "username") final String username) {
+            @ApiParam(value = "Username") @NotNull @RequestParam(value = "username") final String username)
+            throws UserValidationException {
         validateUser(username);
         return new ResponseEntity<>(userService.getTokenInfo(), OK);
     }
