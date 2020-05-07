@@ -1,9 +1,13 @@
-INSERT INTO config(name, value) VALUES ('config.access-token.signing-key', '123');
-INSERT INTO config(name, value) VALUES ('config.access-token.validitity-seconds', '43200');
-INSERT INTO config(name, value) VALUES ('config.grant.types', 'password,client_credentials,refresh_token');
-INSERT INTO config(name, value) VALUES ('config.refresh-token.validitity-seconds', '86400');
-INSERT INTO config(name, value) VALUES ('config.scope', 'WEB');
+CREATE TABLE IF NOT EXISTS `config` (
+    `name` varchar(255) DEFAULT NULL,
+    `value` varchar(255) DEFAULT NULL
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
+INSERT INTO config(name, value) VALUES ('config.access-token.signing-key', '123');
+INSERT INTO config(name, value) VALUES ('config.access-token.validity-seconds', '43200');
+INSERT INTO config(name, value) VALUES ('config.grant.types', 'password,client_credentials,refresh_token');
+INSERT INTO config(name, value) VALUES ('config.refresh-token.validity-seconds', '86400');
+INSERT INTO config(name, value) VALUES ('config.scope', 'WEB');
 
 INSERT INTO `role`(id, description, name) VALUES (1, 'Super user.', 'ROLE_ADMIN');
 INSERT INTO `role`(id, description, name) VALUES (2, 'Standard user.', 'ROLE_USER');

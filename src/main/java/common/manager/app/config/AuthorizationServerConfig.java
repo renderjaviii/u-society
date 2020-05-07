@@ -26,9 +26,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Value("${config.access-token.signing-key}")
     private String signingKey;
-    @Value("${config.access-token.validitity-seconds}")
+    @Value("${config.access-token.validity-seconds}")
     private int accessTokenValiditySeconds;
-    @Value("${config.refresh-token.validitity-seconds}")
+    @Value("${config.refresh-token.validity-seconds}")
     private int refreshTokenValiditySeconds;
 
     private final ClientDetailsService customClientDetails;

@@ -24,11 +24,27 @@ security:
 config:
   table: config
 
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: renderjaviii@gmail.com
+  password: ulsafywykyguvmii
+
+# Other properties
+spring.mail.properties.mail.smtp:
+  auth: true
+  connectiontimeout: 5000
+  timeout: 5000
+  writetimeout: 5000
+# TLS , port 587
+spring.mail.properties.mail.smtp.starttls.enable: true
+
+
 ---
 spring:
   profiles: dev, prod
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/company_database?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${PROJECT_TIME_ZONE:#{'GMT'}}
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/company_db?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${PROJECT_TIME_ZONE:#{'GMT'}}
     username: root
     password: Password123
     platform: mysql
