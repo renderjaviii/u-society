@@ -13,12 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecutiryConfigAdapter extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfigAdapter extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationProvider customAuthenticationProvider;
 
     @Autowired
-    public WebSecutiryConfigAdapter(AuthenticationProvider customAuthenticationProvider) {
+    public WebSecurityConfigAdapter(AuthenticationProvider customAuthenticationProvider) {
         this.customAuthenticationProvider = customAuthenticationProvider;
     }
 
@@ -29,7 +29,7 @@ public class WebSecutiryConfigAdapter extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(customAuthenticationProvider);
     }
 

@@ -11,7 +11,6 @@ public class Test {
 
     public Test() {
         super();
-
     }
 
     public int getCode() {

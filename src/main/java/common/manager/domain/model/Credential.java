@@ -42,7 +42,7 @@ public class Credential {
     private LocalDate createdAt;
 
     @Column(name = "description")
-    private String desctiption;
+    private String description;
 
     public Credential() {
         super();
@@ -87,8 +87,8 @@ public class Credential {
         return createdAt;
     }
 
-    public String getDesctiption() {
-        return desctiption;
+    public String getDescription() {
+        return description;
     }
 
 }

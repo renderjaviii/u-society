@@ -3,8 +3,6 @@ package common.manager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.net.URISyntaxException;
-
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -27,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import common.manager.app.api.ApiError;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
+import common.manager.app.rest.response.CreateUserResponse;
 import common.manager.domain.exception.GenericException;
 import common.manager.domain.exception.UserValidationException;
-import common.manager.domain.provider.test.TestService;
 import common.manager.domain.service.user.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,12 +43,10 @@ public class UserController extends CommonController {
     TokenStore tokenStore;
 
     private final UserService userService;
-    private final TestService testService;
 
     @Autowired
-    public UserController(UserService userService, TestService testService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.testService = testService;
     }
 
     @ApiOperation(value = "Create user.")
@@ -59,14 +55,12 @@ public class UserController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> create(@Valid @RequestBody final CreateUserRequest request)
-            throws GenericException, URISyntaxException {
-        //userService.create(request);
-        testService.example();
-        return new ResponseEntity<>(CREATED);
+    public ResponseEntity<CreateUserResponse> create(@Valid @RequestBody final CreateUserRequest request)
+            throws GenericException {
+        return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
-    @ApiOperation(value = "Token info user logged in.")
+    @ApiOperation(value = "Uer logged in token info.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User logged in."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
@@ -77,6 +71,20 @@ public class UserController extends CommonController {
             throws UserValidationException {
         validateUser(username);
         return new ResponseEntity<>(userService.getTokenInfo(), OK);
+    }
+
+    @ApiOperation(value = "Verify email.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PostMapping(path = "/{username}/verify-email",
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> verifyEmail(@PathVariable(value = "username") final String username,
+                                            @RequestParam(name = "otpCode") final String otpCode)
+            throws GenericException {
+        validateUser(username);
+        userService.enableAccount(username, otpCode);
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")

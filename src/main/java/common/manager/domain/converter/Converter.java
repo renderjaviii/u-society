@@ -1,6 +1,8 @@
 package common.manager.domain.converter;
 
+import common.manager.app.api.OtpApi;
 import common.manager.app.api.UserApi;
+import common.manager.domain.model.Otp;
 import common.manager.domain.model.User;
 
 public class Converter {
@@ -32,6 +34,17 @@ public class Converter {
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
                 .lastAccessAt(user.getLastAccessAt())
+                .build();
+    }
+
+    public static OtpApi otp(Otp otp) {
+        return OtpApi.newBuilder()
+                .id(otp.getId())
+                .active(otp.isActive())
+                .otpCode(otp.getOtpCode())
+                .createdAt(otp.getCreatedAt())
+                .expiresAt(otp.getExpiresAt())
+                .ownerUsername(otp.getOwnerUsername())
                 .build();
     }
 

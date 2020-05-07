@@ -26,7 +26,7 @@ public class User {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", nullable = false)
@@ -40,6 +40,9 @@ public class User {
 
     @Column(name = "document_number", unique = true, nullable = false)
     private String documentNumber;
+
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
     @Column(name = "gender", length = 1)
     private String gender;
@@ -59,6 +62,9 @@ public class User {
     @Column(name = "account_locked", nullable = false, insertable = false, columnDefinition = "boolean default false")
     private boolean accountLocked;
 
+    @Column(name = "email_verified", nullable = false, insertable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
@@ -73,18 +79,17 @@ public class User {
     }
 
     private User(Builder builder) {
-        id = builder.id;
         username = builder.username;
         password = builder.password;
         firstName = builder.firstName;
         lastName = builder.lastName;
         documentNumber = builder.documentNumber;
+        email = builder.email;
         gender = builder.gender;
         birthDate = builder.birthDate;
         phoneNumber = builder.phoneNumber;
         createdAt = builder.createdAt;
         lastAccessAt = builder.lastAccessAt;
-        accountLocked = builder.accountLocked;
         role = builder.role;
     }
 
@@ -116,6 +121,10 @@ public class User {
         return documentNumber;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -142,6 +151,14 @@ public class User {
 
     public boolean isAccountLocked() {
         return accountLocked;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public Role getRole() {
@@ -172,26 +189,21 @@ public class User {
 
     public static final class Builder {
 
-        private Long id;
         private String username;
         private String password;
         private String firstName;
         private String lastName;
         private String documentNumber;
+        private String email;
         private String gender;
         private LocalDate birthDate;
         private String phoneNumber;
         private LocalDate createdAt;
         private LocalDateTime lastAccessAt;
-        private boolean accountLocked;
         private Role role;
 
         private Builder() {
-        }
-
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
+            super();
         }
 
         public Builder username(String username) {
@@ -219,6 +231,11 @@ public class User {
             return this;
         }
 
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
         public Builder gender(String gender) {
             this.gender = gender;
             return this;
@@ -241,11 +258,6 @@ public class User {
 
         public Builder lastAccessAt(LocalDateTime lastAccessAt) {
             this.lastAccessAt = lastAccessAt;
-            return this;
-        }
-
-        public Builder accountLocked(boolean accountLocked) {
-            this.accountLocked = accountLocked;
             return this;
         }
 

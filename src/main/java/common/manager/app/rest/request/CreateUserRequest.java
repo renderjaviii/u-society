@@ -54,6 +54,11 @@ public class CreateUserRequest {
     @JsonProperty(value = "documentNumber")
     private String documentNumber;
 
+    @ApiModelProperty(notes = "Email", required = true)
+    @NotBlank
+    @JsonProperty(value = "email")
+    private String email;
+
     @ApiModelProperty(notes = "User role", required = true)
     @NotNull
     @JsonProperty(value = "userRole")
@@ -72,6 +77,7 @@ public class CreateUserRequest {
         gender = builder.gender;
         phoneNumber = builder.phoneNumber;
         documentNumber = builder.documentNumber;
+        email = builder.email;
         userRole = builder.userRole;
     }
 
@@ -107,6 +113,10 @@ public class CreateUserRequest {
         return documentNumber;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public String getUserRole() {
         return userRole;
     }
@@ -125,6 +135,7 @@ public class CreateUserRequest {
         private String gender;
         private String phoneNumber;
         private String documentNumber;
+        private String email;
         private String userRole;
 
         private Builder() {
@@ -168,6 +179,11 @@ public class CreateUserRequest {
 
         public Builder documentNumber(String documentNumber) {
             this.documentNumber = documentNumber;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
             return this;
         }
 
