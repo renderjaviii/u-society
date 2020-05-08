@@ -50,7 +50,7 @@ public class OtpServiceImpl implements OtpService {
                 .otpCode(generateOtpCode())
                 .build());
 
-        return Converter.otp(otpRepository.getOne(otp.getId()));
+        return Converter.otp(otp);
     }
 
     private String generateOtpCode() {
