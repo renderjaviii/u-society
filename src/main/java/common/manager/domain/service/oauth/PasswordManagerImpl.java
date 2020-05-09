@@ -39,7 +39,7 @@ public class PasswordManagerImpl implements PasswordManager {
         if (user.isAccountLocked()) {
             throw new LockedException("Account locked");
         }
-        if (user.isEmailVerified()) {
+        if (!user.isEmailVerified()) {
             throw new DisabledException("Email not verified.");
         }
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {

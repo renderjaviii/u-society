@@ -116,8 +116,7 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     private Role buildUserRoles(CreateUserRequest request) throws GenericException {
         return roleRepository.findByName(request.getUserRole().replaceFirst("", "ROLE_"))
-                .orElseThrow(() -> new GenericException(String.format(ROLE_ERROR_FORMAT, request.getUserRole()),
-                        "INVALID_ROLE"));
+                .orElseThrow(() -> new GenericException(String.format(ROLE_ERROR_FORMAT, request.getUserRole()), "INVALID_ROLE"));
     }
 
 }

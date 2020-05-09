@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -40,9 +41,9 @@ public class CreateUserRequest {
     @JsonProperty(value = "birthDate")
     private LocalDate birthDate;
 
+    @Pattern(regexp = "[FM]")
     @ApiModelProperty(notes = "Gender", required = true)
     @JsonProperty(value = "gender")
-    @Size(min = 1, max = 1)
     private String gender;
 
     @ApiModelProperty(notes = "Phone Number", required = true)

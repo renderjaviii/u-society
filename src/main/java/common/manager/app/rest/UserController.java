@@ -60,7 +60,7 @@ public class UserController extends CommonController {
         return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
-    @ApiOperation(value = "Uer logged in token info.")
+    @ApiOperation(value = "User logged in token info.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User logged in."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
@@ -82,7 +82,6 @@ public class UserController extends CommonController {
     public ResponseEntity<Void> verifyEmail(@PathVariable(value = "username") final String username,
                                             @RequestParam(name = "otpCode") final String otpCode)
             throws GenericException {
-        validateUser(username);
         userService.enableAccount(username, otpCode);
         return ResponseEntity.ok().build();
     }
