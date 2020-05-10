@@ -36,8 +36,8 @@ public class OtpServiceImpl implements OtpService {
     @Autowired
     public OtpServiceImpl(OtpRepository otpRepository, Clock clock) {
         this.otpRepository = otpRepository;
-        random = new Random();
         this.clock = clock;
+        random = new Random();
     }
 
     @Override
