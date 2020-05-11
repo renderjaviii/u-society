@@ -15,7 +15,7 @@ services:
       - "db-data:/var/lib/mysql"
 
       # Manager schemas and data
-      - "./schemas.sql:/docker-entrypoint-initdb.d/1-schemas.sql"
+      - "./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
       - "./data.sql:/docker-entrypoint-initdb.d/2-data.sql"
 
 networks: 
