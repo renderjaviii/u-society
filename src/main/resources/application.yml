@@ -1,10 +1,10 @@
 server:
   servlet:
-    context-path: '/manager'
-  port: 8080
+    context-path: ${SERVER_CONTEXT_PATH}
+  port: ${SERVER_PORT}
 spring:
   profiles:
-    active: dev
+    active: ${SERVER_ACTIVE_PROFILE}
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -22,21 +22,19 @@ security:
   oauth2:
     resource.filter-order: 3
 config:
-  table: config
+  table: ${SERVER_CONFIG_TABLE_NAME}
 
 spring.mail:
   host: smtp.gmail.com
   port: 587
-  username: renderjaviii@gmail.com
-  password: ulsafywykyguvmii
+  username: ${SPRING_MAIL}
+  password: ${SPRING_MAIL_PASSWORD}
 
-# Other properties
 spring.mail.properties.mail.smtp:
   auth: true
   connectiontimeout: 5000
   timeout: 5000
   writetimeout: 5000
-# TLS , port 587
 spring.mail.properties.mail.smtp.starttls.enable: true
 
 
@@ -44,9 +42,9 @@ spring.mail.properties.mail.smtp.starttls.enable: true
 spring:
   profiles: dev, prod
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/company_db?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${PROJECT_TIME_ZONE:#{'GMT'}}
-    username: root
-    password: Password123
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${PROJECT_DATABASE_PORT}/${PROJECT_DATABASE_NAME}?zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=${SERVER_TIME_ZONE}
+    username: ${PROJECT_DATABASE_USER}
+    password: ${PROJECT_DATABASE_PASSWORD}
     platform: mysql
     initialization-mode: never
   jpa:
@@ -58,4 +56,4 @@ spring:
       hibernate:
         format_sql: true
 config:
-  timezone: 'GMT'
+  timezone: ${SERVER_TIME_ZONE}
