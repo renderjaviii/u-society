@@ -6,8 +6,8 @@ import static java.lang.Boolean.TRUE;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,21 +23,18 @@ import common.manager.domain.service.otp.OtpService;
 public class OtpServiceImpl implements OtpService {
 
     private static final String INVALID_OTP_MESSAGE = "INVALID_OTP";
-    private static final int MIN_VALUE = 10000;
-    private static final int MAX_VALUE = 99999;
+    private static final int OTP_LENGTH = 5;
 
     @Value("${config.otp-expiry-time}")
     private int otpExpiryTime;
 
     private final OtpRepository otpRepository;
-    private final Random random;
     private final Clock clock;
 
     @Autowired
     public OtpServiceImpl(OtpRepository otpRepository, Clock clock) {
         this.otpRepository = otpRepository;
         this.clock = clock;
-        random = new Random();
     }
 
     @Override
@@ -56,7 +53,7 @@ public class OtpServiceImpl implements OtpService {
     private String generateOtpCode() {
         String otpCode;
         do {
-            otpCode = String.valueOf(random.nextInt((MAX_VALUE - MIN_VALUE) + 1) + MIN_VALUE);
+            otpCode = RandomStringUtils.random(OTP_LENGTH, FALSE, TRUE);
         } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != 0);
         return otpCode;
     }
