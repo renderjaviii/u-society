@@ -15,8 +15,12 @@ services:
       - "db-data:/var/lib/mysql"
 
       # Manager schemas and data
-      - "./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
-      - "./data.sql:/docker-entrypoint-initdb.d/2-data.sql"
+      - "./schema.sql:/docker-entrypoint-initdb.d/1-manager-schema.sql"
+      - "./data.sql:/docker-entrypoint-initdb.d/2-manager-data.sql"
+
+      # Authentication schemas and data
+      - "../../../../authentication-api/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/3-authentication-schema.sql"
+      - "../../../../authentication-api/src/main/resources/data.sql:/docker-entrypoint-initdb.d/4-authentication-data.sql"
 
 networks: 
   default:
