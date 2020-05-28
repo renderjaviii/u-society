@@ -1,4 +1,4 @@
-package common.manager.app.api;
+package common.manager.domain.provider.authentication.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,32 +6,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel("Token Api")
-public class TokenApi {
+@ApiModel("Token DTO")
+public class TokenDTO {
 
-    @JsonProperty
+    @JsonProperty("access_token")
     private String accessToken;
 
-    @JsonProperty
+    @JsonProperty("token_type")
     private String tokenType;
 
-    @JsonProperty
+    @JsonProperty("refresh_token")
     private String refreshToken;
 
-    @JsonProperty
+    @JsonProperty("expires_in")
     private String expiresIn;
 
-    @JsonProperty
+    @JsonProperty("scope")
     private String scope;
 
-    @JsonProperty
+    @JsonProperty("jti")
     private String jti;
 
-    public TokenApi() {
+    public TokenDTO() {
         super();
     }
 
-    private TokenApi(Builder builder) {
+    private TokenDTO(Builder builder) {
         accessToken = builder.accessToken;
         tokenType = builder.tokenType;
         refreshToken = builder.refreshToken;
@@ -111,8 +111,8 @@ public class TokenApi {
             return this;
         }
 
-        public TokenApi build() {
-            return new TokenApi(this);
+        public TokenDTO build() {
+            return new TokenDTO(this);
         }
 
     }

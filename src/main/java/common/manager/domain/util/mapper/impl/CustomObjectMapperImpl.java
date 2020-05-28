@@ -1,4 +1,4 @@
-package common.manager.domain.util.mapper;
+package common.manager.domain.util.mapper.impl;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import common.manager.domain.util.mapper.CustomObjectMapper;
 
 @Component
 public class CustomObjectMapperImpl implements CustomObjectMapper {

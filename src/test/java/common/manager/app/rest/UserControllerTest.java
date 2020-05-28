@@ -1,40 +1,16 @@
 package common.manager.app.rest;
 
-import static org.apache.logging.log4j.util.Strings.EMPTY;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import common.manager.app.api.ApiError;
-import common.manager.app.api.UserApi;
-import common.manager.app.handler.RestExceptionHandler;
-import common.manager.app.rest.request.CreateUserRequest;
-import common.manager.domain.exception.GenericException;
-import common.manager.domain.service.user.UserService;
-import common.manager.domain.util.mapper.CustomObjectMapper;
-import common.manager.domain.util.mapper.CustomObjectMapperImpl;
 
 @EnableWebMvc
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
 
+/*
     private static final String BASE_URL = "/services/users";
 
     @Mock
@@ -131,5 +107,6 @@ public class UserControllerTest {
                         .build(),
                 errorResponse);
     }
+*/
 
 }

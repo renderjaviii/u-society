@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "Request to user login.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserLogin {
+public class UserLoginRequest {
 
     @NotNull
     @JsonProperty(value = "username")
@@ -19,11 +19,11 @@ public class UserLogin {
     @JsonProperty(value = "password")
     private String password;
 
-    public UserLogin() {
+    public UserLoginRequest() {
         super();
     }
 
-    private UserLogin(Builder builder) {
+    private UserLoginRequest(Builder builder) {
         username = builder.username;
         password = builder.password;
     }
@@ -59,8 +59,8 @@ public class UserLogin {
             return this;
         }
 
-        public UserLogin build() {
-            return new UserLogin(this);
+        public UserLoginRequest build() {
+            return new UserLoginRequest(this);
         }
 
     }

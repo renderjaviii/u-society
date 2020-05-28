@@ -17,8 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
-import common.manager.app.api.TokenApi;
 import common.manager.domain.exception.WebException;
+import common.manager.domain.provider.authentication.dto.TokenDTO;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.StringUtil;
@@ -33,7 +33,6 @@ public class WebClientService {
 
     private String baseUrl;
     private String authUri;
-    private TokenApi token;
 
     protected void setUp(String url, int timeOut) {
         logger.info("Creating WebClient for host: {}", url);
@@ -77,11 +76,11 @@ public class WebClientService {
                 .build();
     }
 
-    protected void getTokenUsingPassword(String clientId,
-                                         String clientSecret,
-                                         String username,
-                                         String password) {
-        token = WebClient.builder()
+    protected TokenDTO getTokenUsingPassword(String clientId,
+                                             String clientSecret,
+                                             String username,
+                                             String password) {
+        TokenDTO token = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
@@ -92,36 +91,30 @@ public class WebClientService {
                 .body(BodyInserters.fromFormData("username", username).with("password", password))
                 .headers(httpHeaders -> httpHeaders.setBasicAuth(clientId, clientSecret))
                 .retrieve()
-                .bodyToMono(TokenApi.class)
+                .bodyToMono(TokenDTO.class)
                 .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
 
-        webClient = webClient.mutate()
-                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
-                .build();
-
-        logger.info("Access token saved successfully...");
+        logger.info("Access token obtained successfully...");
+        return token;
     }
 
-    protected void getTokenUsingClientCredentials(String clientId, String clientSecret) {
-        token = webClient.post().uri(uriBuilder()
+    protected TokenDTO getTokenUsingClientCredentials(String clientId, String clientSecret) {
+        TokenDTO token = webClient.post().uri(uriBuilder()
                 .path(authUri)
                 .queryParam("grant_type", "client_credentials")
                 .build().toString())
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
                 .retrieve()
-                .bodyToMono(TokenApi.class)
+                .bodyToMono(TokenDTO.class)
                 .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
 
-        webClient = webClient.mutate()
-                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
-                .build();
-
-        logger.info("Access token saved successfully...");
+        logger.info("Access token obtained successfully...");
+        return token;
     }
 
-    protected Optional<Object> checkAccessToken() {
+    protected Optional<Object> checkAccessToken(TokenDTO token) {
         return getWebClient().get().uri(uriBuilder()
                 .pathSegment("oauth")
                 .pathSegment("check_token")
@@ -139,10 +132,6 @@ public class WebClientService {
 
     protected WebClient getWebClient() {
         return webClient;
-    }
-
-    protected TokenApi getToken() {
-        return token;
     }
 
     protected <T> T get(URI uri, Class<T> responseClazz) {
@@ -192,5 +181,9 @@ public class WebClientService {
                 .block();
     }
 
+    /*
+        webClient = webClient.mutate()
+                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
+                .build();*/
 }
 

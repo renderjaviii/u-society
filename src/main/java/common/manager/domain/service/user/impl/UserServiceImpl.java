@@ -1,31 +1,17 @@
 package common.manager.domain.service.user.impl;
 
-import static java.lang.Boolean.TRUE;
-
 import java.time.Clock;
-import java.time.LocalDate;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import common.manager.app.api.OtpApi;
-import common.manager.app.api.UserApi;
-import common.manager.app.rest.request.CreateUserRequest;
-import common.manager.app.rest.response.CreateUserResponse;
+import common.manager.app.api.TokenApi;
+import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.domain.converter.Converter;
-import common.manager.domain.exception.GenericException;
-import common.manager.domain.model.Role;
-import common.manager.domain.model.User;
-import common.manager.domain.repository.RoleRepository;
-import common.manager.domain.repository.UserRepository;
+import common.manager.domain.provider.authentication.AuthenticationConnector;
 import common.manager.domain.service.common.CommonServiceImpl;
 import common.manager.domain.service.email.MailService;
-import common.manager.domain.service.oauth.PasswordManager;
 import common.manager.domain.service.otp.OtpService;
 import common.manager.domain.service.user.UserService;
 
@@ -37,29 +23,28 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     private static final String USER_ALREADY_EXISTS_FORMAT = "UserName: %s or DocumentNumber: %s already registered.";
     private static final String EMAIL_ALREADY_IN_USE = "Email: %s is already in use.";
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordManager passwordManager;
+    private final AuthenticationConnector authenticationConnector;
     private final OtpService otpService;
     private final MailService mailService;
     private final Clock clock;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                           RoleRepository roleRepository,
-                           PasswordManager passwordManager,
-                           OtpService otpService,
+    public UserServiceImpl(OtpService otpService,
                            MailService mailService,
-                           Clock clock) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordManager = passwordManager;
+                           Clock clock,
+                           AuthenticationConnector authenticationConnector) {
         this.otpService = otpService;
         this.mailService = mailService;
         this.clock = clock;
+        this.authenticationConnector = authenticationConnector;
     }
 
     @Override
+    public TokenApi login(UserLoginRequest request) {
+        return Converter.token(authenticationConnector.login(request));
+    }
+
+   /* @Override
     @Transactional(rollbackOn = Exception.class)
     public CreateUserResponse create(CreateUserRequest request) throws GenericException {
         validateUser(request);
@@ -83,6 +68,8 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
         return new CreateUserResponse(userOtp.getExpiresAt());
     }
+
+
 
     private void validateUser(CreateUserRequest request) throws GenericException {
         if (userRepository.findByUsernameOrDocumentNumber(request.getUsername(), request.getDocumentNumber())
@@ -116,7 +103,8 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     private Role buildUserRoles(CreateUserRequest request) throws GenericException {
         return roleRepository.findByName(request.getUserRole().replaceFirst("", "ROLE_"))
-                .orElseThrow(() -> new GenericException(String.format(ROLE_ERROR_FORMAT, request.getUserRole()), "INVALID_ROLE"));
-    }
+                .orElseThrow(() -> new GenericException(String.format(ROLE_ERROR_FORMAT, request.getUserRole()),
+                        "INVALID_ROLE"));
+    }*/
 
 }

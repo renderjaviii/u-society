@@ -1,9 +1,11 @@
 package common.manager.domain.converter;
 
 import common.manager.app.api.OtpApi;
+import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.domain.model.Otp;
-import common.manager.domain.model.User;
+import common.manager.domain.provider.authentication.dto.TokenDTO;
+import common.manager.domain.provider.authentication.dto.UserDTO;
 
 public class Converter {
 
@@ -11,7 +13,18 @@ public class Converter {
         super();
     }
 
-    public static UserApi user(User user) {
+    public static TokenApi token(TokenDTO tokenDTO) {
+        return TokenApi.newBuilder()
+                .refreshToken(tokenDTO.getRefreshToken())
+                .accessToken(tokenDTO.getAccessToken())
+                .expiresIn(tokenDTO.getExpiresIn())
+                .tokenType(tokenDTO.getTokenType())
+                .scope(tokenDTO.getScope())
+                .jti(tokenDTO.getJti())
+                .build();
+    }
+
+    public static UserApi user(UserDTO user) {
         return UserApi.newBuilder()
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
@@ -24,8 +37,8 @@ public class Converter {
                 .build();
     }
 
-    public static User user(UserApi user) {
-        return User.newBuilder()
+    public static UserDTO user(UserApi user) {
+        return UserDTO.newBuilder()
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .documentNumber(user.getDocumentNumber())
