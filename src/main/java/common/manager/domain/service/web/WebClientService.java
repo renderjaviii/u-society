@@ -32,7 +32,7 @@ public class WebClientService {
     private WebClient webClient;
 
     private String baseUrl;
-    private String authUri;
+    private String authPath;
 
     protected void setUp(String url, int timeOut) {
         logger.info("Creating WebClient for host: {}", url);
@@ -56,7 +56,7 @@ public class WebClientService {
 
     private void init(String url, int timeOut, String authUrl) {
         baseUrl = url;
-        authUri = authUrl;
+        authPath = authUrl;
         if (timeOut <= 0) {
             timeOut = TIME_OUT;
         }
@@ -85,7 +85,7 @@ public class WebClientService {
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
                 .post().uri(uriBuilder()
-                        .path(authUri)
+                        .path(authPath)
                         .queryParam("grant_type", "password")
                         .build().toString())
                 .body(BodyInserters.fromFormData("username", username).with("password", password))
@@ -101,7 +101,7 @@ public class WebClientService {
 
     protected TokenDTO getTokenUsingClientCredentials(String clientId, String clientSecret) {
         TokenDTO token = webClient.post().uri(uriBuilder()
-                .path(authUri)
+                .path(authPath)
                 .queryParam("grant_type", "client_credentials")
                 .build().toString())
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))

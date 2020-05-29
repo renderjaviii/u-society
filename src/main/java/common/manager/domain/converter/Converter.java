@@ -5,7 +5,7 @@ import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.domain.model.Otp;
 import common.manager.domain.provider.authentication.dto.TokenDTO;
-import common.manager.domain.provider.authentication.dto.UserDTO;
+import common.manager.domain.provider.user.dto.UserDTO;
 
 public class Converter {
 

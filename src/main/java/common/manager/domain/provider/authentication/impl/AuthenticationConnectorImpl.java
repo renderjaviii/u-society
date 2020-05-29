@@ -13,20 +13,22 @@ import common.manager.domain.service.web.WebClientService;
 @Component
 public class AuthenticationConnectorImpl extends WebClientService implements AuthenticationConnector {
 
-    @Value("${web-service.url:http://localhost:8075/authentication}")
+    @Value("${provider.authentication-service.url}")
     private String baseUrl;
-    @Value("${web-service.auth-url:/oauth/token}")
-    private String authUrl;
-    @Value("${web-service.time-out:5}")
-    private int timeOut;
-    @Value("${authentication-client.id}")
+    @Value("${provider.authentication-service.authentication-path}")
+    private String authPath;
+    @Value("${provider.authentication-service.users-path}")
+    private String usersPath;
+    @Value("${provider.authentication-client.id}")
     private String clientId;
-    @Value("${authentication-client.secret}")
+    @Value("${provider.authentication-client.secret}")
     private String clientSecret;
+    @Value("${provider.web-service.time-out:5}")
+    private int timeOut;
 
     @PostConstruct
     private void init() {
-        setUp(baseUrl, timeOut, authUrl);
+        setUp(baseUrl, timeOut, authPath);
     }
 
     @Override
