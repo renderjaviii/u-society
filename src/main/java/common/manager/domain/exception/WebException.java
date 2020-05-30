@@ -1,15 +1,30 @@
 package common.manager.domain.exception;
 
-public class WebException extends GenericException {
+import common.manager.app.api.ApiError;
+
+public class WebException extends RuntimeException {
 
     public static final String WEB_ERROR = "GENERAL_WEB_ERROR";
 
+    private final String errorCode;
+
     public WebException(String message) {
-        super(message, WEB_ERROR);
+        super(message);
+        this.errorCode = WEB_ERROR;
     }
 
     public WebException(String description, String errorCode) {
-        super(description, errorCode);
+        super(description);
+        this.errorCode = errorCode;
+    }
+
+    public WebException(ApiError error) {
+        super(error.getDescription());
+        this.errorCode = error.getStatusCode();
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 
 }

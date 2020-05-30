@@ -29,6 +29,7 @@ import common.manager.domain.exception.UserValidationException;
 import common.manager.domain.exception.WebException;
 
 @ControllerAdvice
+@SuppressWarnings("unnused")
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String BAD_REQUEST = "BAD_REQUEST";

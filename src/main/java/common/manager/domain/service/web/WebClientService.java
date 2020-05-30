@@ -13,17 +13,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
+import common.manager.app.api.ApiError;
 import common.manager.domain.exception.WebException;
 import common.manager.domain.provider.authentication.dto.TokenDTO;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.StringUtil;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
+@SuppressWarnings("unused")
 public class WebClientService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -73,13 +77,21 @@ public class WebClientService {
                 .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(true)))
                 .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .filter(responseFilter())
                 .build();
     }
 
-    protected TokenDTO getTokenUsingPassword(String clientId,
-                                             String clientSecret,
-                                             String username,
-                                             String password) {
+    private ExchangeFilterFunction responseFilter() {
+        return ExchangeFilterFunction.ofResponseProcessor(response -> {
+            if (response.statusCode().isError()) {
+                return response.bodyToMono(ApiError.class)
+                        .flatMap(error -> Mono.error(new WebException(error)));
+            }
+            return Mono.just(response);
+        });
+    }
+
+    protected TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
         TokenDTO token = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
@@ -92,14 +104,13 @@ public class WebClientService {
                 .headers(httpHeaders -> httpHeaders.setBasicAuth(clientId, clientSecret))
                 .retrieve()
                 .bodyToMono(TokenDTO.class)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
 
         logger.info("Access token obtained successfully...");
         return token;
     }
 
-    protected TokenDTO getTokenUsingClientCredentials(String clientId, String clientSecret) {
+    protected TokenDTO getToken(String clientId, String clientSecret) {
         TokenDTO token = webClient.post().uri(uriBuilder()
                 .path(authPath)
                 .queryParam("grant_type", "client_credentials")
@@ -107,7 +118,6 @@ public class WebClientService {
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
                 .retrieve()
                 .bodyToMono(TokenDTO.class)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
 
         logger.info("Access token obtained successfully...");
@@ -138,7 +148,6 @@ public class WebClientService {
         return webClient.get().uri(uri.toString())
                 .retrieve()
                 .bodyToMono(responseClazz)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
     }
 
@@ -151,7 +160,6 @@ public class WebClientService {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
     }
 
@@ -164,7 +172,6 @@ public class WebClientService {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
     }
 
@@ -177,7 +184,6 @@ public class WebClientService {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
-                .onErrorMap(e -> new WebException(e.getMessage()))
                 .block();
     }
 

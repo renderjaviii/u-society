@@ -83,7 +83,7 @@ public class UserController extends CommonController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Verified user account."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{username}/verify-email",
+    @PostMapping(path = "/{username}/verifyEmail",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> verifyEmail(@PathVariable(value = "username") final String username,
                                             @RequestParam(name = "otpCode") final String otpCode)

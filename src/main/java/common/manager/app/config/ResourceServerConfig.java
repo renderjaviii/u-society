@@ -23,6 +23,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/services/users/login/").permitAll()
                 .antMatchers("/services/**/verify-email/").permitAll()
+                .antMatchers("/services/users/").permitAll()
                 .antMatchers("/services/**").authenticated();
     }
 

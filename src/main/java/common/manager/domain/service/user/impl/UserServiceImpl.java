@@ -1,7 +1,5 @@
 package common.manager.domain.service.user.impl;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -13,6 +11,7 @@ import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.domain.converter.Converter;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.exception.WebException;
 import common.manager.domain.provider.authentication.AuthenticationConnector;
 import common.manager.domain.provider.user.UserConnector;
 import common.manager.domain.provider.user.dto.UserDTO;
@@ -20,12 +19,11 @@ import common.manager.domain.service.common.CommonServiceImpl;
 import common.manager.domain.service.email.MailService;
 import common.manager.domain.service.otp.OtpService;
 import common.manager.domain.service.user.UserService;
+import common.manager.domain.util.mapper.Constant;
 
 @Service
 @EnableConfigurationProperties
 public class UserServiceImpl extends CommonServiceImpl implements UserService {
-
-    private static final String USER_ALREADY_EXISTS_FORMAT = "UserName: %s or DocumentNumber: %s or Email: %s or PhoneNumber: %s already registered.";
 
     private final AuthenticationConnector authenticationConnector;
     private final UserConnector userConnector;
@@ -49,28 +47,13 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public UserApi create(CreateUserRequest request) throws GenericException {
         validateUser(request);
 
         UserDTO userDTO = userConnector.create(request);
         OtpApi userOtp = otpService.create(userDTO.getUsername());
         mailService.sendOtp(request.getEmail(), userOtp.getOtpCode());
-
         return Converter.user(userDTO);
-    }
-
-    private void validateUser(CreateUserRequest request) throws GenericException {
-        UserDTO user = userConnector.get(request.getUsername(),
-                request.getDocumentNumber(),
-                request.getEmail(),
-                request.getPhoneNumber());
-        if (user != null) {
-            String errorMessage = String
-                    .format(USER_ALREADY_EXISTS_FORMAT, request.getUsername(), request.getDocumentNumber(),
-                            request.getEmail(), request.getPhoneNumber());
-            throw new GenericException(errorMessage, "USER_ALREADY_EXISTS");
-        }
     }
 
     @Override
@@ -82,6 +65,20 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     public void enableAccount(String username, String otpCode) throws GenericException {
         otpService.validate(username, otpCode);
         userConnector.enableAccount(username);
+    }
+
+    private void validateUser(CreateUserRequest request) throws GenericException {
+        try {
+            UserDTO user = userConnector.get(request.getUsername(), request.getDocumentNumber(),
+                    request.getEmail(), request.getPhoneNumber());
+            if (user != null) {
+                throw new GenericException("User already exists.", "USER_ALREADY_EXISTS");
+            }
+        } catch (WebException ex) {
+            if (!Constant.USER_NOT_FOUND.equals(ex.getErrorCode())) {
+                throw new GenericException(ex.getMessage());
+            }
+        }
     }
 
 }

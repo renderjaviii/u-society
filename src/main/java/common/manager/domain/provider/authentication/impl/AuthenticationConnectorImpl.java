@@ -17,8 +17,6 @@ public class AuthenticationConnectorImpl extends WebClientService implements Aut
     private String baseUrl;
     @Value("${provider.authentication-service.authentication-path}")
     private String authPath;
-    @Value("${provider.authentication-service.users-path}")
-    private String usersPath;
     @Value("${provider.authentication-client.id}")
     private String clientId;
     @Value("${provider.authentication-client.secret}")
@@ -33,19 +31,7 @@ public class AuthenticationConnectorImpl extends WebClientService implements Aut
 
     @Override
     public TokenDTO login(UserLoginRequest request) {
-        return getTokenUsingPassword(clientId, clientSecret, request.getUsername(), request.getPassword());
+        return getToken(clientId, clientSecret, request.getUsername(), request.getPassword());
     }
-
-    /*
-        MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
-        qParams.add("description", "1234");
-        Map<String, String> pParams = new HashMap<>();
-        pParams.put("id", "1");
-        Test test = get(uriBuilder()
-                        .path("/test/{id}")
-                        .queryParams(qParams)
-                        .build(pParams),
-                Test.class);
-    */
 
 }
