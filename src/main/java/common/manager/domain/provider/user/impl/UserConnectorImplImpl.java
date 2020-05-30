@@ -1,5 +1,7 @@
 package common.manager.domain.provider.user.impl;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.provider.user.UserConnector;
 import common.manager.domain.provider.user.dto.UserDTO;
@@ -71,6 +74,14 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
                         .pathSegment("{username}")
                         .build(username),
                 Void.class);
+    }
+
+    @Override
+    public List<UserApi> getAll() {
+        return getList(uriBuilder().path(path)
+                        .pathSegment("getAll")
+                        .build(),
+                UserApi.class);
     }
 
     /*MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();

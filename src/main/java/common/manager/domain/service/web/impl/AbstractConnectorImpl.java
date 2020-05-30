@@ -8,9 +8,11 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -143,6 +145,14 @@ public class AbstractConnectorImpl implements AbstractConnector {
     }
 
     @Override
+    public <T> List<T> getList(URI uri, Class<T> responseClazz) {
+        return webClient.get().uri(uri.toString())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<T>>() {})
+                .block();
+    }
+
+    @Override
     public <T> T post(URI uri, Class<T> responseClazz) {
         return post(uri, EMPTY, responseClazz);
     }
@@ -153,6 +163,15 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseClazz)
+                .block();
+    }
+
+    @Override
+    public <T> List<T> postList(URI uri, Object body, Class<T> responseClazz) {
+        return webClient.post().uri(uri.toString())
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<T>>() {})
                 .block();
     }
 

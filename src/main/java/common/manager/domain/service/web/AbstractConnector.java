@@ -1,6 +1,7 @@
 package common.manager.domain.service.web;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
@@ -23,9 +24,13 @@ public interface AbstractConnector {
 
     <T> T get(URI uri, Class<T> responseClazz);
 
+    <T> List<T> getList(URI uri, Class<T> responseClazz);
+
     <T> T post(URI uri, Class<T> responseClazz);
 
     <T> T post(URI uri, Object body, Class<T> responseClazz);
+
+    <T> List<T> postList(URI uri, Object body, Class<T> responseClazz);
 
     <T> T put(URI uri, Class<T> responseClazz);
 

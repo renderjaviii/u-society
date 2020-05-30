@@ -1,5 +1,7 @@
 package common.manager.domain.service.user.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,11 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     public void delete(String username) {
         userConnector.delete(username);
 
+    }
+
+    @Override
+    public List<UserApi> getAll() {
+        return userConnector.getAll();
     }
 
     private void validateUser(CreateUserRequest request) throws GenericException {

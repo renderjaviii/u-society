@@ -3,12 +3,15 @@ package common.manager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +29,7 @@ import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.exception.UserValidationException;
 import common.manager.domain.service.user.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -101,6 +105,18 @@ public class UserController extends CommonController {
     public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username) {
         userService.delete(username);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
+    @ApiOperation(value = "Get all users.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Users data."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @GetMapping(path = "/{username}/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UserApi>> getAll(@PathVariable(value = "username") final String username)
+            throws UserValidationException {
+        validateUser(username);
+        return ResponseEntity.ok(userService.getAll());
     }
 
 }

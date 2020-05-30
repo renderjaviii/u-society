@@ -1,5 +1,7 @@
 package common.manager.domain.service.user;
 
+import java.util.List;
+
 import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
@@ -17,5 +19,7 @@ public interface UserService {
     TokenApi login(UserLoginRequest request) throws GenericException;
 
     void delete(String username);
+
+    List<UserApi> getAll();
 
 }
