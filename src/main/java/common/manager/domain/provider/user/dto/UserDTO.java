@@ -1,9 +1,5 @@
 package common.manager.domain.provider.user.dto;
 
-import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
-import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -11,12 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+import common.manager.app.util.BaseObject;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "User DTO")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName(value = "user")
-public class UserDTO {
+public class UserDTO extends BaseObject {
 
     @JsonProperty
     private String username;
@@ -81,67 +78,114 @@ public class UserDTO {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getDocumentNumber() {
         return documentNumber;
     }
 
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getGender() {
         return gender;
     }
 
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public LocalDate getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getLastAccessAt() {
         return lastAccessAt;
     }
 
+    public void setLastAccessAt(LocalDateTime lastAccessAt) {
+        this.lastAccessAt = lastAccessAt;
+    }
+
     public boolean isAccountLocked() {
         return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
     }
 
     public boolean isEmailVerified() {
         return emailVerified;
     }
 
-    @Override
-    public int hashCode() {
-        return reflectionHashCode(this);
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     @Override
     public boolean equals(Object o) {
-        return reflectionEquals(this, o);
+        return super.equals(o);
     }
 
     @Override
-    public String toString() {
-        return reflectionToString(this);
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static Builder newBuilder() {

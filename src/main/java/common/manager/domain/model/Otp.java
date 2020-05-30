@@ -47,24 +47,36 @@ public class Otp {
         ownerUsername = builder.ownerUsername;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getOtpCode() {
         return otpCode;
     }
 
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getExpiresAt() {
         return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public boolean isActive() {
@@ -77,6 +89,14 @@ public class Otp {
 
     public String getOwnerUsername() {
         return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public static final class Builder {

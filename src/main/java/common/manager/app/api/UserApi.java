@@ -1,107 +1,189 @@
 package common.manager.app.api;
 
-import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
-import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+import common.manager.app.util.BaseObject;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "User Api")
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName(value = "user")
-public class UserApi {
+public class UserApi extends BaseObject {
 
-    @ApiModelProperty(value = "username")
-    private String username;
+    @JsonProperty
+    private boolean accountLocked;
 
-    @ApiModelProperty(value = "firstName")
-    private String firstName;
-
-    @ApiModelProperty(value = "lastName")
-    private String lastName;
-
-    @ApiModelProperty(value = "birthDate")
+    @JsonProperty
     private LocalDate birthDate;
 
-    @ApiModelProperty(value = "gender")
-    private String gender;
+    @JsonProperty
+    private LocalDate createdAt;
 
-    @ApiModelProperty(value = "phoneNumber")
-    private String phoneNumber;
-
-    @ApiModelProperty(value = "documentNumber")
+    @JsonProperty
     private String documentNumber;
 
-    @ApiModelProperty(value = "lastAccessAt")
+    @JsonProperty
+    private String email;
+
+    @JsonProperty
+    private boolean emailVerified;
+
+    @JsonProperty
+    private String firstName;
+
+    @JsonProperty
+    private String lastName;
+
+    @JsonProperty
     private LocalDateTime lastAccessAt;
+
+    @JsonProperty
+    private String gender;
+
+    @JsonProperty
+    private String password;
+
+    @JsonProperty
+    private String phoneNumber;
+
+    @JsonProperty
+    private String username;
 
     public UserApi() {
         super();
     }
 
     private UserApi(Builder builder) {
-        username = builder.username;
+        accountLocked = builder.accountLocked;
+        birthDate = builder.birthDate;
+        createdAt = builder.createdAt;
+        documentNumber = builder.documentNumber;
+        email = builder.email;
+        emailVerified = builder.emailVerified;
         firstName = builder.firstName;
         lastName = builder.lastName;
-        birthDate = builder.birthDate;
-        gender = builder.gender;
-        phoneNumber = builder.phoneNumber;
         lastAccessAt = builder.lastAccessAt;
-        documentNumber = builder.documentNumber;
+        gender = builder.gender;
+        password = builder.password;
+        phoneNumber = builder.phoneNumber;
+        username = builder.username;
     }
 
-    public String getUsername() {
-        return username;
+    public boolean isAccountLocked() {
+        return accountLocked;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
     }
 
     public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public String getGender() {
-        return gender;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public LocalDateTime getLastAccessAt() {
-        return lastAccessAt;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getDocumentNumber() {
         return documentNumber;
     }
 
-    @Override
-    public int hashCode() {
-        return reflectionHashCode(this);
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public LocalDateTime getLastAccessAt() {
+        return lastAccessAt;
+    }
+
+    public void setLastAccessAt(LocalDateTime lastAccessAt) {
+        this.lastAccessAt = lastAccessAt;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
     public boolean equals(Object o) {
-        return reflectionEquals(this, o);
+        return super.equals(o);
     }
 
     @Override
-    public String toString() {
-        return reflectionToString(this);
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static Builder newBuilder() {
@@ -110,21 +192,51 @@ public class UserApi {
 
     public static final class Builder {
 
-        private String username;
+        private boolean accountLocked;
+        private LocalDate birthDate;
+        private LocalDate createdAt;
+        private String documentNumber;
+        private String email;
+        private boolean emailVerified;
         private String firstName;
         private String lastName;
-        private LocalDate birthDate;
-        private String gender;
-        private String phoneNumber;
-        private String documentNumber;
         private LocalDateTime lastAccessAt;
+        private String gender;
+        private String password;
+        private String phoneNumber;
+        private String username;
 
         private Builder() {
             super();
         }
 
-        public Builder username(String username) {
-            this.username = username;
+        public Builder accountLocked(boolean accountLocked) {
+            this.accountLocked = accountLocked;
+            return this;
+        }
+
+        public Builder birthDate(LocalDate birthDate) {
+            this.birthDate = birthDate;
+            return this;
+        }
+
+        public Builder createdAt(LocalDate createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder documentNumber(String documentNumber) {
+            this.documentNumber = documentNumber;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder emailVerified(boolean emailVerified) {
+            this.emailVerified = emailVerified;
             return this;
         }
 
@@ -138,8 +250,8 @@ public class UserApi {
             return this;
         }
 
-        public Builder birthDate(LocalDate birthDate) {
-            this.birthDate = birthDate;
+        public Builder lastAccessAt(LocalDateTime lastAccessAt) {
+            this.lastAccessAt = lastAccessAt;
             return this;
         }
 
@@ -148,18 +260,18 @@ public class UserApi {
             return this;
         }
 
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
         public Builder phoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
             return this;
         }
 
-        public Builder documentNumber(String documentNumber) {
-            this.documentNumber = documentNumber;
-            return this;
-        }
-
-        public Builder lastAccessAt(LocalDateTime lastAccessAt) {
-            this.lastAccessAt = lastAccessAt;
+        public Builder username(String username) {
+            this.username = username;
             return this;
         }
 

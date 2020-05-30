@@ -1,0 +1,40 @@
+package common.manager.domain.service.web;
+
+import java.net.URI;
+
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
+
+import common.manager.domain.provider.authentication.dto.TokenDTO;
+
+public interface AbstractConnector {
+
+    void setUp(String url, int timeOut);
+
+    void setUp(String url, int timeOut, String authUrl);
+
+    TokenDTO getToken(String clientId, String clientSecret, String username, String password);
+
+    TokenDTO getToken(String clientId, String clientSecret);
+
+    UriBuilder uriBuilder();
+
+    WebClient getWebClient();
+
+    <T> T get(URI uri, Class<T> responseClazz);
+
+    <T> T post(URI uri, Class<T> responseClazz);
+
+    <T> T post(URI uri, Object body, Class<T> responseClazz);
+
+    <T> T put(URI uri, Class<T> responseClazz);
+
+    <T> T put(URI uri, Object body, Class<T> responseClazz);
+
+    <T> T patch(URI uri, Class<T> responseClazz);
+
+    <T> T patch(URI uri, Object body, Class<T> responseClazz);
+
+    <T> T delete(URI uri, Class<T> responseClazz);
+
+}

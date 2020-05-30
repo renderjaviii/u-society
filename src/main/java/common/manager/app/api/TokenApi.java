@@ -1,13 +1,14 @@
 package common.manager.app.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
+import common.manager.app.util.BaseObject;
 import io.swagger.annotations.ApiModel;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel("Token Api")
-public class TokenApi {
+@JsonRootName(value = "token")
+public class TokenApi extends BaseObject {
 
     @JsonProperty
     private String accessToken;
@@ -40,10 +41,6 @@ public class TokenApi {
         jti = builder.jti;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public String getAccessToken() {
         return accessToken;
     }
@@ -66,6 +63,20 @@ public class TokenApi {
 
     public String getJti() {
         return jti;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public static final class Builder {

@@ -10,10 +10,10 @@ import org.springframework.util.MultiValueMap;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.provider.user.UserConnector;
 import common.manager.domain.provider.user.dto.UserDTO;
-import common.manager.domain.service.web.WebClientService;
+import common.manager.domain.service.web.impl.AbstractConnectorImpl;
 
 @Component
-public class UserConnectorImpl extends WebClientService implements UserConnector {
+public class UserConnectorImplImpl extends AbstractConnectorImpl implements UserConnector {
 
     @Value("${provider.authentication-service.url}")
     private String baseUrl;
@@ -61,6 +61,14 @@ public class UserConnectorImpl extends WebClientService implements UserConnector
         post(uriBuilder().path(path)
                         .pathSegment("{username}")
                         .pathSegment("verifyEmail")
+                        .build(username),
+                Void.class);
+    }
+
+    @Override
+    public void delete(String username) {
+        delete(uriBuilder().path(path)
+                        .pathSegment("{username}")
                         .build(username),
                 Void.class);
     }

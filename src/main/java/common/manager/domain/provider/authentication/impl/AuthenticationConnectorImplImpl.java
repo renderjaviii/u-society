@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.domain.provider.authentication.AuthenticationConnector;
 import common.manager.domain.provider.authentication.dto.TokenDTO;
-import common.manager.domain.service.web.WebClientService;
+import common.manager.domain.service.web.impl.AbstractConnectorImpl;
 
 @Component
-public class AuthenticationConnectorImpl extends WebClientService implements AuthenticationConnector {
+public class AuthenticationConnectorImplImpl extends AbstractConnectorImpl implements AuthenticationConnector {
 
     @Value("${provider.authentication-service.url}")
     private String baseUrl;

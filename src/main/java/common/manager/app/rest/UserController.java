@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,6 +90,16 @@ public class UserController extends CommonController {
                                             @RequestParam(name = "otpCode") final String otpCode)
             throws GenericException {
         userService.enableAccount(username, otpCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "Delete user.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "User deleted."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username) {
+        userService.delete(username);
         return ResponseEntity.ok().build();
     }
 

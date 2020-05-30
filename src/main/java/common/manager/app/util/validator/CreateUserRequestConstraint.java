@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CreateUserRequestConstraint {
 
-    String message() default "Comment in case validation faliled.";
+    String message() default "Comment in case validation failed.";
 
     Class<?>[] groups() default {};
 

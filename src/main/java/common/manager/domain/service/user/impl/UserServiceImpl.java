@@ -42,11 +42,6 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     }
 
     @Override
-    public TokenApi login(UserLoginRequest request) {
-        return Converter.token(authenticationConnector.login(request));
-    }
-
-    @Override
     public UserApi create(CreateUserRequest request) throws GenericException {
         validateUser(request);
 
@@ -65,6 +60,17 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     public void enableAccount(String username, String otpCode) throws GenericException {
         otpService.validate(username, otpCode);
         userConnector.enableAccount(username);
+    }
+
+    @Override
+    public TokenApi login(UserLoginRequest request) {
+        return Converter.token(authenticationConnector.login(request));
+    }
+
+    @Override
+    public void delete(String username) {
+        userConnector.delete(username);
+
     }
 
     private void validateUser(CreateUserRequest request) throws GenericException {

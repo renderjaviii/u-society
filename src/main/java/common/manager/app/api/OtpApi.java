@@ -3,11 +3,14 @@ package common.manager.app.api;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
+import common.manager.app.util.BaseObject;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "OTP Api")
-public class OtpApi {
+@JsonRootName(value = "otp")
+public class OtpApi extends BaseObject {
 
     @JsonProperty(value = "id")
     private Long id;
@@ -35,32 +38,66 @@ public class OtpApi {
         ownerUsername = builder.ownerUsername;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getOtpCode() {
         return otpCode;
     }
 
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getExpiresAt() {
         return expiresAt;
     }
 
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
     public boolean isActive() {
         return active;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getOwnerUsername() {
         return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public static final class Builder {

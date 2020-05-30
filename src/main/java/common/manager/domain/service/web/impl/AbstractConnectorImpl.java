@@ -1,5 +1,6 @@
-package common.manager.domain.service.web;
+package common.manager.domain.service.web.impl;
 
+import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -7,11 +8,11 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,24 +22,24 @@ import org.springframework.web.util.UriBuilder;
 import common.manager.app.api.ApiError;
 import common.manager.domain.exception.WebException;
 import common.manager.domain.provider.authentication.dto.TokenDTO;
+import common.manager.domain.service.web.AbstractConnector;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.StringUtil;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
-@SuppressWarnings("unused")
-public class WebClientService {
+@Component
+public class AbstractConnectorImpl implements AbstractConnector {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final int TIME_OUT = 30;
 
     private WebClient webClient;
-
     private String baseUrl;
     private String authPath;
 
-    protected void setUp(String url, int timeOut) {
+    @Override
+    public void setUp(String url, int timeOut) {
         logger.info("Creating WebClient for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException("The base url is invalid.");
@@ -46,7 +47,8 @@ public class WebClientService {
         init(url, timeOut, EMPTY);
     }
 
-    protected void setUp(String url, int timeOut, String authUrl) {
+    @Override
+    public void setUp(String url, int timeOut, String authUrl) {
         logger.info("Creating WebClient for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException("The base url is invalid.");
@@ -54,16 +56,12 @@ public class WebClientService {
         if (StringUtil.isNullOrEmpty(authUrl)) {
             throw new UnsupportedOperationException("The auth url is invalid.");
         }
-
         init(url, timeOut, authUrl);
     }
 
     private void init(String url, int timeOut, String authUrl) {
         baseUrl = url;
         authPath = authUrl;
-        if (timeOut <= 0) {
-            timeOut = TIME_OUT;
-        }
         buildWebClient(timeOut);
     }
 
@@ -74,7 +72,7 @@ public class WebClientService {
 
         webClient = WebClient.builder()
                 .baseUrl(baseUrl)
-                .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(true)))
+                .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(TRUE)))
                 .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .filter(responseFilter())
@@ -91,7 +89,8 @@ public class WebClientService {
         });
     }
 
-    protected TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
+    @Override
+    public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
         TokenDTO token = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
@@ -106,11 +105,12 @@ public class WebClientService {
                 .bodyToMono(TokenDTO.class)
                 .block();
 
-        logger.info("Access token obtained successfully...");
+        logger.info("Access token obtained successfully: {}", token);
         return token;
     }
 
-    protected TokenDTO getToken(String clientId, String clientSecret) {
+    @Override
+    public TokenDTO getToken(String clientId, String clientSecret) {
         TokenDTO token = webClient.post().uri(uriBuilder()
                 .path(authPath)
                 .queryParam("grant_type", "client_credentials")
@@ -120,42 +120,35 @@ public class WebClientService {
                 .bodyToMono(TokenDTO.class)
                 .block();
 
-        logger.info("Access token obtained successfully...");
+        logger.info("Access token obtained successfully: {}", token);
         return token;
     }
 
-    protected Optional<Object> checkAccessToken(TokenDTO token) {
-        return getWebClient().get().uri(uriBuilder()
-                .pathSegment("oauth")
-                .pathSegment("check_token")
-                .queryParam("token", token.getAccessToken())
-                .build().toString())
-                .retrieve()
-                .bodyToMono(Object.class)
-                .doOnError(error -> logger.error(error.getMessage()))
-                .blockOptional();
-    }
-
-    protected UriBuilder uriBuilder() {
+    @Override
+    public UriBuilder uriBuilder() {
         return new DefaultUriBuilderFactory().builder();
     }
 
-    protected WebClient getWebClient() {
+    @Override
+    public WebClient getWebClient() {
         return webClient;
     }
 
-    protected <T> T get(URI uri, Class<T> responseClazz) {
+    @Override
+    public <T> T get(URI uri, Class<T> responseClazz) {
         return webClient.get().uri(uri.toString())
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .block();
     }
 
-    protected <T> T post(URI uri, Class<T> responseClazz) {
+    @Override
+    public <T> T post(URI uri, Class<T> responseClazz) {
         return post(uri, EMPTY, responseClazz);
     }
 
-    protected <T> T post(URI uri, Object body, Class<T> responseClazz) {
+    @Override
+    public <T> T post(URI uri, Object body, Class<T> responseClazz) {
         return webClient.post().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
@@ -163,11 +156,13 @@ public class WebClientService {
                 .block();
     }
 
-    protected <T> T put(URI uri, Class<T> responseClazz) {
+    @Override
+    public <T> T put(URI uri, Class<T> responseClazz) {
         return put(uri, EMPTY, responseClazz);
     }
 
-    protected <T> T put(URI uri, Object body, Class<T> responseClazz) {
+    @Override
+    public <T> T put(URI uri, Object body, Class<T> responseClazz) {
         return webClient.put().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
@@ -175,11 +170,13 @@ public class WebClientService {
                 .block();
     }
 
-    protected <T> T patch(URI uri, Class<T> responseClazz) {
+    @Override
+    public <T> T patch(URI uri, Class<T> responseClazz) {
         return patch(uri, EMPTY, responseClazz);
     }
 
-    protected <T> T patch(URI uri, Object body, Class<T> responseClazz) {
+    @Override
+    public <T> T patch(URI uri, Object body, Class<T> responseClazz) {
         return webClient.patch().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
@@ -187,8 +184,15 @@ public class WebClientService {
                 .block();
     }
 
-    /*
-        webClient = webClient.mutate()
+    @Override
+    public <T> T delete(URI uri, Class<T> responseClazz) {
+        return webClient.delete().uri(uri.toString())
+                .retrieve()
+                .bodyToMono(responseClazz)
+                .block();
+    }
+
+    /*webClient = webClient.mutate()
                 .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
                 .build();*/
 }

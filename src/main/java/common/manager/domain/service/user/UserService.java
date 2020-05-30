@@ -16,4 +16,6 @@ public interface UserService {
 
     TokenApi login(UserLoginRequest request) throws GenericException;
 
+    void delete(String username);
+
 }

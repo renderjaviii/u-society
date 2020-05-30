@@ -1,5 +1,7 @@
 package common.manager.domain.converter;
 
+import org.modelmapper.ModelMapper;
+
 import common.manager.app.api.OtpApi;
 import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
@@ -8,6 +10,8 @@ import common.manager.domain.provider.authentication.dto.TokenDTO;
 import common.manager.domain.provider.user.dto.UserDTO;
 
 public class Converter {
+
+    private static final ModelMapper modelMapper = new ModelMapper();
 
     private Converter() {
         super();
@@ -25,40 +29,11 @@ public class Converter {
     }
 
     public static UserApi user(UserDTO user) {
-        return UserApi.newBuilder()
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .documentNumber(user.getDocumentNumber())
-                .birthDate(user.getBirthDate())
-                .gender(user.getGender())
-                .phoneNumber(user.getPhoneNumber())
-                .lastAccessAt(user.getLastAccessAt())
-                .build();
-    }
-
-    public static UserDTO user(UserApi user) {
-        return UserDTO.newBuilder()
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .documentNumber(user.getDocumentNumber())
-                .lastName(user.getLastName())
-                .birthDate(user.getBirthDate())
-                .gender(user.getGender())
-                .phoneNumber(user.getPhoneNumber())
-                .lastAccessAt(user.getLastAccessAt())
-                .build();
+        return modelMapper.map(user, UserApi.class);
     }
 
     public static OtpApi otp(Otp otp) {
-        return OtpApi.newBuilder()
-                .id(otp.getId())
-                .active(otp.isActive())
-                .otpCode(otp.getOtpCode())
-                .createdAt(otp.getCreatedAt())
-                .expiresAt(otp.getExpiresAt())
-                .ownerUsername(otp.getOwnerUsername())
-                .build();
+        return modelMapper.map(otp, OtpApi.class);
     }
 
 }
