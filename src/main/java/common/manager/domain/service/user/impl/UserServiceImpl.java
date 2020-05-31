@@ -3,7 +3,6 @@ package common.manager.domain.service.user.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import common.manager.app.api.OtpApi;
@@ -24,7 +23,6 @@ import common.manager.domain.service.user.UserService;
 import common.manager.domain.util.mapper.Constant;
 
 @Service
-@EnableConfigurationProperties
 public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     private final AuthenticationConnector authenticationConnector;
