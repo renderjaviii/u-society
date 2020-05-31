@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import common.manager.app.api.OtpApi;
 import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
+import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.app.rest.response.LoginResponse;
@@ -79,6 +80,12 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     @Override
     public List<UserApi> getAll() {
         return userConnector.getAll();
+    }
+
+    @Override
+    public void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException {
+        otpService.validate(username, otpCode);
+        userConnector.changePassword(username, request);
     }
 
     private void validateUser(CreateUserRequest request) throws GenericException {

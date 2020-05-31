@@ -3,6 +3,7 @@ package common.manager.domain.provider.user;
 import java.util.List;
 
 import common.manager.app.api.UserApi;
+import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.service.web.AbstractConnector;
 
@@ -19,5 +20,7 @@ public interface UserConnector extends AbstractConnector {
     void delete(String username);
 
     List<UserApi> getAll();
+
+    void changePassword(String username, ChangePasswordRequest body);
 
 }

@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import common.manager.app.api.ApiError;
 import common.manager.app.api.UserApi;
+import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.app.rest.response.LoginResponse;
@@ -50,7 +52,7 @@ public class UserController extends CommonController {
         this.userService = userService;
     }
 
-    @ApiOperation(value = "Create user.")
+    @ApiOperation(value = "Create.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
@@ -61,7 +63,7 @@ public class UserController extends CommonController {
         return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
-    @ApiOperation(value = "Get user.")
+    @ApiOperation(value = "Get.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
@@ -93,22 +95,25 @@ public class UserController extends CommonController {
     public ResponseEntity<Void> verifyEmail(@PathVariable(value = "username") final String username,
                                             @RequestParam(name = "otpCode") final String otpCode)
             throws GenericException {
+        validateUser(username);
         userService.enableAccount(username, otpCode);
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value = "Delete user.")
+    @ApiOperation(value = "Delete.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User deleted."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username) {
+    public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username)
+            throws UserValidationException {
+        validateUser(username);
         userService.delete(username);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
-    @ApiOperation(value = "Get all users.")
+    @ApiOperation(value = "Get all.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Users data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
@@ -117,6 +122,19 @@ public class UserController extends CommonController {
             throws UserValidationException {
         validateUser(username);
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @ApiOperation(value = "Change password.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Password changed."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PatchMapping(path = "/{username}/changePassword", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UserApi>> changePassword(@PathVariable(value = "username") final String username,
+                                                        @RequestParam(name = "otpCode") final String otpCode,
+                                                        @Valid @RequestBody ChangePasswordRequest request)
+            throws GenericException {
+        userService.changePassword(validateUser(username), otpCode, request);
+        return ResponseEntity.ok().build();
     }
 
 }

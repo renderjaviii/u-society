@@ -11,6 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import common.manager.app.api.UserApi;
+import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.domain.converter.Converter;
 import common.manager.domain.provider.user.UserConnector;
@@ -87,6 +88,16 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
         return responseList.stream()
                 .map(Converter::user)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void changePassword(String username, ChangePasswordRequest body) {
+        patch(uriBuilder().path(path)
+                        .pathSegment("{username}")
+                        .pathSegment("changePassword")
+                        .build(username),
+                body,
+                Void.class);
     }
 
     /*MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();

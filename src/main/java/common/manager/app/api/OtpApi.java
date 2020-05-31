@@ -12,17 +12,17 @@ import io.swagger.annotations.ApiModel;
 @JsonRootName(value = "otp")
 public class OtpApi extends BaseObject {
 
-    @JsonProperty(value = "id")
+    @JsonProperty
     private Long id;
-    @JsonProperty(value = "otpCode")
+    @JsonProperty
     private String otpCode;
-    @JsonProperty(value = "createdAt")
+    @JsonProperty
     private LocalDateTime createdAt;
-    @JsonProperty(value = "expiresAt")
+    @JsonProperty
     private LocalDateTime expiresAt;
-    @JsonProperty(value = "active")
+    @JsonProperty
     private boolean active;
-    @JsonProperty(value = "ownerUsername")
+    @JsonProperty
     private String ownerUsername;
 
     public OtpApi() {

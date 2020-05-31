@@ -3,6 +3,7 @@ package common.manager.domain.service.user;
 import java.util.List;
 
 import common.manager.app.api.UserApi;
+import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.app.rest.response.LoginResponse;
@@ -21,5 +22,7 @@ public interface UserService {
     void delete(String username);
 
     List<UserApi> getAll();
+
+    void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException;
 
 }

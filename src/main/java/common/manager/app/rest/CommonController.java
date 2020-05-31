@@ -13,12 +13,13 @@ public abstract class CommonController {
         return authentication.getPrincipal().toString();
     }
 
-    protected void validateUser(String username) throws UserValidationException {
+    protected String validateUser(String username) throws UserValidationException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (((OAuth2Authentication) authentication).isClientOnly() ||
                 !authentication.getPrincipal().toString().equals(username)) {
             throw new UserValidationException("Invalid credentials.", "INVALID_CREDENTIALS");
         }
+        return username;
     }
 
 }

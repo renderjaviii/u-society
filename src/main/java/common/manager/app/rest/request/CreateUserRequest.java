@@ -2,15 +2,16 @@ package common.manager.app.rest.request;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import common.manager.app.util.validator.CreateUserRequestConstraint;
+import common.manager.app.util.validator.PasswordCreationConstraint;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,7 +26,7 @@ public class CreateUserRequest {
     private String username;
 
     @ApiModelProperty(notes = "Password", required = true)
-    @NotBlank
+    @PasswordCreationConstraint
     @JsonProperty(value = "password")
     private String password;
 
@@ -56,6 +57,7 @@ public class CreateUserRequest {
     private String documentNumber;
 
     @ApiModelProperty(notes = "Email", required = true)
+    @Email
     @NotBlank
     @JsonProperty(value = "email")
     private String email;
