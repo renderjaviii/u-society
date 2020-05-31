@@ -32,6 +32,10 @@ public class Converter {
         return modelMapper.map(user, UserApi.class);
     }
 
+    public static UserDTO user1(UserDTO user) {
+        return modelMapper.map(user, UserDTO.class);
+    }
+
     public static OtpApi otp(Otp otp) {
         return modelMapper.map(otp, OtpApi.class);
     }

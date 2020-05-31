@@ -13,7 +13,8 @@ import io.swagger.annotations.ApiModel;
 @ApiModel(value = "User DTO")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName(value = "user")
-public class UserDTO extends BaseObject {
+public class
+UserDTO extends BaseObject {
 
     @JsonProperty
     private String username;

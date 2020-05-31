@@ -1,7 +1,6 @@
 package common.manager.domain.provider.user.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -10,16 +9,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.ChangePasswordRequest;
 import common.manager.app.rest.request.CreateUserRequest;
-import common.manager.domain.converter.Converter;
 import common.manager.domain.provider.user.UserConnector;
 import common.manager.domain.provider.user.dto.UserDTO;
 import common.manager.domain.service.web.impl.AbstractConnectorImpl;
 
 @Component
-public class UserConnectorImplImpl extends AbstractConnectorImpl implements UserConnector {
+public class UserConnectorImpl extends AbstractConnectorImpl implements UserConnector {
 
     @Value("${web.authentication.url}")
     private String baseUrl;
@@ -34,32 +31,32 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
     }
 
     @Override
-    public UserApi create(CreateUserRequest body) {
-        return Converter.user(post(uriBuilder().path(path).build(), body, UserDTO.class));
+    public UserDTO create(CreateUserRequest body) {
+        return post(uriBuilder().path(path).build(), body, UserDTO.class);
     }
 
     @Override
-    public UserApi get(String username) {
-        return Converter.user(get(uriBuilder()
+    public UserDTO get(String username) {
+        return get(uriBuilder()
                         .path(path)
                         .pathSegment(username)
                         .build(),
-                UserDTO.class));
+                UserDTO.class);
     }
 
     @Override
-    public UserApi get(String username, String documentNumber, String email, String phoneNumber) {
+    public UserDTO get(String username, String documentNumber, String email, String phoneNumber) {
         MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
         qParams.add("documentNumber", documentNumber);
         qParams.add("phoneNumber", phoneNumber);
         qParams.add("username", username);
         qParams.add("email", email);
 
-        return Converter.user(get(uriBuilder().path(path)
+        return get(uriBuilder().path(path)
                         .pathSegment("findByFilters")
                         .queryParams(qParams)
                         .build(),
-                UserDTO.class));
+                UserDTO.class);
     }
 
     @Override
@@ -78,14 +75,11 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
     }
 
     @Override
-    public List<UserApi> getAll() {
-        List<UserDTO> responseList = getList(uriBuilder().path(path)
+    public List<UserDTO> getAll() {
+        return getList(uriBuilder().path(path)
                         .pathSegment("getAll")
                         .build(),
                 UserDTO.class);
-        return responseList.stream()
-                .map(Converter::user)
-                .collect(Collectors.toList());
     }
 
     @Override

@@ -177,7 +177,8 @@ public class AbstractConnectorImpl implements AbstractConnector {
         return webClient.post().uri(uri.toString())
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<T>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<T>>() {
+                })
                 .block();
     }
 
