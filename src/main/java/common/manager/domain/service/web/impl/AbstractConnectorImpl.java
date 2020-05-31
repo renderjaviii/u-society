@@ -1,5 +1,6 @@
 package common.manager.domain.service.web.impl;
 
+import static common.manager.domain.exception.UserValidationException.LOGIN_ERROR;
 import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.springframework.http.HttpHeaders.ACCEPT;
@@ -9,13 +10,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -104,6 +108,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .body(BodyInserters.fromFormData("username", username).with("password", password))
                 .headers(httpHeaders -> httpHeaders.setBasicAuth(clientId, clientSecret))
                 .retrieve()
+                .onStatus(HttpStatus::isError, buildTokenError())
                 .bodyToMono(TokenDTO.class)
                 .block();
 
@@ -119,6 +124,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .build().toString())
                 .headers(headers -> headers.setBasicAuth(clientId, clientSecret))
                 .retrieve()
+                .onStatus(HttpStatus::isError, buildTokenError())
                 .bodyToMono(TokenDTO.class)
                 .block();
 
@@ -209,6 +215,11 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .block();
+    }
+
+    private Function<ClientResponse, Mono<? extends Throwable>> buildTokenError() {
+        return response -> response.bodyToMono(ApiError.class)
+                .flatMap(error -> Mono.error(new WebException(error.getErrorDescription(), LOGIN_ERROR)));
     }
 
     /*webClient = webClient.mutate()

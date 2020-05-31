@@ -11,17 +11,17 @@ import common.manager.domain.provider.authentication.dto.TokenDTO;
 import common.manager.domain.service.web.impl.AbstractConnectorImpl;
 
 @Component
-public class AuthenticationConnectorImplImpl extends AbstractConnectorImpl implements AuthenticationConnector {
+public class AuthenticationConnectorImpl extends AbstractConnectorImpl implements AuthenticationConnector {
 
-    @Value("${provider.authentication-service.url}")
+    @Value("${web.authentication.url}")
     private String baseUrl;
-    @Value("${provider.authentication-service.authentication-path}")
+    @Value("${web.authentication.path}")
     private String authPath;
-    @Value("${provider.authentication-client.id}")
+    @Value("${web.authentication.client-id}")
     private String clientId;
-    @Value("${provider.authentication-client.secret}")
+    @Value("${web.authentication.client-secret}")
     private String clientSecret;
-    @Value("${provider.web-service.time-out:5}")
+    @Value("${web.time-out}")
     private int timeOut;
 
     @PostConstruct

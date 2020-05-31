@@ -1,5 +1,8 @@
 package common.manager.app.api;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import common.manager.app.util.BaseObject;
@@ -12,6 +15,10 @@ public class ApiError extends BaseObject {
     private String description;
     @JsonProperty
     private String statusCode;
+
+    @JsonInclude(NON_NULL)
+    @JsonProperty(value = "error_description")
+    private String errorDescription;
 
     public ApiError() {
         super();
@@ -33,6 +40,10 @@ public class ApiError extends BaseObject {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
     }
 
     @Override

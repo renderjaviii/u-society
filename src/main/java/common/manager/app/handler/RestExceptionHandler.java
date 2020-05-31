@@ -95,8 +95,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(WebException.class)
     public ResponseEntity<ApiError> handleWeb(WebException ex) {
-        String description = Strings.isNullOrEmpty(ex.getMessage()) ? "Request Timeout." : ex.getMessage();
-        return new ResponseEntity<>(new ApiError(description, ex.getErrorCode()), HttpStatus.BAD_GATEWAY);
+        String description = Strings.isNullOrEmpty(ex.getMessage()) ? "Unexpected web error." : ex.getMessage();
+        String errorCode = Strings.isNullOrEmpty(ex.getErrorCode()) ? "UNEXPECTED_WEB_ERROR." : ex.getErrorCode();
+        return new ResponseEntity<>(new ApiError(description, errorCode), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UserValidationException.class)

@@ -16,7 +16,6 @@ import common.manager.domain.exception.GenericException;
 import common.manager.domain.exception.WebException;
 import common.manager.domain.provider.authentication.AuthenticationConnector;
 import common.manager.domain.provider.user.UserConnector;
-import common.manager.domain.provider.user.dto.UserDTO;
 import common.manager.domain.service.common.CommonServiceImpl;
 import common.manager.domain.service.email.MailService;
 import common.manager.domain.service.otp.OtpService;
@@ -47,15 +46,15 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     public UserApi create(CreateUserRequest request) throws GenericException {
         validateUser(request);
 
-        UserDTO userDTO = userConnector.create(request);
-        OtpApi userOtp = otpService.create(userDTO.getUsername());
+        UserApi user = userConnector.create(request);
+        OtpApi userOtp = otpService.create(user.getUsername());
         mailService.sendOtp(request.getEmail(), userOtp.getOtpCode());
-        return Converter.user(userDTO);
+        return user;
     }
 
     @Override
     public UserApi get(String username) {
-        return Converter.user(userConnector.getByUsername(username));
+        return userConnector.getByUsername(username);
     }
 
     @Override
@@ -82,7 +81,7 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     private void validateUser(CreateUserRequest request) throws GenericException {
         try {
-            UserDTO user = userConnector.get(request.getUsername(), request.getDocumentNumber(),
+            UserApi user = userConnector.get(request.getUsername(), request.getDocumentNumber(),
                     request.getEmail(), request.getPhoneNumber());
             if (user != null) {
                 throw new GenericException("User already exists.", "USER_ALREADY_EXISTS");
