@@ -8,8 +8,9 @@ import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
 import common.manager.app.rest.response.LoginResponse;
 import common.manager.domain.exception.GenericException;
+import common.manager.domain.service.common.CommonService;
 
-public interface UserService {
+public interface UserService extends CommonService {
 
     UserApi create(CreateUserRequest request) throws GenericException;
 

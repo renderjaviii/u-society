@@ -73,9 +73,7 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
 
     @Override
     public void delete(String username) {
-        delete(uriBuilder().path(path)
-                        .pathSegment("{username}")
-                        .build(username),
+        delete(uriBuilder().path(path).pathSegment("{username}").build(username),
                 Void.class);
     }
 

@@ -10,12 +10,10 @@ import javax.validation.constraints.Pattern;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import common.manager.app.util.validator.CreateUserRequestConstraint;
 import common.manager.app.util.validator.PasswordCreationConstraint;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@CreateUserRequestConstraint
 @ApiModel(value = "Request to create user")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserRequest {
