@@ -2,10 +2,10 @@ package common.manager.domain.service.user;
 
 import java.util.List;
 
-import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
+import common.manager.app.rest.response.LoginResponse;
 import common.manager.domain.exception.GenericException;
 
 public interface UserService {
@@ -16,7 +16,7 @@ public interface UserService {
 
     void enableAccount(String username, String otpCode) throws GenericException;
 
-    TokenApi login(UserLoginRequest request) throws GenericException;
+    LoginResponse login(UserLoginRequest request) throws GenericException;
 
     void delete(String username);
 

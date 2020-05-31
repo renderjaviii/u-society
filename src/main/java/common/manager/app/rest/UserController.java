@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import common.manager.app.api.ApiError;
-import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
+import common.manager.app.rest.response.LoginResponse;
 import common.manager.domain.exception.GenericException;
 import common.manager.domain.exception.UserValidationException;
 import common.manager.domain.service.user.UserService;
@@ -79,7 +79,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/login/",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenApi> login(@Valid @RequestBody final UserLoginRequest request)
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final UserLoginRequest request)
             throws GenericException {
         return new ResponseEntity<>(userService.login(request), OK);
     }

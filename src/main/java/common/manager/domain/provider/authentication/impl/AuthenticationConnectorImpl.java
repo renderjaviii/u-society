@@ -5,7 +5,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import common.manager.app.api.TokenApi;
 import common.manager.app.rest.request.UserLoginRequest;
+import common.manager.domain.converter.Converter;
 import common.manager.domain.provider.authentication.AuthenticationConnector;
 import common.manager.domain.provider.authentication.dto.TokenDTO;
 import common.manager.domain.service.web.impl.AbstractConnectorImpl;
@@ -30,8 +32,9 @@ public class AuthenticationConnectorImpl extends AbstractConnectorImpl implement
     }
 
     @Override
-    public TokenDTO login(UserLoginRequest request) {
-        return getToken(clientId, clientSecret, request.getUsername(), request.getPassword());
+    public TokenApi login(UserLoginRequest body) {
+        TokenDTO token = getToken(clientId, clientSecret, body.getUsername(), body.getPassword());
+        return Converter.token(token);
     }
 
 }

@@ -8,9 +8,9 @@ import common.manager.domain.service.web.AbstractConnector;
 
 public interface UserConnector extends AbstractConnector {
 
-    UserApi create(CreateUserRequest request);
+    UserApi create(CreateUserRequest body);
 
-    UserApi getByUsername(String username);
+    UserApi get(String username);
 
     UserApi get(String username, String documentNumber, String email, String phoneNumber);
 

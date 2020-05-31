@@ -11,7 +11,7 @@ import common.manager.app.api.TokenApi;
 import common.manager.app.api.UserApi;
 import common.manager.app.rest.request.CreateUserRequest;
 import common.manager.app.rest.request.UserLoginRequest;
-import common.manager.domain.converter.Converter;
+import common.manager.app.rest.response.LoginResponse;
 import common.manager.domain.exception.GenericException;
 import common.manager.domain.exception.WebException;
 import common.manager.domain.provider.authentication.AuthenticationConnector;
@@ -54,7 +54,7 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     @Override
     public UserApi get(String username) {
-        return userConnector.getByUsername(username);
+        return userConnector.get(username);
     }
 
     @Override
@@ -64,8 +64,10 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
     }
 
     @Override
-    public TokenApi login(UserLoginRequest request) {
-        return Converter.token(authenticationConnector.login(request));
+    public LoginResponse login(UserLoginRequest request) {
+        UserApi user = userConnector.get(request.getUsername());
+        TokenApi token = authenticationConnector.login(request);
+        return new LoginResponse(user, token);
     }
 
     @Override

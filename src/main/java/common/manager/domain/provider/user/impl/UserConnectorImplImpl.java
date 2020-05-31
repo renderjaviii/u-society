@@ -33,12 +33,12 @@ public class UserConnectorImplImpl extends AbstractConnectorImpl implements User
     }
 
     @Override
-    public UserApi create(CreateUserRequest request) {
-        return Converter.user(post(uriBuilder().path(path).build(), request, UserDTO.class));
+    public UserApi create(CreateUserRequest body) {
+        return Converter.user(post(uriBuilder().path(path).build(), body, UserDTO.class));
     }
 
     @Override
-    public UserApi getByUsername(String username) {
+    public UserApi get(String username) {
         return Converter.user(get(uriBuilder()
                         .path(path)
                         .pathSegment(username)

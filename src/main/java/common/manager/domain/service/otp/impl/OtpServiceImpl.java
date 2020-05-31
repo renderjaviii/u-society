@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import common.manager.domain.service.otp.OtpService;
 @Service
 public class OtpServiceImpl implements OtpService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
+
     private static final String INVALID_OTP_MESSAGE = "INVALID_OTP";
     private static final int OTP_LENGTH = 5;
 
@@ -34,6 +38,7 @@ public class OtpServiceImpl implements OtpService {
     @Autowired
     public OtpServiceImpl(OtpRepository otpRepository, Clock clock) {
         this.otpRepository = otpRepository;
+
         this.clock = clock;
     }
 
@@ -47,6 +52,7 @@ public class OtpServiceImpl implements OtpService {
                 .otpCode(generateOtpCode())
                 .build());
 
+        LOGGER.debug("Created OTP {} for username = {}.", otp.getOtpCode(), username);
         return Converter.otp(otp);
     }
 
@@ -65,22 +71,22 @@ public class OtpServiceImpl implements OtpService {
             Otp otp = optionalOTP.get();
 
             if (!otp.isActive()) {
-                throw new GenericException(getErrorMessage(otpCode, "OTP already used: %s."), INVALID_OTP_MESSAGE);
+                throw new GenericException(getErrorMessage("OTP already used: %s.", otpCode), INVALID_OTP_MESSAGE);
             }
 
             if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
-                throw new GenericException(getErrorMessage(otpCode, "Expired OTP: %s."), "EXPIRED_OTP");
+                throw new GenericException(getErrorMessage("Expired OTP: %s.", otpCode), "EXPIRED_OTP");
             }
 
             otp.setActive(FALSE);
             otpRepository.save(otp);
         } else {
-            throw new GenericException(getErrorMessage(otpCode, "Invalid OTP: %s."), INVALID_OTP_MESSAGE);
+            throw new GenericException(getErrorMessage("Invalid OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
         }
     }
 
-    private String getErrorMessage(String otpCode, String s) {
-        return String.format(s, otpCode);
+    private String getErrorMessage(String format, String otpCode) {
+        return String.format(format, otpCode);
     }
 
 }

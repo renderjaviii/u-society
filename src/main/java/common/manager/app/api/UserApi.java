@@ -3,12 +3,14 @@ package common.manager.app.api;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import common.manager.app.util.BaseObject;
 import io.swagger.annotations.ApiModel;
 
+@JsonIgnoreProperties( { "password" })
 @ApiModel(value = "User Api")
 @JsonRootName(value = "user")
 public class UserApi extends BaseObject {
