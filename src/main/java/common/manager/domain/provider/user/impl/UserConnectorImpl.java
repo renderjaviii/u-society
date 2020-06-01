@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -76,10 +77,15 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
 
     @Override
     public List<UserDTO> getAll() {
-        return getList(uriBuilder().path(path)
+        return getWebClient().get()
+                .uri(uriBuilder()
+                        .path(path)
                         .pathSegment("getAll")
-                        .build(),
-                UserDTO.class);
+                        .build().toString())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserDTO>>() {
+                })
+                .block();
     }
 
     @Override
