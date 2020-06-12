@@ -1,5 +1,7 @@
 # REST Manager-base
-Este es un orquestador API REST base creado como un proyecto común para construir cualquier administrador REST. El módulo está construido con la convención sobre configuración, Spring boot 2.2.5.
+This is a base REST API Orchestrator created as a common project to build any particular REST manager. The module is built with the convention over configuration, Spring boot 2.2.5.
+
+
 Currenty use:
 - Spring boot core: 2.2.5.
 - Maven manager dependency.
@@ -11,4 +13,3 @@ Currenty use:
 - Spring boot mail.
 - Jackson databind: 2.10.3
 - Apache commons lang3: 3.9.
-
