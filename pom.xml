@@ -8,11 +8,11 @@
         <version>2.2.5.RELEASE</version>
         <relativePath/>
     </parent>
-    <groupId>common</groupId>
+    <groupId>u-society</groupId>
     <artifactId>manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>common-manager</name>
-    <description>Common Manager - base project.</description>
+    <name>us-society-manager</name>
+    <description>U Society - Manager API.</description>
 
     <properties>
         <java.version>1.8</java.version>

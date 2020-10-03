@@ -1,5 +1,5 @@
 # REST Manager-base
-This is a base REST API Orchestrator created as a common project to build any particular REST manager. The module is built with the convention over configuration, Spring boot 2.2.5.
+This is a base REST API Orchestrator created as a usociety project to build any particular REST manager. The module is built with the convention over configuration, Spring boot 2.2.5.
 
 
 Currenty use:

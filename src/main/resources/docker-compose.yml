@@ -19,8 +19,8 @@ services:
       - "./data.sql:/docker-entrypoint-initdb.d/2-manager-data.sql"
 
       # Authentication schemas and data
-      - "../../../../authentication-api/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/3-authentication-schema.sql"
-      - "../../../../authentication-api/src/main/resources/data.sql:/docker-entrypoint-initdb.d/4-authentication-data.sql"
+      - "../../../../u-society-auth-api/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/3-authentication-schema.sql"
+      - "../../../../u-society-auth-api/src/main/resources/data.sql:/docker-entrypoint-initdb.d/4-authentication-data.sql"
 
 networks: 
   default:
