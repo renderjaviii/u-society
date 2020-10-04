@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
+import usociety.manager.domain.service.aws.s3.S3Service;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.email.MailService;
@@ -54,24 +56,30 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final ObjectMapper objectMapper;
     private final UserService userService;
     private final MailService mailService;
+    private final S3Service s3Service;
 
     @Autowired
     public GroupServiceImpl(UserGroupRepository userGroupRepository,
                             CategoryService categoryService,
                             GroupRepository groupRepository,
-                            UserService userService, MailService mailService) {
+                            UserService userService,
+                            MailService mailService,
+                            S3Service s3Service) {
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
         this.userService = userService;
         this.mailService = mailService;
+        this.s3Service = s3Service;
         objectMapper = new ObjectMapper();
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GroupApi create(String username, CreateGroupRequest request)
-            throws JsonProcessingException, GenericException {
+    public GroupApi create(String username,
+                           CreateGroupRequest request,
+                           MultipartFile photo)
+            throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findByName(request.getName());
         if (optionalGroup.isPresent()) {
             throw new GenericException(String.format("Group with name: %s already exists.", request.getName()),
@@ -79,24 +87,30 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
 
         Category category = categoryService.get(request.getCategoryId());
+        String photoUrl = s3Service.upload(photo);
 
-        Group savedGroup = groupRepository.save(Group.newBuilder()
-                .objectives(objectMapper.writeValueAsString(request.getObjectives()))
-                .rules(objectMapper.writeValueAsString(request.getRules()))
-                .category(category)
-                .description(request.getDescription())
-                .photo(request.getPhoto())
-                .name(request.getName())
-                .build());
+        Group savedGroup;
+        try {
+            savedGroup = groupRepository.save(Group.newBuilder()
+                    .objectives(objectMapper.writeValueAsString(request.getObjectives()))
+                    .rules(objectMapper.writeValueAsString(request.getRules()))
+                    .category(category)
+                    .description(request.getDescription())
+                    .photo(photoUrl)
+                    .name(request.getName())
+                    .build());
 
-        userGroupRepository.save(UserGroup.newBuilder()
-                .group(savedGroup)
-                .isAdmin(TRUE)
-                .role(ADMINISTRATOR_ROLE)
-                .status(UserGroupStatusEnum.ACTIVE.getCode())
-                .userId(userService.get(username).getId())
-                .build());
-
+            userGroupRepository.save(UserGroup.newBuilder()
+                    .group(savedGroup)
+                    .isAdmin(TRUE)
+                    .role(ADMINISTRATOR_ROLE)
+                    .status(UserGroupStatusEnum.ACTIVE.getCode())
+                    .userId(userService.get(username).getId())
+                    .build());
+        } catch (Exception ex) {
+            s3Service.delete(photoUrl);
+            throw new GenericException("Error creating group.", CREATING_GROUP_ERROR_CODE);
+        }
         return Converter.group(savedGroup);
     }
 

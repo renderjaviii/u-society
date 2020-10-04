@@ -17,8 +17,6 @@ public class CreateGroupRequest {
     private String description;
     @NotNull
     private Long categoryId;
-    @NotNull
-    private String photo;
 
     private String[] objectives;
     private String[] rules;
@@ -30,7 +28,6 @@ public class CreateGroupRequest {
     private CreateGroupRequest(Builder builder) {
         name = builder.name;
         description = builder.description;
-        photo = builder.photo;
         objectives = builder.objectives;
         rules = builder.rules;
         categoryId = builder.categoryId;
@@ -46,10 +43,6 @@ public class CreateGroupRequest {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getPhoto() {
-        return photo;
     }
 
     public String[] getObjectives() {
@@ -68,7 +61,6 @@ public class CreateGroupRequest {
 
         private String name;
         private String description;
-        private String photo;
         private String[] objectives;
         private String[] rules;
         private Long categoryId;
@@ -83,11 +75,6 @@ public class CreateGroupRequest {
 
         public Builder description(String description) {
             this.description = description;
-            return this;
-        }
-
-        public Builder photo(String photo) {
-            this.photo = photo;
             return this;
         }
 

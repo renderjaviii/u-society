@@ -2,7 +2,6 @@ package usociety.manager.app.rest.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +31,6 @@ public class CreateUserRequest {
 
     @ApiModelProperty(notes = "Photo")
     @JsonProperty(value = "photo")
-    @NotNull
     private String photo;
 
     @ApiModelProperty(notes = "Password", required = true)
@@ -83,6 +81,10 @@ public class CreateUserRequest {
 
     public String getOtpCode() {
         return otpCode;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public static final class Builder {

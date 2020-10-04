@@ -2,6 +2,8 @@ package usociety.manager.domain.service.user;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
@@ -11,7 +13,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface UserService {
 
-    UserApi create(CreateUserRequest request) throws GenericException;
+    UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException;
 
     void verify(String username, String email) throws GenericException;
 

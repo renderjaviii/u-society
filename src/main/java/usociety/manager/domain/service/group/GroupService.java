@@ -2,6 +2,8 @@ package usociety.manager.domain.service.group;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import usociety.manager.app.api.GroupApi;
@@ -14,7 +16,7 @@ import usociety.manager.domain.model.Group;
 
 public interface GroupService {
 
-    GroupApi create(String username, CreateGroupRequest request) throws JsonProcessingException, GenericException;
+    GroupApi create(String username, CreateGroupRequest request, MultipartFile photo) throws GenericException;
 
     GetGroupResponse get(Long id, String username) throws GenericException;
 

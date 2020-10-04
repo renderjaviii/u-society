@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -50,11 +52,12 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateGroupRequest request)
-            throws JsonProcessingException, GenericException {
-        return new ResponseEntity(groupService.create(getUser(), request), CREATED);
+    public ResponseEntity<GroupApi> create(@Valid @RequestPart("group") CreateGroupRequest request,
+                                           @RequestPart("photo") MultipartFile photo)
+            throws GenericException {
+        return new ResponseEntity(groupService.create(getUser(), request, photo), CREATED);
     }
 
     @ApiOperation(value = "Get.")

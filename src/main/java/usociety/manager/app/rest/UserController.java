@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -52,10 +54,12 @@ public class UserController extends CommonController {
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserApi> create(@Valid @RequestBody final CreateUserRequest request)
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserApi> create(@Valid @RequestPart("user") CreateUserRequest request,
+                                          @RequestPart("photo") MultipartFile photo)
             throws GenericException {
-        return new ResponseEntity<>(userService.create(request), CREATED);
+        return new ResponseEntity<>(userService.create(request, photo), CREATED);
     }
 
     @ApiOperation(value = "Verify user data and send otp.")

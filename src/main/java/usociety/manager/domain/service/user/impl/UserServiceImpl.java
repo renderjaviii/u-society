@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.app.api.TokenApi;
@@ -19,6 +20,7 @@ import usociety.manager.domain.exception.WebException;
 import usociety.manager.domain.provider.authentication.AuthenticationConnector;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
+import usociety.manager.domain.service.aws.s3.S3Service;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;
@@ -31,23 +33,36 @@ public class UserServiceImpl implements UserService {
     private final UserConnector userConnector;
     private final MailService mailService;
     private final OtpService otpService;
+    private final S3Service s3Service;
 
     @Autowired
     public UserServiceImpl(AuthenticationConnector authenticationConnector,
                            UserConnector userConnector,
                            MailService mailService,
-                           OtpService otpService) {
+                           OtpService otpService,
+                           S3Service s3Service) {
         this.authenticationConnector = authenticationConnector;
         this.userConnector = userConnector;
         this.mailService = mailService;
         this.otpService = otpService;
+        this.s3Service = s3Service;
     }
 
     @Override
-    public UserApi create(CreateUserRequest request) throws GenericException {
-        otpService.validate(request.getUsername(), request.getOtpCode());
+    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
+        //otpService.validate(request.getUsername(), request.getOtpCode());
         validateUser(request.getUsername(), request.getEmail());
-        UserDTO user = userConnector.create(request);
+
+        String photoUrl = s3Service.upload(photo);
+        request.setPhoto(photoUrl);
+
+        UserDTO user;
+        try {
+            user = userConnector.create(request);
+        } catch (Exception ex) {
+            s3Service.delete(photoUrl);
+            throw new GenericException("User couldn't be created.", "USER_NOT_CREATED_ERROR");
+        }
         return Converter.user(user);
     }
 
