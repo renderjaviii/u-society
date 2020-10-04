@@ -22,9 +22,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private String signingKey;
 
     private static final RequestMatcher ENDPOINTS_WITHOUT_AUTH = new OrRequestMatcher(
-            new AntPathRequestMatcher("/services/users/login/"),
-            new AntPathRequestMatcher("/services/**/verifyEmail/"),
-            new AntPathRequestMatcher("/services/users/"));
+            new AntPathRequestMatcher("/services/users/"),
+            new AntPathRequestMatcher("/services/users/**/verify"),
+            new AntPathRequestMatcher("/services/categories/**"),
+            new AntPathRequestMatcher("/services/users/login"));
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -34,7 +35,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and().csrf().disable()
                 .authorizeRequests()
                 .requestMatchers(ENDPOINTS_WITHOUT_AUTH).permitAll()
-                .anyRequest().authenticated();
+                .and()
+                .authorizeRequests()
+                .requestMatchers(new AntPathRequestMatcher("/services/**")).authenticated();
     }
 
     @Bean
@@ -50,4 +53,3 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
 
 }
-

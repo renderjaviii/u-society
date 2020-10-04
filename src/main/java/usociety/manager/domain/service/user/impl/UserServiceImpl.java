@@ -19,14 +19,13 @@ import usociety.manager.domain.exception.WebException;
 import usociety.manager.domain.provider.authentication.AuthenticationConnector;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
-import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;
 import usociety.manager.domain.util.mapper.Constant;
 
 @Service
-public class UserServiceImpl extends CommonServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     private final AuthenticationConnector authenticationConnector;
     private final UserConnector userConnector;
@@ -46,17 +45,27 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
 
     @Override
     public UserApi create(CreateUserRequest request) throws GenericException {
-        validateUser(request);
-
+        otpService.validate(request.getUsername(), request.getOtpCode());
+        validateUser(request.getUsername(), request.getEmail());
         UserDTO user = userConnector.create(request);
-        OtpApi userOtp = otpService.create(user.getUsername());
-        mailService.sendOtp(request.getEmail(), userOtp.getOtpCode());
         return Converter.user(user);
+    }
+
+    @Override
+    public void verify(String username, String email) throws GenericException {
+        validateUser(username, email);
+        OtpApi userOtp = otpService.create(username, email);
+        mailService.sendOtp(email, userOtp.getOtpCode());
     }
 
     @Override
     public UserApi get(String username) {
         return Converter.user(userConnector.get(username));
+    }
+
+    @Override
+    public UserApi getById(Long id) {
+        return Converter.user(userConnector.get(id, null, null));
     }
 
     @Override
@@ -91,10 +100,9 @@ public class UserServiceImpl extends CommonServiceImpl implements UserService {
         userConnector.changePassword(username, request);
     }
 
-    private void validateUser(CreateUserRequest request) throws GenericException {
+    private void validateUser(String username, String email) throws GenericException {
         try {
-            UserDTO user = userConnector.get(request.getUsername(), request.getDocumentNumber(),
-                    request.getEmail(), request.getPhoneNumber());
+            UserDTO user = userConnector.get(null, username, email);
             if (user != null) {
                 throw new GenericException("User already exists.", "USER_ALREADY_EXISTS");
             }

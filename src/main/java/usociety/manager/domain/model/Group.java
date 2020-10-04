@@ -2,9 +2,9 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -20,7 +20,7 @@ public class Group {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "description")
@@ -32,7 +32,10 @@ public class Group {
     @Column(name = "objectives")
     private String objectives;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Column(name = "rules")
+    private String rules;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
@@ -46,6 +49,7 @@ public class Group {
         description = builder.description;
         photo = builder.photo;
         objectives = builder.objectives;
+        rules = builder.rules;
         category = builder.category;
     }
 
@@ -77,6 +81,18 @@ public class Group {
         return category;
     }
 
+    public String getRules() {
+        return rules;
+    }
+
+    public void setRules(String rules) {
+        this.rules = rules;
+    }
+
+    public void setObjectives(String objectives) {
+        this.objectives = objectives;
+    }
+
     public static final class Builder {
 
         private Long id;
@@ -84,6 +100,7 @@ public class Group {
         private String description;
         private String photo;
         private String objectives;
+        private String rules;
         private Category category;
 
         private Builder() {
@@ -112,6 +129,11 @@ public class Group {
 
         public Builder objectives(String objectives) {
             this.objectives = objectives;
+            return this;
+        }
+
+        public Builder rules(String rules) {
+            this.rules = rules;
             return this;
         }
 

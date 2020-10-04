@@ -31,8 +31,11 @@ public class Otp {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Column(name = "owner_username", nullable = false)
-    private String ownerUsername;
+    @Column(name = "username_owner")
+    private String usernameOwner;
+
+    @Column(name = "email_owner")
+    private String emailOwner;
 
     public Otp() {
         super();
@@ -44,39 +47,24 @@ public class Otp {
         createdAt = builder.createdAt;
         expiresAt = builder.expiresAt;
         active = builder.active;
-        ownerUsername = builder.ownerUsername;
+        usernameOwner = builder.ownerUsername;
+        emailOwner = builder.emailOwner;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getOtpCode() {
         return otpCode;
-    }
-
-    public void setOtpCode(String otpCode) {
-        this.otpCode = otpCode;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getExpiresAt() {
         return expiresAt;
-    }
-
-    public void setExpiresAt(LocalDateTime expiresAt) {
-        this.expiresAt = expiresAt;
     }
 
     public boolean isActive() {
@@ -87,12 +75,12 @@ public class Otp {
         this.active = active;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public String getUsernameOwner() {
+        return usernameOwner;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public String getEmailOwner() {
+        return emailOwner;
     }
 
     public static Builder newBuilder() {
@@ -107,6 +95,7 @@ public class Otp {
         private LocalDateTime expiresAt;
         private boolean active;
         private String ownerUsername;
+        private String emailOwner;
 
         private Builder() {
             super();
@@ -139,6 +128,11 @@ public class Otp {
 
         public Builder ownerUsername(String ownerUsername) {
             this.ownerUsername = ownerUsername;
+            return this;
+        }
+
+        public Builder emailOwner(String emailOwner) {
+            this.emailOwner = emailOwner;
             return this;
         }
 

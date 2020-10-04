@@ -13,7 +13,7 @@ public interface UserConnector extends AbstractConnector {
 
     UserDTO get(String username);
 
-    UserDTO get(String username, String documentNumber, String email, String phoneNumber);
+    UserDTO get(Long id, String username, String email);
 
     void enableAccount(String username);
 

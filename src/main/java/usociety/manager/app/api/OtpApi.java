@@ -23,7 +23,9 @@ public class OtpApi extends BaseObject {
     @JsonProperty
     private boolean active;
     @JsonProperty
-    private String ownerUsername;
+    private String usernameOwner;
+    @JsonProperty
+    private String userEmailOwner;
 
     public OtpApi() {
         super();
@@ -35,55 +37,37 @@ public class OtpApi extends BaseObject {
         createdAt = builder.createdAt;
         expiresAt = builder.expiresAt;
         active = builder.active;
-        ownerUsername = builder.ownerUsername;
+        usernameOwner = builder.usernameOwner;
+
+        userEmailOwner = builder.userEmailOwner;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getOtpCode() {
         return otpCode;
-    }
-
-    public void setOtpCode(String otpCode) {
-        this.otpCode = otpCode;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getExpiresAt() {
         return expiresAt;
-    }
-
-    public void setExpiresAt(LocalDateTime expiresAt) {
-        this.expiresAt = expiresAt;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public String getUserEmailOwner() {
+        return userEmailOwner;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
-    }
-
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public String getUsernameOwner() {
+        return usernameOwner;
     }
 
     @Override
@@ -107,7 +91,8 @@ public class OtpApi extends BaseObject {
         private LocalDateTime createdAt;
         private LocalDateTime expiresAt;
         private boolean active;
-        private String ownerUsername;
+        private String usernameOwner;
+        private String userEmailOwner;
 
         private Builder() {
             super();
@@ -138,8 +123,13 @@ public class OtpApi extends BaseObject {
             return this;
         }
 
-        public Builder ownerUsername(String ownerUsername) {
-            this.ownerUsername = ownerUsername;
+        public Builder usernameOwner(String usernameOwner) {
+            this.usernameOwner = usernameOwner;
+            return this;
+        }
+
+        public Builder userEmailOwner(String userEmailOwner) {
+            this.userEmailOwner = userEmailOwner;
             return this;
         }
 

@@ -40,13 +40,14 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
     }
 
     @Override
-    public OtpApi create(String username) {
+    public OtpApi create(String username, String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
                 .active(TRUE)
                 .createdAt(LocalDateTime.now(clock))
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))
-                .ownerUsername(username)
                 .otpCode(generateOtpCode())
+                .ownerUsername(username)
+                .emailOwner(email)
                 .build());
 
         LOGGER.debug("Created OTP {} for username = {}.", otp.getOtpCode(), username);
@@ -63,7 +64,7 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
 
     @Override
     public void validate(String username, String otpCode) throws GenericException {
-        Optional<Otp> optionalOTP = otpRepository.findByOwnerUsernameAndOtpCode(username, otpCode);
+        Optional<Otp> optionalOTP = otpRepository.findByUsernameOwnerAndOtpCode(username, otpCode);
         if (optionalOTP.isPresent()) {
             Otp otp = optionalOTP.get();
 

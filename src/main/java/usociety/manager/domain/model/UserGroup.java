@@ -2,17 +2,18 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "user_group")
+@Table(name = "user_group", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
 public class UserGroup {
 
     @Id
@@ -23,13 +24,13 @@ public class UserGroup {
     @Column(name = "status", nullable = false)
     private int status;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role")
     private String role;
 
     @Column(name = "is_admin")
     private boolean isAdmin;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
@@ -57,14 +58,6 @@ public class UserGroup {
         return id;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }
@@ -75,6 +68,22 @@ public class UserGroup {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public static final class Builder {

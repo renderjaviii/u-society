@@ -5,14 +5,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "react")
+@Table(name = "react", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
 public class React {
 
     @Id
@@ -20,7 +22,7 @@ public class React {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 
@@ -59,6 +61,10 @@ public class React {
 
     public int getValue() {
         return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
     public static final class Builder {

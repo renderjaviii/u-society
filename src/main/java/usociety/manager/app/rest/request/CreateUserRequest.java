@@ -1,58 +1,28 @@
 package usociety.manager.app.rest.request;
 
-import java.time.LocalDate;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import usociety.manager.app.util.validator.PasswordCreationConstraint;
 
 @ApiModel(value = "Request to create user")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserRequest {
 
+    @NotBlank
+    @ApiModelProperty(notes = "Name", required = true)
+    @JsonProperty(value = "name")
+    private String name;
+
     @ApiModelProperty(notes = "Username", required = true)
     @NotBlank
     @JsonProperty(value = "username")
     private String username;
-
-    @ApiModelProperty(notes = "Password", required = true)
-    @PasswordCreationConstraint
-    @JsonProperty(value = "password")
-    private String password;
-
-    @ApiModelProperty(notes = "First name", required = true)
-    @JsonProperty(value = "firstName")
-    private String firstName;
-
-    @ApiModelProperty(notes = "Last name", required = true)
-    @JsonProperty(value = "lastName")
-    private String lastName;
-
-    @ApiModelProperty(notes = "Birth Date", required = true)
-    @JsonProperty(value = "birthDate")
-    private LocalDate birthDate;
-
-    @Pattern(regexp = "[FM]")
-    @ApiModelProperty(notes = "Gender", required = true)
-    @JsonProperty(value = "gender")
-    private String gender;
-
-    @ApiModelProperty(notes = "Phone Number", required = true)
-    @JsonProperty(value = "phoneNumber")
-    private String phoneNumber;
-
-    @ApiModelProperty(notes = "Document Number", required = true)
-    @NotBlank
-    @JsonProperty(value = "documentNumber")
-    private String documentNumber;
 
     @ApiModelProperty(notes = "Email", required = true)
     @Email
@@ -60,126 +30,81 @@ public class CreateUserRequest {
     @JsonProperty(value = "email")
     private String email;
 
-    @ApiModelProperty(notes = "User role", required = true)
+    @ApiModelProperty(notes = "Photo")
+    @JsonProperty(value = "photo")
     @NotNull
-    @JsonProperty(value = "userRole")
-    private String userRole;
+    private String photo;
+
+    @ApiModelProperty(notes = "Password", required = true)
+    @NotBlank
+    @JsonProperty(value = "password")
+    private String password;
+
+    @ApiModelProperty(notes = "Otp code", required = true)
+    @JsonProperty(value = "otpCode")
+    private String otpCode;
 
     public CreateUserRequest() {
         super();
     }
 
     private CreateUserRequest(Builder builder) {
+        name = builder.name;
         username = builder.username;
-        password = builder.password;
-        firstName = builder.firstName;
-        lastName = builder.lastName;
-        birthDate = builder.birthDate;
-        gender = builder.gender;
-        phoneNumber = builder.phoneNumber;
-        documentNumber = builder.documentNumber;
         email = builder.email;
-        userRole = builder.userRole;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getDocumentNumber() {
-        return documentNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getUserRole() {
-        return userRole;
+        photo = builder.photo;
+        password = builder.password;
+        otpCode = builder.otpCode;
     }
 
     public static Builder newBuilder() {
         return new Builder();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getOtpCode() {
+        return otpCode;
+    }
+
     public static final class Builder {
 
+        private String name;
         private String username;
-        private String password;
-        private String firstName;
-        private String lastName;
-        private LocalDate birthDate;
-        private String gender;
-        private String phoneNumber;
-        private String documentNumber;
         private String email;
-        private String userRole;
+        private String photo;
+        private String password;
+        private String otpCode;
 
         private Builder() {
             super();
         }
 
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
         public Builder username(String username) {
             this.username = username;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public Builder firstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public Builder lastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-
-        public Builder birthDate(LocalDate birthDate) {
-            this.birthDate = birthDate;
-            return this;
-        }
-
-        public Builder gender(String gender) {
-            this.gender = gender;
-            return this;
-        }
-
-        public Builder phoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-            return this;
-        }
-
-        public Builder documentNumber(String documentNumber) {
-            this.documentNumber = documentNumber;
             return this;
         }
 
@@ -188,8 +113,18 @@ public class CreateUserRequest {
             return this;
         }
 
-        public Builder userRole(String userRole) {
-            this.userRole = userRole;
+        public Builder photo(String photo) {
+            this.photo = photo;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder otpCode(String otpCode) {
+            this.otpCode = otpCode;
             return this;
         }
 

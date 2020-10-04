@@ -58,6 +58,62 @@ public class Application {
                 .pathMapping("/");
     }
 
+    @Bean
+    public Docket swaggerCategory() {
+        final String title = "Category";
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(title)
+                .select()
+                .paths(regex("/services/categories/*.*"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .build()
+                .apiInfo(buildApiInfo(title))
+                .pathMapping("/");
+    }
+
+    @Bean
+    public Docket swaggerGroup() {
+        final String title = "Group";
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(title)
+                .select()
+                .paths(regex("/services/groups/*.*"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .build()
+                .apiInfo(buildApiInfo(title))
+                .pathMapping("/");
+    }
+
+    @Bean
+    public Docket swaggerMessage() {
+        final String title = "Message";
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(title)
+                .select()
+                .paths(regex("/services/messages/*.*"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .build()
+                .apiInfo(buildApiInfo(title))
+                .pathMapping("/");
+    }
+
+    @Bean
+    public Docket swaggerPost() {
+        final String title = "Post";
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(title)
+                .select()
+                .paths(regex("/services/posts/*.*"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .build()
+                .apiInfo(buildApiInfo(title))
+                .pathMapping("/");
+    }
+
     private ApiInfo buildApiInfo(String title) {
         return new ApiInfoBuilder()
                 .title(String.format("Rest Manager Base - %s.", title))

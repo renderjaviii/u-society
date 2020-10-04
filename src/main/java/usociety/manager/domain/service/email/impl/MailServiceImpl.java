@@ -18,11 +18,20 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    public void send(String email, String content) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+        msg.setSubject("U Society.");
+        msg.setText(content);
+        javaMailSender.send(msg);
+    }
+
+    @Override
     public void sendOtp(String email, String otpCode) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
-        msg.setSubject("Spring Boot - Please verify your account.");
-        msg.setText(String.format("This is the verification code: %s.", otpCode));
+        msg.setSubject("U Society - Please verify your account.");
+        msg.setText(String.format("This's your verification code: %s.", otpCode));
         javaMailSender.send(msg);
     }
 

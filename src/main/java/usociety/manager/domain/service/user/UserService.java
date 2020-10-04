@@ -8,13 +8,16 @@ import usociety.manager.app.rest.request.CreateUserRequest;
 import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
-import usociety.manager.domain.service.common.CommonService;
 
-public interface UserService extends CommonService {
+public interface UserService {
 
     UserApi create(CreateUserRequest request) throws GenericException;
 
+    void verify(String username, String email) throws GenericException;
+
     UserApi get(String username) throws GenericException;
+
+    UserApi getById(Long id) throws GenericException;
 
     void enableAccount(String username, String otpCode) throws GenericException;
 

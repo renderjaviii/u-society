@@ -1,6 +1,9 @@
 package usociety.manager.domain.provider.user.impl;
 
+import static org.apache.logging.log4j.util.Strings.EMPTY;
+
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
@@ -17,6 +20,7 @@ import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.service.web.impl.AbstractConnectorImpl;
 
 @Component
+@SuppressWarnings("java:S1192")
 public class UserConnectorImpl extends AbstractConnectorImpl implements UserConnector {
 
     @Value("${web.authentication.url}")
@@ -46,15 +50,14 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
     }
 
     @Override
-    public UserDTO get(String username, String documentNumber, String email, String phoneNumber) {
+    public UserDTO get(Long id, String username, String email) {
         MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
-        qParams.add("documentNumber", documentNumber);
-        qParams.add("phoneNumber", phoneNumber);
+
+        qParams.add("id", Objects.isNull(id) ? EMPTY : id.toString());
         qParams.add("username", username);
         qParams.add("email", email);
 
         return get(uriBuilder().path(path)
-                        .pathSegment("findByFilters")
                         .queryParams(qParams)
                         .build(),
                 UserDTO.class);
@@ -64,7 +67,7 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
     public void enableAccount(String username) {
         post(uriBuilder().path(path)
                         .pathSegment("{username}")
-                        .pathSegment("verifyEmail")
+                        .pathSegment("verify-email")
                         .build(username),
                 Void.class);
     }
@@ -80,7 +83,7 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
         return getWebClient().get()
                 .uri(uriBuilder()
                         .path(path)
-                        .pathSegment("getAll")
+                        .pathSegment("all")
                         .build().toString())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<UserDTO>>() {
@@ -92,19 +95,10 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
     public void changePassword(String username, ChangePasswordRequest body) {
         patch(uriBuilder().path(path)
                         .pathSegment("{username}")
-                        .pathSegment("changePassword")
+                        .pathSegment("change-password")
                         .build(username),
                 body,
                 Void.class);
     }
 
-    /*MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
-        qParams.add("description", "1234");
-        Map<String, String> pParams = new HashMap<>();
-        pParams.put("id", "1");
-        get(uriBuilder()
-                        .path("/test/{id}")
-                        .queryParams(qParams)
-                        .build(pParams),
-                UserDTO.class);*/
 }
