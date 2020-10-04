@@ -121,7 +121,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GroupApi>> jointToGroup(@PathVariable("id") Long id)
+    public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException {
         groupService.join(id, getUser());
         return ResponseEntity.ok().build();
