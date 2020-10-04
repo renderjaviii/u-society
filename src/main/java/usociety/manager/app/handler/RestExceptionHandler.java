@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,10 +50,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatus status,
                                                                   WebRequest request) {
         StringJoiner s = new StringJoiner(", ");
-        ex.getBindingResult().getAllErrors()
-                .forEach(error -> s
-                        .add(String.format(BASIC_FORMAT, ((FieldError) error).getField(),
-                                error.getDefaultMessage())));
+        ex.getBindingResult()
+                .getAllErrors()
+                .forEach(error -> getFieldErrorMessage(s, error));
 
         String errorMessage = String.format(BASIC_FORMAT, "Fields validation failed:", s.toString());
         return new ResponseEntity<>(new ApiError(errorMessage, BAD_REQUEST), HttpStatus.BAD_REQUEST);
@@ -105,9 +105,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.FORBIDDEN);
     }
 
-  /*  @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGlobal(Exception ex) {
-        return new ResponseEntity<>(new ApiError(ex.getMessage(), "INTERNAL_SERVER_ERROR"), INTERNAL_SERVER_ERROR);
+    private StringJoiner getFieldErrorMessage(StringJoiner joiner, ObjectError error) {
+        if (error instanceof FieldError) {
+            String message = String.format(BASIC_FORMAT, ((FieldError) error).getField(), error.getDefaultMessage());
+            return joiner.add(message);
+        }
+        return joiner.add(error.getDefaultMessage());
     }
-*/
+
 }

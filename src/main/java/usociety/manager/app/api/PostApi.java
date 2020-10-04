@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,6 +17,7 @@ import usociety.manager.domain.service.post.dto.PostAdditionalData;
 @ApiModel("Post")
 @PostCreationConstraint
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(value = "public")
 public class PostApi {
 
     @JsonProperty

@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PostCreationConstraint {
 
-    String message() default "If post type is survey the options and the expirationDate are mandatory.";
+    String message() default "If post type is survey the options and the expirationDate are mandatory and must be private.";
 
     Class<?>[] groups() default {};
 

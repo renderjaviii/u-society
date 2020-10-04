@@ -83,4 +83,16 @@ public class PostController extends CommonController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "Vote in survey.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Survey vote saved."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PostMapping(path = "/{postId}/survey", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> interactWithSurvey(@PathVariable("postId") Long postId,
+                                                   @NotNull @RequestParam("vote") Integer vote)
+            throws GenericException {
+        postService.interactWithSurvey(getUser(), postId, vote);
+        return ResponseEntity.ok().build();
+    }
+
 }

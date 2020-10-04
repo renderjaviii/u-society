@@ -11,8 +11,6 @@ import usociety.manager.domain.model.Group;
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
-    Optional<Group> findById(Long id);
-
     Optional<Group> findByName(String name);
 
     List<Group> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name);

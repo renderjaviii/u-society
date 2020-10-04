@@ -18,4 +18,6 @@ public interface PostService {
 
     void comment(String username, Long postId, CommentPostRequest request) throws GenericException;
 
+    void interactWithSurvey(String username, Long postId, Integer vote) throws GenericException;
+
 }

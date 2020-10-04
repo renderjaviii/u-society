@@ -17,7 +17,8 @@ public class PostCreationValidator implements ConstraintValidator<PostCreationCo
         if (PostTypeEnum.SURVEY.getCode() == content.getType()) {
             return Objects.nonNull(content.getOptions())
                     && !content.getOptions().isEmpty()
-                    && Objects.nonNull(post.getExpirationDate());
+                    && Objects.nonNull(post.getExpirationDate())
+                    && !post.isPublic();
         }
         return true;
     }

@@ -11,9 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "survey")
+@Table(name = "survey", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
 public class Survey {
 
     @Id
@@ -33,6 +34,73 @@ public class Survey {
 
     public Survey() {
         super();
+    }
+
+    private Survey(Builder builder) {
+        id = builder.id;
+        vote = builder.vote;
+        post = builder.post;
+        userId = builder.userId;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getVote() {
+        return vote;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setVote(Integer vote) {
+        this.vote = vote;
+    }
+
+    public static final class Builder {
+
+        private Long id;
+        private int vote;
+        private Post post;
+        private Long userId;
+
+        private Builder() {
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder vote(int vote) {
+            this.vote = vote;
+            return this;
+        }
+
+        public Builder post(Post post) {
+            this.post = post;
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Survey build() {
+            return new Survey(this);
+        }
+
     }
 
 }
