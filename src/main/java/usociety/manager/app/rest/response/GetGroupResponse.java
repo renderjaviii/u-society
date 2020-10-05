@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
 
-@ApiModel(value = "Get Group Response")
+@ApiModel(value = "Get group response.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetGroupResponse {
 

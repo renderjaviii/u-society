@@ -21,9 +21,6 @@ public class PostAdditionalData {
     @JsonProperty
     private String value;
 
-    @JsonProperty
-    private String description;
-
     @Valid
     @JsonProperty
     private List<SurveyOption> options;
@@ -35,7 +32,6 @@ public class PostAdditionalData {
     private PostAdditionalData(Builder builder) {
         type = builder.type;
         value = builder.value;
-        description = builder.description;
         options = builder.options;
     }
 
@@ -55,14 +51,6 @@ public class PostAdditionalData {
         this.value = value;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public List<SurveyOption> getOptions() {
         return options;
     }
@@ -72,7 +60,6 @@ public class PostAdditionalData {
         private PostTypeEnum type;
         private String value;
         private List<SurveyOption> options;
-        private String description;
 
         private Builder() {
         }
@@ -84,11 +71,6 @@ public class PostAdditionalData {
 
         public Builder value(String value) {
             this.value = value;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = description;
             return this;
         }
 

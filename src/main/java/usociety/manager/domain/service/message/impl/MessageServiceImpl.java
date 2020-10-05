@@ -48,7 +48,8 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
         validateIfUserIsMember(username, request.getGroupId(), SENDING_GROUP_MESSAGE_ERROR_CODE);
 
         if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
-            throw new GenericException("The content is required for TEXT type.", SENDING_GROUP_MESSAGE_ERROR_CODE);
+            throw new GenericException("El content es requerido para mensajes de tipo texto.",
+                    SENDING_GROUP_MESSAGE_ERROR_CODE);
         }
         processContent(request, image);
 

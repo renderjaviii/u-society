@@ -2,11 +2,13 @@ package usociety.manager.app.rest.request;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "Request to update group.")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateGroupRequest {
 
     @NotNull

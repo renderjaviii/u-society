@@ -4,21 +4,30 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 
-@ApiModel(value = "Create Group Request")
+@ApiModel(value = "Create group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateGroupRequest {
 
     @NotEmpty
+    @JsonProperty
     private String name;
+
     @NotNull
+    @JsonProperty
     private String description;
+
     @NotNull
+    @JsonProperty
     private Long categoryId;
 
+    @JsonProperty
     private String[] objectives;
+
+    @JsonProperty
     private String[] rules;
 
     public CreateGroupRequest() {

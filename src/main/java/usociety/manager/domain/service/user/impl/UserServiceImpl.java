@@ -3,6 +3,7 @@ package usociety.manager.domain.service.user.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
-        //otpService.validate(request.getUsername(), request.getOtpCode());
+        otpService.validate(request.getUsername(), request.getOtpCode());
         validateUser(request.getUsername(), request.getEmail());
 
         String photoUrl = s3Service.upload(photo);
@@ -61,8 +62,11 @@ public class UserServiceImpl implements UserService {
             user = userConnector.create(request);
         } catch (Exception ex) {
             s3Service.delete(photoUrl);
-            throw new GenericException("User couldn't be created.", "USER_NOT_CREATED_ERROR");
+            throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
+
+        String content = String.format("¡Hola %s!, bienvenido a U Society.", StringUtils.capitalize(request.getName()));
+        mailService.send(request.getEmail(), content);
         return Converter.user(user);
     }
 
@@ -119,7 +123,8 @@ public class UserServiceImpl implements UserService {
         try {
             UserDTO user = userConnector.get(null, username, email);
             if (user != null) {
-                throw new GenericException("User already exists.", "USER_ALREADY_EXISTS");
+                throw new GenericException("Usuario ya registrado, por favor verifique el alias y el correo.",
+                        "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {
             if (!Constant.USER_NOT_FOUND.equals(ex.getErrorCode())) {

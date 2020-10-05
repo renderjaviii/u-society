@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 
-@ApiModel(value = "Create User Response")
+@ApiModel(value = "Create user response.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserResponse {
 

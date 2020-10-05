@@ -15,10 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PostCreationConstraint {
 
-    String message() default
-            "If post type is survey the options and the expirationDate are mandatory and must be private." +
-                    " If post type is different to image the content.value is mandatory." +
-                    " The post description is only for post of IMAGE type.";
+    String message() default "";
 
     Class<?>[] groups() default {};
 

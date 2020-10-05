@@ -1,13 +1,13 @@
 package usociety.manager.domain.service.post.impl;
 
+import static java.lang.Boolean.FALSE;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,15 +38,14 @@ import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
-import usociety.manager.domain.service.user.UserService;
 
 @Service
 public class PostServiceImpl extends CommonServiceImpl implements PostService {
 
-    private static final String CREATING_POST_ERROR_CODE = "ERROR_CREATING_POST";
-    private static final String GETTING_POST_ERROR_CODE = "ERROR_GETTING_POSTS";
     private static final String REACTING_POST_ERROR_CODE = "ERROR_REACTING_TO_POST";
     private static final String VOTING_SURVEY_ERROR_CODE = "ERROR_VOTING_INTO_POST";
+    private static final String CREATING_POST_ERROR_CODE = "ERROR_CREATING_POST";
+    private static final String GETTING_POST_ERROR_CODE = "POST_NOT_FOUND";
 
     private final UserGroupRepository userGroupRepository;
     private final CommentRepository commentRepository;
@@ -55,7 +54,6 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final GroupService groupService;
     private final ObjectMapper objectMapper;
-    private final UserService userService;
     private final S3Service s3Service;
 
     @Autowired
@@ -65,7 +63,6 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                            ReactRepository reactRepository,
                            PostRepository postRepository,
                            GroupService groupService,
-                           UserService userService,
                            S3Service s3Service) {
         this.userGroupRepository = userGroupRepository;
         this.commentRepository = commentRepository;
@@ -73,7 +70,6 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         this.reactRepository = reactRepository;
         this.postRepository = postRepository;
         this.groupService = groupService;
-        this.userService = userService;
         this.s3Service = s3Service;
         objectMapper = new ObjectMapper();
     }
@@ -83,23 +79,20 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
             throws GenericException, JsonProcessingException {
         validateIfUserIsMember(username, request.getGroupId(), CREATING_POST_ERROR_CODE);
 
-        if (Objects.nonNull(image) && StringUtils.isNotEmpty(request.getContent().getValue())) {
-            throw new GenericException("If the post is an image mustn't have value content.", CREATING_POST_ERROR_CODE);
-        }
-
         processContent(request, image);
         return Converter.post(postRepository.save(Post.newBuilder()
                 .group(groupService.get(request.getGroupId()))
                 .creationDate(LocalDateTime.now(clock))
                 .expirationDate(request.getExpirationDate())
-                .isPublic(request.isPublic())
+                .isPublic(PostTypeEnum.SURVEY == request.getContent().getType() ? FALSE : request.isPublic())
                 .content(objectMapper.writeValueAsString(request.getContent()))
+                .description(request.getDescription())
                 .build()));
     }
 
     @Override
     public List<PostApi> getAll(String username, Long groupId) throws GenericException {
-        UserApi user = userService.get(username);
+        UserApi user = getUser(username);
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(groupId, user.getId());
         boolean isGroupMember = optionalUserGroup.isPresent();
 
@@ -129,7 +122,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     public void react(String username, Long postId, ReactTypeEnum react) throws GenericException {
         Post post = getPost(postId);
         validateIfUserIsMember(username, post.getGroup().getId(), REACTING_POST_ERROR_CODE);
-        UserApi user = userService.get(username);
+        UserApi user = getUser(username);
 
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(postId, user.getId());
         if (optionalReact.isPresent()) {
@@ -150,7 +143,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         Post post = getPost(postId);
         validateIfUserIsMember(username, post.getGroup().getId(), REACTING_POST_ERROR_CODE);
 
-        UserApi user = userService.get(username);
+        UserApi user = getUser(username);
         commentRepository.save(Comment.newBuilder()
                 .creationDate(LocalDateTime.now(clock))
                 .value(request.getComment())
@@ -167,13 +160,13 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
 
         PostApi postApi = Converter.post(post);
         if (PostTypeEnum.SURVEY != postApi.getContent().getType()) {
-            throw new GenericException("Post isn't a survey.", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("Post no es de tipo encuesta.", VOTING_SURVEY_ERROR_CODE);
         }
         if (vote >= postApi.getContent().getOptions().size()) {
-            throw new GenericException("Invalid vote.", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("Voto no válido.", VOTING_SURVEY_ERROR_CODE);
         }
 
-        UserApi user = userService.get(username);
+        UserApi user = getUser(username);
         Optional<Survey> optionalSurvey = surveyRepository.findByPostIdAndUserId(postId, user.getId());
         if (optionalSurvey.isPresent()) {
             Survey survey = optionalSurvey.get();

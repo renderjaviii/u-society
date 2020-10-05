@@ -10,6 +10,8 @@ import usociety.manager.domain.service.email.MailService;
 @Service
 public class MailServiceImpl implements MailService {
 
+    private static final String SIGN_IN_MESSAGE = "Este es tu código de verificación: %s. Ingrésalo en la página para continuar con el registro.";
+
     private final JavaMailSender javaMailSender;
 
     @Autowired
@@ -30,8 +32,8 @@ public class MailServiceImpl implements MailService {
     public void sendOtp(String email, String otpCode) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
-        msg.setSubject("U Society - Please verify your account.");
-        msg.setText(String.format("This's your verification code: %s.", otpCode));
+        msg.setSubject("Bienvenido a U Society - Verificación de cuenta.");
+        msg.setText(String.format(SIGN_IN_MESSAGE, otpCode));
         javaMailSender.send(msg);
     }
 

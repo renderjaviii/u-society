@@ -44,6 +44,9 @@ public class PostApi {
     @JsonProperty
     private List<CommentApi> comments;
 
+    @JsonProperty
+    private String description;
+
     public PostApi() {
         super();
     }
@@ -53,6 +56,7 @@ public class PostApi {
         expirationDate = builder.expirationDate;
         isPublic = builder.isPublic;
         content = builder.content;
+        description = builder.description;
         groupId = builder.groupId;
         reacts = builder.reacts;
         comments = builder.comments;
@@ -102,6 +106,14 @@ public class PostApi {
         this.comments = comments;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public static final class Builder {
 
         private Long id;
@@ -111,6 +123,7 @@ public class PostApi {
         private @NotNull Long groupId;
         private List<ReactApi> reacts;
         private List<CommentApi> comments;
+        private String description;
 
         private Builder() {
         }
@@ -130,13 +143,18 @@ public class PostApi {
             return this;
         }
 
-        public Builder content(@Valid @NotNull PostAdditionalData content) {
+        public Builder content(PostAdditionalData content) {
             this.content = content;
             return this;
         }
 
-        public Builder groupId(@NotNull Long groupId) {
+        public Builder groupId(Long groupId) {
             this.groupId = groupId;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
             return this;
         }
 

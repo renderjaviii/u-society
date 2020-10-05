@@ -35,6 +35,9 @@ public class Post {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
@@ -49,6 +52,7 @@ public class Post {
         expirationDate = builder.expirationDate;
         isPublic = builder.isPublic;
         content = builder.content;
+        description = builder.description;
         group = builder.group;
     }
 
@@ -80,6 +84,10 @@ public class Post {
         return group;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public static final class Builder {
 
         private Long id;
@@ -88,6 +96,7 @@ public class Post {
         private boolean isPublic;
         private String content;
         private Group group;
+        private String description;
 
         private Builder() {
             super();
@@ -115,6 +124,11 @@ public class Post {
 
         public Builder content(String content) {
             this.content = content;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
             return this;
         }
 

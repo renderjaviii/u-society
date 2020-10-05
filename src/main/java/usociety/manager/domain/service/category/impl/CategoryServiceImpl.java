@@ -36,8 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category get(Long id) throws GenericException {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (!optionalCategory.isPresent()) {
-            throw new GenericException(String.format("Category with id: %s no exists.", id),
-                    "ERROR_GETTING_CATEGORY");
+            throw new GenericException(String.format("Categoría con id: %s no existe.", id), "ERROR_GETTING_CATEGORY");
         }
         return optionalCategory.get();
     }
