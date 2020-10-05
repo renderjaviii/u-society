@@ -15,7 +15,6 @@ public class MessageApi {
     @JsonProperty
     private Long id;
 
-    @NotNull
     @JsonProperty
     private String content;
 
@@ -57,6 +56,10 @@ public class MessageApi {
 
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public MessageTypeEnum getType() {

@@ -5,20 +5,25 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("Comment")
 public class CommentApi {
 
     @JsonProperty
+    @ApiModelProperty("id")
     private Long id;
 
     @JsonProperty
+    @ApiModelProperty("User id")
     private Long userId;
 
     @JsonProperty
+    @ApiModelProperty(value = "value", example = "text")
     private String value;
 
     @JsonProperty
+    @ApiModelProperty("creationDate")
     private LocalDateTime creationDate;
 
     public CommentApi() {

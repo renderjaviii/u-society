@@ -10,15 +10,12 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = PostCreationValidator.class)
+@Constraint(validatedBy = MessageCreationValidator.class)
 @Target( { ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PostCreationConstraint {
+public @interface MessageCreationConstraint {
 
-    String message() default
-            "If post type is survey the options and the expirationDate are mandatory and must be private." +
-                    " If post type is different to image the content.value is mandatory." +
-                    " The post description is only for post of IMAGE type.";
+    String message() default "If message type is TEXT, content is mandatory.";
 
     Class<?>[] groups() default {};
 

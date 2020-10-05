@@ -16,9 +16,15 @@ public class PostCreationValidator implements ConstraintValidator<PostCreationCo
         PostAdditionalData content = post.getContent();
         if (PostTypeEnum.SURVEY == content.getType()) {
             return Objects.nonNull(content.getOptions())
+                    && Objects.nonNull(post.getContent().getValue())
+                    && Objects.isNull(post.getContent().getDescription())
                     && !content.getOptions().isEmpty()
                     && Objects.nonNull(post.getExpirationDate())
                     && !post.isPublic();
+        }
+        if (PostTypeEnum.TEXT == content.getType()) {
+            return Objects.nonNull(post.getContent().getValue())
+                    && Objects.isNull(post.getContent().getDescription());
         }
         return true;
     }

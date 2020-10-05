@@ -3,7 +3,6 @@ package usociety.manager.domain.service.post.dto;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,9 +18,11 @@ public class PostAdditionalData {
     @JsonProperty
     private PostTypeEnum type;
 
-    @NotNull
     @JsonProperty
     private String value;
+
+    @JsonProperty
+    private String description;
 
     @Valid
     @JsonProperty
@@ -34,6 +35,7 @@ public class PostAdditionalData {
     private PostAdditionalData(Builder builder) {
         type = builder.type;
         value = builder.value;
+        description = builder.description;
         options = builder.options;
     }
 
@@ -49,6 +51,18 @@ public class PostAdditionalData {
         return value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<SurveyOption> getOptions() {
         return options;
     }
@@ -58,6 +72,7 @@ public class PostAdditionalData {
         private PostTypeEnum type;
         private String value;
         private List<SurveyOption> options;
+        private String description;
 
         private Builder() {
         }
@@ -69,6 +84,11 @@ public class PostAdditionalData {
 
         public Builder value(String value) {
             this.value = value;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
             return this;
         }
 

@@ -3,11 +3,14 @@ package usociety.manager.domain.service.post.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +33,7 @@ import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
+import usociety.manager.domain.service.aws.s3.S3Service;
 import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
@@ -52,6 +56,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     private final GroupService groupService;
     private final ObjectMapper objectMapper;
     private final UserService userService;
+    private final S3Service s3Service;
 
     @Autowired
     public PostServiceImpl(UserGroupRepository userGroupRepository,
@@ -60,7 +65,8 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                            ReactRepository reactRepository,
                            PostRepository postRepository,
                            GroupService groupService,
-                           UserService userService) {
+                           UserService userService,
+                           S3Service s3Service) {
         this.userGroupRepository = userGroupRepository;
         this.commentRepository = commentRepository;
         this.surveyRepository = surveyRepository;
@@ -68,14 +74,20 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         this.postRepository = postRepository;
         this.groupService = groupService;
         this.userService = userService;
+        this.s3Service = s3Service;
         objectMapper = new ObjectMapper();
     }
 
     @Override
-    public PostApi create(String username, PostApi request) throws GenericException, JsonProcessingException {
+    public PostApi create(String username, PostApi request, MultipartFile image)
+            throws GenericException, JsonProcessingException {
         validateIfUserIsMember(username, request.getGroupId(), CREATING_POST_ERROR_CODE);
-        processContent(request);
 
+        if (Objects.nonNull(image) && StringUtils.isNotEmpty(request.getContent().getValue())) {
+            throw new GenericException("If the post is an image mustn't have value content.", CREATING_POST_ERROR_CODE);
+        }
+
+        processContent(request, image);
         return Converter.post(postRepository.save(Post.newBuilder()
                 .group(groupService.get(request.getGroupId()))
                 .creationDate(LocalDateTime.now(clock))
@@ -176,7 +188,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         }
     }
 
-    private void processContent(PostApi request) {
+    private void processContent(PostApi request, MultipartFile image) throws GenericException {
         PostAdditionalData content = request.getContent();
         if (PostTypeEnum.SURVEY == content.getType()) {
             List<SurveyOption> surveyOptions = content.getOptions();
@@ -184,6 +196,9 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                 SurveyOption surveyOption = surveyOptions.get(index);
                 surveyOption.setId(index);
             }
+        } else if (PostTypeEnum.IMAGE == content.getType()) {
+            String imageUrl = s3Service.upload(image);
+            content.setValue(imageUrl);
         }
     }
 
