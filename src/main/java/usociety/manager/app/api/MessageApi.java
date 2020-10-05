@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.domain.enums.MessageTypeEnum;
 
 @ApiModel("Message")
 public class MessageApi {
@@ -20,7 +21,7 @@ public class MessageApi {
 
     @NotNull
     @JsonProperty
-    private int type;
+    private MessageTypeEnum type;
 
     @JsonProperty
     private LocalDate creationDate;
@@ -58,7 +59,7 @@ public class MessageApi {
         return content;
     }
 
-    public int getType() {
+    public MessageTypeEnum getType() {
         return type;
     }
 
@@ -78,7 +79,7 @@ public class MessageApi {
 
         private Long id;
         private String content;
-        private int type;
+        private MessageTypeEnum type;
         private LocalDate creationDate;
         private Long userId;
         private Long groupId;
@@ -96,7 +97,7 @@ public class MessageApi {
             return this;
         }
 
-        public Builder type(int type) {
+        public Builder type(MessageTypeEnum type) {
             this.type = type;
             return this;
         }

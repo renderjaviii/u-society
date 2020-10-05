@@ -27,6 +27,7 @@ import io.swagger.annotations.ApiResponses;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
+import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.post.PostService;
 
@@ -73,7 +74,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{postId}/react", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(@PathVariable("postId") Long postId,
-                                      @NotNull @RequestParam("react") Integer react) throws GenericException {
+                                      @NotNull @RequestParam("react") ReactTypeEnum react) throws GenericException {
         postService.react(getUser(), postId, react);
         return ResponseEntity.ok().build();
     }

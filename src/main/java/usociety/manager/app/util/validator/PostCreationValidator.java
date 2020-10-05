@@ -14,7 +14,7 @@ public class PostCreationValidator implements ConstraintValidator<PostCreationCo
     @Override
     public boolean isValid(PostApi post, ConstraintValidatorContext context) {
         PostAdditionalData content = post.getContent();
-        if (PostTypeEnum.SURVEY.getCode() == content.getType()) {
+        if (PostTypeEnum.SURVEY == content.getType()) {
             return Objects.nonNull(content.getOptions())
                     && !content.getOptions().isEmpty()
                     && Objects.nonNull(post.getExpirationDate())

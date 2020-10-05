@@ -18,6 +18,7 @@ import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.enums.PostTypeEnum;
+import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Comment;
 import usociety.manager.domain.model.Post;
@@ -113,7 +114,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     }
 
     @Override
-    public void react(String username, Long postId, Integer react) throws GenericException {
+    public void react(String username, Long postId, ReactTypeEnum react) throws GenericException {
         Post post = getPost(postId);
         validateIfUserIsMember(username, post.getGroup().getId(), REACTING_POST_ERROR_CODE);
         UserApi user = userService.get(username);
@@ -121,13 +122,13 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(postId, user.getId());
         if (optionalReact.isPresent()) {
             React savedReact = optionalReact.get();
-            savedReact.setValue(react);
+            savedReact.setValue(react.getCode());
             reactRepository.save(savedReact);
         } else {
             reactRepository.save(React.newBuilder()
                     .post(post)
                     .userId(user.getId())
-                    .value(react)
+                    .value(react.getCode())
                     .build());
         }
     }
@@ -153,8 +154,11 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         validateIfUserIsMember(username, post.getGroup().getId(), VOTING_SURVEY_ERROR_CODE);
 
         PostApi postApi = Converter.post(post);
-        if (PostTypeEnum.SURVEY.getCode() != postApi.getContent().getType()) {
+        if (PostTypeEnum.SURVEY != postApi.getContent().getType()) {
             throw new GenericException("Post isn't a survey.", VOTING_SURVEY_ERROR_CODE);
+        }
+        if (vote >= postApi.getContent().getOptions().size()) {
+            throw new GenericException("Invalid vote.", VOTING_SURVEY_ERROR_CODE);
         }
 
         UserApi user = userService.get(username);
@@ -174,7 +178,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
 
     private void processContent(PostApi request) {
         PostAdditionalData content = request.getContent();
-        if (PostTypeEnum.SURVEY.getCode() == content.getType()) {
+        if (PostTypeEnum.SURVEY == content.getType()) {
             List<SurveyOption> surveyOptions = content.getOptions();
             for (int index = 0; index < surveyOptions.size(); index++) {
                 SurveyOption surveyOption = surveyOptions.get(index);

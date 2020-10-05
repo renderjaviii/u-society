@@ -167,12 +167,11 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .orElseThrow(() -> new GenericException("User is not member of the group.",
                         ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
 
-        if (UserGroupStatusEnum.REJECTED.getCode() == request.getStatus()
-                || UserGroupStatusEnum.DELETED.getCode() == request.getStatus()) {
+        if (UserGroupStatusEnum.REJECTED == request.getStatus() || UserGroupStatusEnum.DELETED == request.getStatus()) {
             userGroupRepository.delete(userGroup);
         } else {
             userGroup.setRole(request.getRole());
-            userGroup.setStatus(request.getStatus());
+            userGroup.setStatus(request.getStatus().getCode());
             userGroupRepository.save(userGroup);
         }
     }

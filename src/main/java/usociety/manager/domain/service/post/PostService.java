@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
+import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 
 public interface PostService {
@@ -14,7 +15,7 @@ public interface PostService {
 
     List<PostApi> getAll(String username, Long groupId) throws GenericException;
 
-    void react(String username, Long postId, Integer react) throws GenericException;
+    void react(String username, Long postId, ReactTypeEnum react) throws GenericException;
 
     void comment(String username, Long postId, CommentPostRequest request) throws GenericException;
 

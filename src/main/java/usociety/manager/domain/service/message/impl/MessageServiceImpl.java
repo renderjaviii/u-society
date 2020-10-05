@@ -40,7 +40,7 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
         messageRepository.save(Message.newBuilder()
                 .content(request.getContent())
                 .creationDate(LocalDateTime.now(clock))
-                .type(request.getType())
+                .type(request.getType().getCode())
                 .userId(request.getUserId())
                 .group(group)
                 .build());

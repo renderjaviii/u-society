@@ -3,12 +3,13 @@ package usociety.manager.app.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel("User group information.")
 public class UserGroupApi {
 
     @JsonProperty
-    private Integer status;
+    private UserGroupStatusEnum status;
     @JsonProperty
     private String role;
     @JsonProperty
@@ -31,7 +32,7 @@ public class UserGroupApi {
         return new Builder();
     }
 
-    public int getStatus() {
+    public UserGroupStatusEnum getStatus() {
         return status;
     }
 
@@ -49,7 +50,7 @@ public class UserGroupApi {
 
     public static final class Builder {
 
-        private int status;
+        private UserGroupStatusEnum status;
         private String role;
         private Long groupId;
         private Long userId;
@@ -58,7 +59,7 @@ public class UserGroupApi {
             super();
         }
 
-        public Builder status(int status) {
+        public Builder status(UserGroupStatusEnum status) {
             this.status = status;
             return this;
         }
