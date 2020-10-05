@@ -33,6 +33,8 @@ public class OtpController {
     @ApiOperation(value = "Create user OTP.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "OTP created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/")
     public ResponseEntity<OtpApi> create(@RequestParam(name = "username") final String username) {
@@ -42,6 +44,8 @@ public class OtpController {
     @ApiOperation(value = "Validate user OTP.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OTP validated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/validate")
     public ResponseEntity<Void> validate(@RequestParam(name = "username") final String username,

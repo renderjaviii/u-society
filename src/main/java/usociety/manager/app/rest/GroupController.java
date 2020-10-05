@@ -50,6 +50,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Create.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
@@ -63,6 +65,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Get.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
@@ -73,6 +77,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Get user groups.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group list in where user is member."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{username}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getAllUserGroups(@PathVariable(name = "username") String username)
@@ -84,6 +90,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Update membership data.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Membership data updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(path = "/update-membership",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -97,6 +105,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Update.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> update(@Valid @RequestBody UpdateGroupRequest request)
@@ -108,6 +118,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Get by filters.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/by-filters", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getByFilters(@RequestParam("name") String name,
@@ -119,6 +131,8 @@ public class GroupController extends CommonController {
     @ApiOperation(value = "Join to group.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Join to group request sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)

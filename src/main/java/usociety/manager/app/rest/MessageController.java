@@ -40,6 +40,8 @@ public class MessageController extends CommonController {
     @ApiOperation(value = "Send group message.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Message sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> sendGroupMessage(@Valid @RequestBody MessageApi request)
@@ -51,6 +53,8 @@ public class MessageController extends CommonController {
     @ApiOperation(value = "Get group messages.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group messages."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<MessageApi>> getByFilter(@PathVariable("groupId") Long groupId)
