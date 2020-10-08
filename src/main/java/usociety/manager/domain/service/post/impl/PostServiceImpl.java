@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.PostApi;
-import usociety.manager.app.api.SurveyOption;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
 import usociety.manager.domain.converter.Converter;
@@ -38,6 +37,7 @@ import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
+import usociety.manager.domain.service.post.dto.SurveyOption;
 
 @Service
 public class PostServiceImpl extends CommonServiceImpl implements PostService {

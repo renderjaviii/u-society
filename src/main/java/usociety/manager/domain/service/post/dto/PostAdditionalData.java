@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import usociety.manager.app.api.SurveyOption;
 import usociety.manager.domain.enums.PostTypeEnum;
 
 @ApiModel("Post additional data based on the type.")

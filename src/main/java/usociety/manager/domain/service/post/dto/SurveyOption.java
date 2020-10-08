@@ -1,4 +1,4 @@
-package usociety.manager.app.api;
+package usociety.manager.domain.service.post.dto;
 
 import javax.validation.constraints.NotEmpty;
 
