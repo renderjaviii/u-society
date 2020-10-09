@@ -14,7 +14,7 @@ import usociety.manager.app.api.UserApi;
 public class GetGroupResponse {
 
     @JsonProperty
-    private GroupApi groupApi;
+    private GroupApi group;
 
     @JsonProperty
     private List<UserApi> activeMembers;
@@ -26,8 +26,8 @@ public class GetGroupResponse {
         super();
     }
 
-    public GroupApi getGroupApi() {
-        return groupApi;
+    public GroupApi getGroup() {
+        return group;
     }
 
     public List<UserApi> getActiveMembers() {
@@ -39,7 +39,7 @@ public class GetGroupResponse {
     }
 
     private GetGroupResponse(Builder builder) {
-        groupApi = builder.groupApi;
+        group = builder.groupApi;
         activeMembers = builder.activeMembers;
         pendingMembers = builder.pendingMembers;
     }

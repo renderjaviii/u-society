@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.converter.Converter;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.provider.user.UserConnector;
@@ -36,6 +37,16 @@ public abstract class CommonServiceImpl implements CommonService {
             throws GenericException {
         UserDTO user = userConnector.get(username);
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(groupId, user.getId());
+        if (!optionalUserGroup.isPresent()) {
+            throw new GenericException("El usuario no es miembro activo del grupo.", sendingGroupMessageErrorCode);
+        }
+    }
+
+    protected void validateIfUserActiveIsMember(String username, Long groupId, String sendingGroupMessageErrorCode)
+            throws GenericException {
+        UserDTO user = userConnector.get(username);
+        Optional<UserGroup> optionalUserGroup = userGroupRepository
+                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), UserGroupStatusEnum.ACTIVE.getCode());
         if (!optionalUserGroup.isPresent()) {
             throw new GenericException("El usuario no es miembro activo del grupo.", sendingGroupMessageErrorCode);
         }

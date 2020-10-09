@@ -2,6 +2,10 @@ package usociety.manager.domain.service.group.impl;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
+import static usociety.manager.domain.enums.UserGroupStatusEnum.DELETED;
+import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
+import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +109,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                     .group(savedGroup)
                     .isAdmin(TRUE)
                     .role(ADMINISTRATOR_ROLE)
-                    .status(UserGroupStatusEnum.ACTIVE.getCode())
+                    .status(ACTIVE.getCode())
                     .userId(getUser(username).getId())
                     .build());
         } catch (Exception ex) {
@@ -124,17 +128,17 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
 
-            if (UserGroupStatusEnum.ACTIVE.getCode() == userGroup.getStatus()) {
-                List<UserGroup> groupMembers = userGroupRepository.findAllByGroupId(group.getId());
-                List<UserApi> activeMembers = getUsersData(groupMembers, UserGroupStatusEnum.ACTIVE, user.getId());
+            if (ACTIVE.getCode() == userGroup.getStatus()) {
+                List<UserGroup> groupMembers = userGroupRepository
+                        .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
+                List<UserApi> activeMembers = getUsersData(groupMembers, ACTIVE, user.getId());
 
                 GetGroupResponse.Builder builder = GetGroupResponse.newBuilder()
                         .groupApi(Converter.group(group))
                         .activeMembers(activeMembers);
 
                 if (userGroup.isAdmin()) {
-                    return builder.pendingMembers(getUsersData(groupMembers, UserGroupStatusEnum.PENDING, user.getId()))
-                            .build();
+                    return builder.pendingMembers(getUsersData(groupMembers, PENDING, user.getId())).build();
                 }
                 return builder.build();
             }
@@ -155,7 +159,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     public List<GroupApi> getAllUserGroups(String username) throws GenericException {
         UserApi user = getUser(username);
         return userGroupRepository
-                .findAllByUserIdAndStatus(user.getId(), UserGroupStatusEnum.ACTIVE.getCode())
+                .findAllByUserIdAndStatus(user.getId(), ACTIVE.getCode())
                 .stream()
                 .map(userGroup -> Converter.group(userGroup.getGroup()))
                 .collect(Collectors.toList());
@@ -163,26 +167,32 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void updateMembership(UserGroupApi request) throws GenericException {
-        UserGroup userGroup = userGroupRepository.findByGroupIdAndUserId(request.getGroupId(), request.getUserId())
-                .orElseThrow(() -> new GenericException("El usario no es miembro activo del grupo.",
-                        ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
-
-        if (UserGroupStatusEnum.REJECTED == request.getStatus() || UserGroupStatusEnum.DELETED == request.getStatus()) {
-            userGroupRepository.delete(userGroup);
-        } else {
-            userGroup.setRole(request.getRole());
-            userGroup.setStatus(request.getStatus().getCode());
-            userGroupRepository.save(userGroup);
+    public void updateMembership(Long id, UserGroupApi request) throws GenericException {
+        UserGroup userGroup = getUserGroup(id, request.getUserId());
+        if (!userGroup.isAdmin()) {
+            if (REJECTED == request.getStatus() ||
+                    DELETED == request.getStatus()) {
+                userGroupRepository.delete(userGroup);
+            } else {
+                userGroup.setRole(request.getRole());
+                userGroup.setStatus(request.getStatus().getCode());
+                userGroupRepository.save(userGroup);
+            }
         }
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void update(UpdateGroupRequest request) throws GenericException, JsonProcessingException {
+    public void update(UpdateGroupRequest request, String username) throws GenericException, JsonProcessingException {
         Group group = getGroup(request.getId());
-        Category category = categoryService.get(request.getCategoryId());
 
+        UserApi user = userService.get(username);
+        UserGroup userGroup = getUserGroup(request.getId(), user.getId());
+        if (!userGroup.isAdmin()) {
+            throw new GenericException("No eres administrador de este grupo.", "FORBIDDEN_ACCESS");
+        }
+
+        Category category = categoryService.get(request.getCategoryId());
         groupRepository.save(Group.newBuilder()
                 .rules(objectMapper.writeValueAsString(request.getRules()))
                 .objectives(objectMapper.writeValueAsString(request.getObjectives()))
@@ -221,7 +231,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         userGroupRepository.save(UserGroup.newBuilder()
                 .group(group)
                 .isAdmin(FALSE)
-                .status(UserGroupStatusEnum.PENDING.getCode())
+                .status(PENDING.getCode())
                 .userId(user.getId())
                 .build());
 
@@ -256,6 +266,12 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
             userApiList.add(userApi);
         }
         return userApiList;
+    }
+
+    private UserGroup getUserGroup(Long groupId, Long userId) throws GenericException {
+        return userGroupRepository.findByGroupIdAndUserId(groupId, userId)
+                .orElseThrow(() -> new GenericException("El usario no es miembro activo del grupo.",
+                        ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
     }
 
 }

@@ -20,6 +20,7 @@ import usociety.manager.app.api.ReactApi;
 import usociety.manager.app.api.TokenApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
+import usociety.manager.domain.enums.MessageTypeEnum;
 import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Comment;
 import usociety.manager.domain.model.Group;
@@ -86,7 +87,7 @@ public class Converter {
                 groupApi.setRules(objectMapper.readValue(group.getRules(), String[].class));
             }
         } catch (JsonProcessingException ignored) {
-            //It's no necessary
+            //It's no necessary.
         }
         return groupApi;
     }
@@ -96,7 +97,9 @@ public class Converter {
     }
 
     public static MessageApi message(Message message) {
-        return modelMapper.map(message, MessageApi.class);
+        MessageApi messageApi = modelMapper.map(message, MessageApi.class);
+        messageApi.setType(MessageTypeEnum.fromCode(message.getType()));
+        return messageApi;
     }
 
     public static PostApi post(Post post) {

@@ -37,7 +37,7 @@ public class S3ServiceImpl implements S3Service {
     private String sessionToken;
     @Value("${config.aws.endpoint-url}")
     private String endpointUrl;
-    @Value("${config.aws.bucket-nme}")
+    @Value("${config.aws.bucket-name}")
     private String bucketName;
 
     private AmazonS3 s3client;

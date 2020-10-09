@@ -93,12 +93,11 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(path = "/update-membership",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateMembership(@RequestBody UserGroupApi request)
+    @PutMapping(path = "/{id}/update-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateMembership(@PathVariable("id") Long id,
+                                                 @RequestBody UserGroupApi request)
             throws GenericException {
-        groupService.updateMembership(request);
+        groupService.updateMembership(id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -108,10 +107,10 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> update(@Valid @RequestBody UpdateGroupRequest request)
             throws GenericException, JsonProcessingException {
-        groupService.update(request);
+        groupService.update(request, getUser());
         return ResponseEntity.ok().build();
     }
 
@@ -134,7 +133,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException {
         groupService.join(id, getUser());

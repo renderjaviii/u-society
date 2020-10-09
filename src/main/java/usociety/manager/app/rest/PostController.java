@@ -64,9 +64,9 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PostApi>> getAll(@PathVariable("groupId") Long groupId) throws GenericException {
-        return ResponseEntity.ok(postService.getAll(getUser(), groupId));
+    @GetMapping(path = "/{id}/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PostApi>> getAll(@PathVariable("id") Long id) throws GenericException {
+        return ResponseEntity.ok(postService.getAll(getUser(), id));
     }
 
     @ApiOperation(value = "React to a post.")
@@ -75,10 +75,10 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{postId}/react", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> react(@PathVariable("postId") Long postId,
+    @PostMapping(path = "/{id}/react", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> react(@PathVariable("id") Long id,
                                       @NotNull @RequestParam("react") ReactTypeEnum react) throws GenericException {
-        postService.react(getUser(), postId, react);
+        postService.react(getUser(), id, react);
         return ResponseEntity.ok().build();
     }
 
@@ -88,10 +88,10 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{postId}/comment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> comment(@PathVariable("postId") Long postId,
+    @PostMapping(path = "/{id}/comment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> comment(@PathVariable("id") Long id,
                                         @RequestBody CommentPostRequest request) throws GenericException {
-        postService.comment(getUser(), postId, request);
+        postService.comment(getUser(), id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -101,11 +101,11 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{postId}/survey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> interactWithSurvey(@PathVariable("postId") Long postId,
+    @PostMapping(path = "/{id}/survey", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> interactWithSurvey(@PathVariable("id") Long id,
                                                    @NotNull @RequestParam("vote") Integer vote)
             throws GenericException {
-        postService.interactWithSurvey(getUser(), postId, vote);
+        postService.interactWithSurvey(getUser(), id, vote);
         return ResponseEntity.ok().build();
     }
 

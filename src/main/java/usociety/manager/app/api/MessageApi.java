@@ -1,6 +1,6 @@
 package usociety.manager.app.api;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
@@ -23,9 +23,8 @@ public class MessageApi {
     private MessageTypeEnum type;
 
     @JsonProperty
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
 
-    @NotNull
     @JsonProperty
     private Long userId;
 
@@ -66,7 +65,11 @@ public class MessageApi {
         return type;
     }
 
-    public LocalDate getCreationDate() {
+    public void setType(MessageTypeEnum type) {
+        this.type = type;
+    }
+
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
@@ -83,7 +86,7 @@ public class MessageApi {
         private Long id;
         private String content;
         private MessageTypeEnum type;
-        private LocalDate creationDate;
+        private LocalDateTime creationDate;
         private Long userId;
         private Long groupId;
 
@@ -105,7 +108,7 @@ public class MessageApi {
             return this;
         }
 
-        public Builder creationDate(LocalDate creationDate) {
+        public Builder creationDate(LocalDateTime creationDate) {
             this.creationDate = creationDate;
             return this;
         }

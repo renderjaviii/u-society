@@ -65,7 +65,7 @@ public class UserController extends CommonController {
     }
 
     @ApiOperation(value = "Verify user data and send otp.")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "User verified and otp sent."),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "User verified and otp sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
