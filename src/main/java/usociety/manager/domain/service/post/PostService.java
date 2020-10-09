@@ -16,7 +16,7 @@ public interface PostService {
     PostApi create(String username, PostApi request, MultipartFile image)
             throws GenericException, JsonProcessingException;
 
-    List<PostApi> getAll(String username, Long groupId) throws GenericException;
+    List<PostApi> getAll(String username, Long groupId, int page) throws GenericException;
 
     void react(String username, Long postId, ReactTypeEnum react) throws GenericException;
 

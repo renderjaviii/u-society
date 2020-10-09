@@ -38,6 +38,7 @@ import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
+import usociety.manager.domain.util.PageableUtils;
 
 @Service
 public class PostServiceImpl extends CommonServiceImpl implements PostService {
@@ -91,12 +92,12 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostApi> getAll(String username, Long groupId) throws GenericException {
+    public List<PostApi> getAll(String username, Long groupId, int page) throws GenericException {
         UserApi user = getUser(username);
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(groupId, user.getId());
         boolean isGroupMember = optionalUserGroup.isPresent();
 
-        List<Post> posts = postRepository.findAllByGroupIdOrderByCreationDateAsc(groupId);
+        List<Post> posts = postRepository.findAllByGroupIdOrderByCreationDateAsc(groupId, PageableUtils.paginate(page));
         if (!isGroupMember) {
             posts = posts.stream()
                     .filter(post -> Boolean.TRUE.equals(post.isPublic()))

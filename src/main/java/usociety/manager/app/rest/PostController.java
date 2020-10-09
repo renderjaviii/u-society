@@ -65,8 +65,10 @@ public class PostController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{id}/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PostApi>> getAll(@PathVariable("id") Long id) throws GenericException {
-        return ResponseEntity.ok(postService.getAll(getUser(), id));
+    public ResponseEntity<List<PostApi>> getAll(@PathVariable("id") Long id,
+                                                @RequestParam("page") int page)
+            throws GenericException {
+        return ResponseEntity.ok(postService.getAll(getUser(), id, page));
     }
 
     @ApiOperation(value = "React to a post.")

@@ -25,7 +25,7 @@ import usociety.manager.domain.service.aws.s3.S3Service;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;
-import usociety.manager.domain.util.mapper.Constant;
+import usociety.manager.domain.util.Constant;
 
 @Service
 public class UserServiceImpl implements UserService {

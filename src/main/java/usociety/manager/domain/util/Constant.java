@@ -1,4 +1,4 @@
-package usociety.manager.domain.util.mapper;
+package usociety.manager.domain.util;
 
 public class Constant {
 
