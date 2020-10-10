@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
@@ -54,24 +55,29 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public String upload(MultipartFile multipartFile) throws GenericException {
-        String fileName = generateFileName();
-        File file = convertMultiPartToFile(multipartFile, fileName);
-        String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
+        if (!multipartFile.isEmpty()) {
+            String fileName = generateFileName();
+            File file = convertMultiPartToFile(multipartFile, fileName);
+            String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
 
-        s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
-        try {
-            Files.delete(file.toPath());
-        } catch (IOException e) {
-            s3client.deleteObject(bucketName, fileName);
-            throw new GenericException("Error deleting file.", UPLOADING_FILE_ERROR_CODE);
+            s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                s3client.deleteObject(bucketName, fileName);
+                throw new GenericException("Error deleting file.", UPLOADING_FILE_ERROR_CODE);
+            }
+            return fileUrl;
         }
-        return fileUrl;
+        return null;
     }
 
     @Override
     public void delete(String fileUrl) {
-        s3client.deleteObject(bucketName, fileUrl.substring(fileUrl.lastIndexOf("/") + 1));
+        if (Objects.nonNull(fileUrl)) {
+            s3client.deleteObject(bucketName, fileUrl.substring(fileUrl.lastIndexOf("/") + 1));
+        }
     }
 
     private File convertMultiPartToFile(MultipartFile multipartFile, String fileName) throws GenericException {

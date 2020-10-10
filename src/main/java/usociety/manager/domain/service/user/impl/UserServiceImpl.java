@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService {
     private final OtpService otpService;
     private final S3Service s3Service;
 
+    @Value("${config.user.validate-otp:0}")
+    private boolean validateOtp;
+
     @Autowired
     public UserServiceImpl(AuthenticationConnector authenticationConnector,
                            UserConnector userConnector,
@@ -51,7 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
-        otpService.validate(request.getUsername(), request.getOtpCode());
+        if (validateOtp) {
+            otpService.validate(request.getUsername(), request.getOtpCode());
+        }
         validateUser(request.getUsername(), request.getEmail());
 
         String photoUrl = s3Service.upload(photo);

@@ -1,5 +1,7 @@
 package usociety.manager.app.rest.request;
 
+import java.util.List;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -7,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.api.CategoryApi;
 
 @ApiModel(value = "Create group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,13 +25,13 @@ public class CreateGroupRequest {
 
     @NotNull
     @JsonProperty
-    private Long categoryId;
+    private CategoryApi category;
 
     @JsonProperty
-    private String[] objectives;
+    private List<String> objectives;
 
     @JsonProperty
-    private String[] rules;
+    private List<String> rules;
 
     public CreateGroupRequest() {
         super();
@@ -39,7 +42,7 @@ public class CreateGroupRequest {
         description = builder.description;
         objectives = builder.objectives;
         rules = builder.rules;
-        categoryId = builder.categoryId;
+        category = builder.category;
     }
 
     public static Builder newBuilder() {
@@ -54,25 +57,25 @@ public class CreateGroupRequest {
         return description;
     }
 
-    public String[] getObjectives() {
+    public List<String> getObjectives() {
         return objectives;
     }
 
-    public String[] getRules() {
+    public List<String> getRules() {
         return rules;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public CategoryApi getCategory() {
+        return category;
     }
 
     public static final class Builder {
 
         private String name;
         private String description;
-        private String[] objectives;
-        private String[] rules;
-        private Long categoryId;
+        private List<String> objectives;
+        private List<String> rules;
+        private CategoryApi category;
 
         private Builder() {
         }
@@ -87,18 +90,18 @@ public class CreateGroupRequest {
             return this;
         }
 
-        public Builder objectives(String[] objectives) {
+        public Builder objectives(List<String> objectives) {
             this.objectives = objectives;
             return this;
         }
 
-        public Builder rules(String[] rules) {
+        public Builder rules(List<String> rules) {
             this.rules = rules;
             return this;
         }
 
-        public Builder categoryId(Long categoryId) {
-            this.categoryId = categoryId;
+        public Builder category(CategoryApi category) {
+            this.category = category;
             return this;
         }
 

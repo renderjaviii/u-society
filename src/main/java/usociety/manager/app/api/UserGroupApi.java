@@ -1,21 +1,23 @@
 package usociety.manager.app.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel("User group information.")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserGroupApi {
 
     @JsonProperty
-    private UserGroupStatusEnum status;
+    private UserApi user;
+
     @JsonProperty
     private String role;
+
     @JsonProperty
-    private Long groupId;
-    @JsonProperty
-    private Long userId;
+    private UserGroupStatusEnum status;
 
     public UserGroupApi() {
         super();
@@ -24,8 +26,7 @@ public class UserGroupApi {
     private UserGroupApi(Builder builder) {
         status = builder.status;
         role = builder.role;
-        groupId = builder.groupId;
-        userId = builder.userId;
+        user = builder.user;
     }
 
     public static Builder newBuilder() {
@@ -40,20 +41,15 @@ public class UserGroupApi {
         return role;
     }
 
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public Long getUserId() {
-        return userId;
+    public UserApi getUser() {
+        return user;
     }
 
     public static final class Builder {
 
         private UserGroupStatusEnum status;
         private String role;
-        private Long groupId;
-        private Long userId;
+        private UserApi user;
 
         private Builder() {
             super();
@@ -69,13 +65,8 @@ public class UserGroupApi {
             return this;
         }
 
-        public Builder groupId(Long groupId) {
-            this.groupId = groupId;
-            return this;
-        }
-
-        public Builder userId(Long userId) {
-            this.userId = userId;
+        public Builder user(UserApi user) {
+            this.user = user;
             return this;
         }
 

@@ -2,6 +2,7 @@ package usociety.manager.domain.service.group.impl;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.DELETED;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
@@ -19,9 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
@@ -50,6 +48,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private static final String GROUP_NAME_ERROR_FORMAT = "Grupo con nombre: %s ya existe, prueba un nombre diferente.";
 
     private static final String ERROR_UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
+    private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
     private static final String JOINING_TO_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";
     private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
@@ -58,7 +57,6 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final UserGroupRepository userGroupRepository;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
-    private final ObjectMapper objectMapper;
     private final UserService userService;
     private final MailService mailService;
     private final S3Service s3Service;
@@ -76,7 +74,6 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         this.userService = userService;
         this.mailService = mailService;
         this.s3Service = s3Service;
-        objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -87,30 +84,30 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
             throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findByName(request.getName());
         if (optionalGroup.isPresent()) {
-            throw new GenericException(String.format(GROUP_NAME_ERROR_FORMAT, request.getName()),
-                    CREATING_GROUP_ERROR_CODE);
+            String errorMessage = String.format(GROUP_NAME_ERROR_FORMAT, request.getName());
+            throw new GenericException(errorMessage, CREATING_GROUP_ERROR_CODE);
         }
 
-        Category category = categoryService.get(request.getCategoryId());
+        Category category = categoryService.get(request.getCategory().getId());
         String photoUrl = s3Service.upload(photo);
 
         Group savedGroup;
         try {
             savedGroup = groupRepository.save(Group.newBuilder()
-                    .objectives(objectMapper.writeValueAsString(request.getObjectives()))
-                    .rules(objectMapper.writeValueAsString(request.getRules()))
-                    .category(category)
                     .description(request.getDescription())
-                    .photo(photoUrl)
+                    .objectives(request.getObjectives().stream().map(this::removeCommas).collect(Collectors.toList()))
+                    .rules(request.getRules().stream().map(this::removeCommas).collect(Collectors.toList()))
                     .name(request.getName())
+                    .category(category)
+                    .photo(photoUrl)
                     .build());
 
             userGroupRepository.save(UserGroup.newBuilder()
-                    .group(savedGroup)
-                    .isAdmin(TRUE)
+                    .userId(getUser(username).getId())
                     .role(ADMINISTRATOR_ROLE)
                     .status(ACTIVE.getCode())
-                    .userId(getUser(username).getId())
+                    .group(savedGroup)
+                    .isAdmin(TRUE)
                     .build());
         } catch (Exception ex) {
             s3Service.delete(photoUrl);
@@ -123,30 +120,26 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     public GetGroupResponse get(Long id, String username) throws GenericException {
         Group group = getGroup(id);
         UserApi user = getUser(username);
+        Optional<UserGroup> optionalUserGroup = userGroupRepository
+                .findByGroupIdAndUserIdAndStatus(id, user.getId(), ACTIVE.getCode());
 
-        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
+            List<UserGroup> groupMembers = userGroupRepository
+                    .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
 
-            if (ACTIVE.getCode() == userGroup.getStatus()) {
-                List<UserGroup> groupMembers = userGroupRepository
-                        .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
-                List<UserApi> activeMembers = getUsersData(groupMembers, ACTIVE, user.getId());
-
-                GetGroupResponse.Builder builder = GetGroupResponse.newBuilder()
-                        .groupApi(Converter.group(group))
-                        .activeMembers(activeMembers);
-
-                if (userGroup.isAdmin()) {
-                    return builder.pendingMembers(getUsersData(groupMembers, PENDING, user.getId())).build();
-                }
-                return builder.build();
-            }
+            return GetGroupResponse.newBuilder()
+                    .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
+                    .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
+                    .groupApi(Converter.group(group))
+                    .membershipStatus(ACTIVE)
+                    .build();
         }
 
         group.setRules(null);
         return GetGroupResponse.newBuilder()
                 .groupApi(Converter.group(group))
+                .membershipStatus(PENDING)
                 .build();
     }
 
@@ -161,29 +154,38 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         return userGroupRepository
                 .findAllByUserIdAndStatus(user.getId(), ACTIVE.getCode())
                 .stream()
-                .map(userGroup -> Converter.group(userGroup.getGroup()))
+                .map(userGroup -> buildGroupResponse(userGroup.getGroup()))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void updateMembership(Long id, UserGroupApi request) throws GenericException {
-        UserGroup userGroup = getUserGroup(id, request.getUserId());
+        Optional<UserGroup> optionalUserGroup = userGroupRepository
+                .findByGroupIdAndUserId(id, request.getUser().getId());
+        if (!optionalUserGroup.isPresent()) {
+            throw new GenericException("No se puede realizar esta operación con este usuario.",
+                    UPDATING_MEMBERSHIP_ERROR_CODE);
+        }
+
+        UserGroup userGroup = optionalUserGroup.get();
         if (!userGroup.isAdmin()) {
-            if (REJECTED == request.getStatus() ||
-                    DELETED == request.getStatus()) {
+            if (REJECTED == request.getStatus() || DELETED == request.getStatus()) {
                 userGroupRepository.delete(userGroup);
             } else {
                 userGroup.setRole(request.getRole());
                 userGroup.setStatus(request.getStatus().getCode());
                 userGroupRepository.save(userGroup);
             }
+        } else {
+            throw new GenericException("El administrador del grupo no puede realizar esta operación.",
+                    UPDATING_MEMBERSHIP_ERROR_CODE);
         }
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void update(UpdateGroupRequest request, String username) throws GenericException, JsonProcessingException {
+    public void update(UpdateGroupRequest request, String username, MultipartFile photo) throws GenericException {
         Group group = getGroup(request.getId());
 
         UserApi user = userService.get(username);
@@ -192,12 +194,12 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
             throw new GenericException("No eres administrador de este grupo.", "FORBIDDEN_ACCESS");
         }
 
-        Category category = categoryService.get(request.getCategoryId());
+        Category category = categoryService.get(request.getCategory().getId());
         groupRepository.save(Group.newBuilder()
-                .rules(objectMapper.writeValueAsString(request.getRules()))
-                .objectives(objectMapper.writeValueAsString(request.getObjectives()))
                 .description(request.getDescription())
-                .photo(request.getPhoto())
+                .objectives(request.getObjectives())
+                .rules(request.getRules())
+                .photo(!photo.isEmpty() ? s3Service.upload(photo) : request.getPhoto())
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
@@ -214,7 +216,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         groupList.addAll(groupRepository.findByCategoryIdOrNameContainingIgnoreCase(categoryId, name));
         return groupList.stream()
                 .distinct()
-                .map(Converter::group)
+                .map(this::buildGroupResponse)
                 .collect(Collectors.toList());
     }
 
@@ -225,7 +227,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (optionalUserGroup.isPresent()) {
-            throw new GenericException("El usuario ya es miembro del grupo.", JOINING_TO_GROUP_ERROR_CODE);
+            throw new GenericException("El usuario ya solicitó ingresar al grupo o ya es miembro activo.",
+                    JOINING_TO_GROUP_ERROR_CODE);
         }
 
         userGroupRepository.save(UserGroup.newBuilder()
@@ -244,6 +247,10 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
     }
 
+    private String removeCommas(String value) {
+        return value.replace(",", EMPTY);
+    }
+
     private Group getGroup(Long id) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findById(id);
         if (!optionalGroup.isPresent()) {
@@ -252,26 +259,35 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         return optionalGroup.get();
     }
 
-    private List<UserApi> getUsersData(List<UserGroup> groupMembers, UserGroupStatusEnum userGroupStatus, Long userId)
-            throws GenericException {
-        List<UserGroup> userGroups = groupMembers.stream()
-                .filter(userGroup -> !userGroup.getUserId().equals(userId) &&
-                        userGroupStatus.getCode() == userGroup.getStatus())
-                .collect(Collectors.toList());
-
-        List<UserApi> userApiList = new ArrayList<>();
-        for (UserGroup userGroup : userGroups) {
-            UserApi userApi = userService.getById(userGroup.getUserId());
-            userApi.setRole(userGroup.getRole());
-            userApiList.add(userApi);
-        }
-        return userApiList;
-    }
-
     private UserGroup getUserGroup(Long groupId, Long userId) throws GenericException {
-        return userGroupRepository.findByGroupIdAndUserId(groupId, userId)
+        return userGroupRepository.findByGroupIdAndUserIdAndStatus(groupId, userId, ACTIVE.getCode())
                 .orElseThrow(() -> new GenericException("El usario no es miembro activo del grupo.",
                         ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
+    }
+
+    private List<UserApi> getMembersDataByStatus(List<UserGroup> userList, UserGroupStatusEnum userGroupStatus)
+            throws GenericException {
+        List<UserGroup> membersGroup = userList
+                .stream()
+                .filter(userGroup -> userGroupStatus.getCode() == userGroup.getStatus())
+                .collect(Collectors.toList());
+
+        List<UserApi> usersDataList = new ArrayList<>();
+        for (UserGroup userGroup : membersGroup) {
+            UserApi memberUser = userService.getById(userGroup.getUserId());
+            memberUser.setRole(userGroup.getRole());
+            usersDataList.add(memberUser);
+        }
+        return usersDataList;
+    }
+
+    private GroupApi buildGroupResponse(Group group) {
+        return GroupApi.newBuilder()
+                .category(Converter.category(group.getCategory()))
+                .description(group.getDescription())
+                .photo(group.getPhoto())
+                .name(group.getName())
+                .build();
     }
 
 }

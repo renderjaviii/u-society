@@ -14,6 +14,7 @@ INSERT INTO managerConfig(name, value) VALUES('web.authentication.users-path', '
 INSERT INTO managerConfig(name, value) VALUES('web.authentication.client-id', 'clientIdTest');
 INSERT INTO managerConfig(name, value) VALUES('web.authentication.client-secret', 'admin');
 INSERT INTO managerConfig(name, value) VALUES('web.time-out', '30');
+INSERT INTO managerConfig(name, value) VALUES('config.user.validate-otp', '0');
 
 -- Category list
 INSERT INTO category (id, name) VALUES(1, 'Deporte');

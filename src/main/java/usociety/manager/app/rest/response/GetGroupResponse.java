@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel(value = "Get group response.")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,8 +23,18 @@ public class GetGroupResponse {
     @JsonProperty
     private List<UserApi> pendingMembers;
 
+    @JsonProperty
+    private UserGroupStatusEnum membershipStatus;
+
     public GetGroupResponse() {
         super();
+    }
+
+    private GetGroupResponse(Builder builder) {
+        group = builder.groupApi;
+        activeMembers = builder.activeMembers;
+        pendingMembers = builder.pendingMembers;
+        membershipStatus = builder.membershipStatus;
     }
 
     public GroupApi getGroup() {
@@ -38,10 +49,12 @@ public class GetGroupResponse {
         return pendingMembers;
     }
 
-    private GetGroupResponse(Builder builder) {
-        group = builder.groupApi;
-        activeMembers = builder.activeMembers;
-        pendingMembers = builder.pendingMembers;
+    public UserGroupStatusEnum getMembershipStatus() {
+        return membershipStatus;
+    }
+
+    public void setMembershipStatus(UserGroupStatusEnum membershipStatus) {
+        this.membershipStatus = membershipStatus;
     }
 
     public static Builder newBuilder() {
@@ -53,6 +66,7 @@ public class GetGroupResponse {
         private GroupApi groupApi;
         private List<UserApi> activeMembers;
         private List<UserApi> pendingMembers;
+        private UserGroupStatusEnum membershipStatus;
 
         private Builder() {
         }
@@ -69,6 +83,11 @@ public class GetGroupResponse {
 
         public Builder pendingMembers(List<UserApi> pendingMembers) {
             this.pendingMembers = pendingMembers;
+            return this;
+        }
+
+        public Builder membershipStatus(UserGroupStatusEnum membershipStatus) {
+            this.membershipStatus = membershipStatus;
             return this;
         }
 

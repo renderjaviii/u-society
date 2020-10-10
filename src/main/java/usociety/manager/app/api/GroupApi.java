@@ -1,24 +1,34 @@
 package usociety.manager.app.api;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 
 @ApiModel("Group")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class GroupApi {
 
     @JsonProperty
     private Long id;
+
     @JsonProperty
     private String name;
+
     @JsonProperty
     private String description;
+
     @JsonProperty
     private String photo;
+
     @JsonProperty
-    private String[] objectives;
+    private List<String> objectives;
+
     @JsonProperty
-    private String[] rules;
+    private List<String> rules;
+
     @JsonProperty
     private CategoryApi category;
 
@@ -56,11 +66,11 @@ public class GroupApi {
         return photo;
     }
 
-    public String[] getObjectives() {
+    public List<String> getObjectives() {
         return objectives;
     }
 
-    public String[] getRules() {
+    public List<String> getRules() {
         return rules;
     }
 
@@ -68,12 +78,32 @@ public class GroupApi {
         return category;
     }
 
-    public void setObjectives(String[] objectives) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setObjectives(List<String> objectives) {
         this.objectives = objectives;
     }
 
-    public void setRules(String[] rules) {
+    public void setRules(List<String> rules) {
         this.rules = rules;
+    }
+
+    public void setCategory(CategoryApi category) {
+        this.category = category;
     }
 
     public static final class Builder {
@@ -82,8 +112,8 @@ public class GroupApi {
         private String name;
         private String description;
         private String photo;
-        private String[] objectives;
-        private String[] rules;
+        private List<String> objectives;
+        private List<String> rules;
         private CategoryApi category;
 
         private Builder() {
@@ -109,12 +139,12 @@ public class GroupApi {
             return this;
         }
 
-        public Builder objectives(String[] objectives) {
+        public Builder objectives(List<String> objectives) {
             this.objectives = objectives;
             return this;
         }
 
-        public Builder rules(String[] rules) {
+        public Builder rules(List<String> rules) {
             this.rules = rules;
             return this;
         }

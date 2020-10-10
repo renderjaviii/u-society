@@ -59,7 +59,7 @@ public class UserController extends CommonController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> create(@Valid @RequestPart("user") CreateUserRequest request,
-                                          @RequestPart("photo") MultipartFile photo)
+                                          @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException {
         return new ResponseEntity<>(userService.create(request, photo), CREATED);
     }

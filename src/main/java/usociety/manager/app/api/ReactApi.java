@@ -1,40 +1,39 @@
 package usociety.manager.app.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.domain.enums.ReactTypeEnum;
 
 @ApiModel("React")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ReactApi {
 
     @JsonProperty
-    private Long id;
+    private int amount;
 
     @JsonProperty
-    private Long userId;
-
-    @JsonProperty
-    private int value;
+    private ReactTypeEnum value;
 
     public ReactApi() {
         super();
     }
 
     private ReactApi(Builder builder) {
-        id = builder.id;
-        userId = builder.userId;
+        amount = builder.amount;
         value = builder.value;
     }
 
-    public Long getId() {
-        return id;
+    public int getAmount() {
+        return amount;
     }
 
-    public Long getUserId() {
-        return userId;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
-    public int getValue() {
+    public ReactTypeEnum getValue() {
         return value;
     }
 
@@ -45,24 +44,18 @@ public class ReactApi {
 
     public static final class Builder {
 
-        private Long id;
-        private Long userId;
-        private int value;
+        private int amount;
+        private ReactTypeEnum value;
 
         private Builder() {
         }
 
-        public Builder id(Long id) {
-            this.id = id;
+        public Builder amount(int amount) {
+            this.amount = amount;
             return this;
         }
 
-        public Builder userId(Long userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder value(int value) {
+        public Builder value(ReactTypeEnum value) {
             this.value = value;
             return this;
         }

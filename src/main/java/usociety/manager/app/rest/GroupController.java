@@ -57,9 +57,9 @@ public class GroupController extends CommonController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestPart("group") CreateGroupRequest request,
-                                           @RequestPart("photo") MultipartFile photo)
+                                           @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException {
-        return new ResponseEntity(groupService.create(getUser(), request, photo), CREATED);
+        return new ResponseEntity<>(groupService.create(getUser(), request, photo), CREATED);
     }
 
     @ApiOperation(value = "Get.")
@@ -72,6 +72,20 @@ public class GroupController extends CommonController {
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
             throws GenericException {
         return ResponseEntity.ok(groupService.get(id, getUser()));
+    }
+
+    @ApiOperation(value = "Update.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Void> update(@Valid @RequestPart UpdateGroupRequest request,
+                                       @RequestPart(value = "photo", required = false) MultipartFile photo)
+            throws GenericException, JsonProcessingException {
+        groupService.update(request, getUser(), photo);
+        return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "Get user groups.")
@@ -98,19 +112,6 @@ public class GroupController extends CommonController {
                                                  @RequestBody UserGroupApi request)
             throws GenericException {
         groupService.updateMembership(id, request);
-        return ResponseEntity.ok().build();
-    }
-
-    @ApiOperation(value = "Update.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> update(@Valid @RequestBody UpdateGroupRequest request)
-            throws GenericException, JsonProcessingException {
-        groupService.update(request, getUser());
         return ResponseEntity.ok().build();
     }
 

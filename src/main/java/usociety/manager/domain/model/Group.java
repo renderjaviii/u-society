@@ -2,14 +2,18 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import usociety.manager.domain.util.StringListConverter;
 
 @Entity
 @Table(name = "`group`")
@@ -30,12 +34,14 @@ public class Group {
     private String photo;
 
     @Column(name = "objectives")
-    private String objectives;
+    @Convert(converter = StringListConverter.class)
+    private List<String> objectives;
 
     @Column(name = "rules")
-    private String rules;
+    @Convert(converter = StringListConverter.class)
+    private List<String> rules;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
@@ -61,36 +67,56 @@ public class Group {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getPhoto() {
         return photo;
     }
 
-    public String getObjectives() {
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public List<String> getObjectives() {
         return objectives;
+    }
+
+    public void setObjectives(List<String> objectives) {
+        this.objectives = objectives;
+    }
+
+    public List<String> getRules() {
+        return rules;
+    }
+
+    public void setRules(List<String> rules) {
+        this.rules = rules;
     }
 
     public Category getCategory() {
         return category;
     }
 
-    public String getRules() {
-        return rules;
-    }
-
-    public void setRules(String rules) {
-        this.rules = rules;
-    }
-
-    public void setObjectives(String objectives) {
-        this.objectives = objectives;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public static final class Builder {
@@ -99,12 +125,11 @@ public class Group {
         private String name;
         private String description;
         private String photo;
-        private String objectives;
-        private String rules;
+        private List<String> objectives;
+        private List<String> rules;
         private Category category;
 
         private Builder() {
-            super();
         }
 
         public Builder id(Long id) {
@@ -127,12 +152,12 @@ public class Group {
             return this;
         }
 
-        public Builder objectives(String objectives) {
+        public Builder objectives(List<String> objectives) {
             this.objectives = objectives;
             return this;
         }
 
-        public Builder rules(String rules) {
+        public Builder rules(List<String> rules) {
             this.rules = rules;
             return this;
         }

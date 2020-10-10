@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import usociety.manager.domain.enums.MessageTypeEnum;
 
 @ApiModel("Message")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageApi {
 
     @JsonProperty
@@ -26,11 +28,11 @@ public class MessageApi {
     private LocalDateTime creationDate;
 
     @JsonProperty
-    private Long userId;
+    private UserApi user;
 
     @NotNull
     @JsonProperty
-    private Long groupId;
+    private GroupApi group;
 
     public MessageApi() {
         super();
@@ -41,8 +43,8 @@ public class MessageApi {
         content = builder.content;
         type = builder.type;
         creationDate = builder.creationDate;
-        userId = builder.userId;
-        groupId = builder.groupId;
+        user = builder.user;
+        group = builder.group;
     }
 
     public static Builder newBuilder() {
@@ -73,12 +75,12 @@ public class MessageApi {
         return creationDate;
     }
 
-    public Long getUserId() {
-        return userId;
+    public UserApi getUser() {
+        return user;
     }
 
-    public Long getGroupId() {
-        return groupId;
+    public GroupApi getGroup() {
+        return group;
     }
 
     public static final class Builder {
@@ -87,8 +89,8 @@ public class MessageApi {
         private String content;
         private MessageTypeEnum type;
         private LocalDateTime creationDate;
-        private Long userId;
-        private Long groupId;
+        private GroupApi group;
+        private UserApi user;
 
         private Builder() {
         }
@@ -113,13 +115,13 @@ public class MessageApi {
             return this;
         }
 
-        public Builder userId(Long userId) {
-            this.userId = userId;
+        public Builder group(GroupApi group) {
+            this.group = group;
             return this;
         }
 
-        public Builder groupId(Long groupId) {
-            this.groupId = groupId;
+        public Builder user(UserApi user) {
+            this.user = user;
             return this;
         }
 

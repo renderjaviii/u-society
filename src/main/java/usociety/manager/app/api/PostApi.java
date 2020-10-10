@@ -2,20 +2,17 @@ package usociety.manager.app.api;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import usociety.manager.app.util.validator.PostCreationConstraint;
+import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
 @ApiModel("Post")
-@PostCreationConstraint
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(value = "public")
 public class PostApi {
@@ -27,25 +24,31 @@ public class PostApi {
     private LocalDateTime expirationDate;
 
     @JsonProperty
+    private LocalDateTime creationDate;
+
+    @JsonProperty
     private boolean isPublic;
 
-    @Valid
-    @NotNull
     @JsonProperty
     private PostAdditionalData content;
 
-    @NotNull
     @JsonProperty
-    private Long groupId;
-
-    @JsonProperty
-    private List<ReactApi> reacts;
+    private Map<ReactTypeEnum, Integer> reacts;
 
     @JsonProperty
     private List<CommentApi> comments;
 
     @JsonProperty
     private String description;
+
+    @JsonProperty
+    private GroupApi group;
+
+    @JsonProperty
+    private Integer selectedOptionId;
+
+    @JsonProperty
+    private ReactTypeEnum selectedReaction;
 
     public PostApi() {
         super();
@@ -54,12 +57,15 @@ public class PostApi {
     private PostApi(Builder builder) {
         id = builder.id;
         expirationDate = builder.expirationDate;
+        creationDate = builder.creationDate;
         isPublic = builder.isPublic;
         content = builder.content;
         description = builder.description;
-        groupId = builder.groupId;
         reacts = builder.reacts;
         comments = builder.comments;
+        group = builder.group;
+        selectedOptionId = builder.selectedOptionId;
+        selectedReaction = builder.selectedReaction;
     }
 
     public static Builder newBuilder() {
@@ -86,11 +92,7 @@ public class PostApi {
         this.content = content;
     }
 
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public List<ReactApi> getReacts() {
+    public Map<ReactTypeEnum, Integer> getReacts() {
         return reacts;
     }
 
@@ -98,12 +100,20 @@ public class PostApi {
         return comments;
     }
 
-    public void setReacts(List<ReactApi> reacts) {
+    public void setReacts(Map<ReactTypeEnum, Integer> reacts) {
         this.reacts = reacts;
     }
 
     public void setComments(List<CommentApi> comments) {
         this.comments = comments;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getDescription() {
@@ -114,16 +124,43 @@ public class PostApi {
         this.description = description;
     }
 
+    public GroupApi getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupApi group) {
+        this.group = group;
+    }
+
+    public Integer getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(Integer selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
+    }
+
+    public ReactTypeEnum getSelectedReaction() {
+        return selectedReaction;
+    }
+
+    public void setSelectedReaction(ReactTypeEnum selectedReaction) {
+        this.selectedReaction = selectedReaction;
+    }
+
     public static final class Builder {
 
         private Long id;
         private LocalDateTime expirationDate;
         private boolean isPublic;
-        private @Valid @NotNull PostAdditionalData content;
-        private @NotNull Long groupId;
-        private List<ReactApi> reacts;
+        private PostAdditionalData content;
+        private Map<ReactTypeEnum, Integer> reacts;
         private List<CommentApi> comments;
         private String description;
+        private LocalDateTime creationDate;
+        private GroupApi group;
+        private Integer selectedOptionId;
+        private ReactTypeEnum selectedReaction;
 
         private Builder() {
         }
@@ -138,6 +175,11 @@ public class PostApi {
             return this;
         }
 
+        public Builder creationDate(LocalDateTime creationDate) {
+            this.creationDate = creationDate;
+            return this;
+        }
+
         public Builder isPublic(boolean isPublic) {
             this.isPublic = isPublic;
             return this;
@@ -148,8 +190,8 @@ public class PostApi {
             return this;
         }
 
-        public Builder groupId(Long groupId) {
-            this.groupId = groupId;
+        public Builder group(GroupApi group) {
+            this.group = group;
             return this;
         }
 
@@ -158,13 +200,23 @@ public class PostApi {
             return this;
         }
 
-        public Builder reacts(List<ReactApi> reacts) {
+        public Builder reacts(Map<ReactTypeEnum, Integer> reacts) {
             this.reacts = reacts;
             return this;
         }
 
         public Builder comments(List<CommentApi> comments) {
             this.comments = comments;
+            return this;
+        }
+
+        public Builder selectedOptionId(Integer selectedOptionId) {
+            this.selectedOptionId = selectedOptionId;
+            return this;
+        }
+
+        public Builder selectedReaction(ReactTypeEnum selectedReaction) {
+            this.selectedReaction = selectedReaction;
             return this;
         }
 

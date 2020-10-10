@@ -10,6 +10,6 @@ import usociety.manager.domain.model.Message;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findAllByGroupIdOrderByCreationDateAsc(Long groupId);
+    List<Message> findAllByGroupIdOrderByCreationDateDesc(Long groupId);
 
 }

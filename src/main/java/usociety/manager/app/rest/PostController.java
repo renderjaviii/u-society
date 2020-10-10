@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import io.swagger.annotations.ApiResponses;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
+import usociety.manager.app.rest.request.CreatePostRequest;
 import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.post.PostService;
@@ -52,7 +54,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestPart("post") PostApi request,
+    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestPart("post") CreatePostRequest request,
                                                     @RequestPart(value = "image", required = false) MultipartFile image)
             throws GenericException, JsonProcessingException {
         return new ResponseEntity<>(postService.create(getUser(), request, image), CREATED);
@@ -79,8 +81,8 @@ public class PostController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/react", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(@PathVariable("id") Long id,
-                                      @NotNull @RequestParam("react") ReactTypeEnum react) throws GenericException {
-        postService.react(getUser(), id, react);
+                                      @NotNull @RequestParam("value") ReactTypeEnum value) throws GenericException {
+        postService.react(getUser(), id, value);
         return ResponseEntity.ok().build();
     }
 
@@ -105,7 +107,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/survey", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> interactWithSurvey(@PathVariable("id") Long id,
-                                                   @NotNull @RequestParam("vote") Integer vote)
+                                                   @PositiveOrZero @RequestParam("vote") Integer vote)
             throws GenericException {
         postService.interactWithSurvey(getUser(), id, vote);
         return ResponseEntity.ok().build();

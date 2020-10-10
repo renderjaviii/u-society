@@ -12,6 +12,6 @@ import usociety.manager.domain.model.Post;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSortingRepository<Post, Long> {
 
-    List<Post> findAllByGroupIdOrderByCreationDateAsc(Long groupId, Pageable pageable);
+    List<Post> findAllByGroupIdOrderByCreationDateDesc(Long groupId, Pageable pageable);
 
 }

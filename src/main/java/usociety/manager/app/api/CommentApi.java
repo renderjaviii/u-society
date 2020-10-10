@@ -2,28 +2,22 @@ package usociety.manager.app.api;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("Comment")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CommentApi {
 
     @JsonProperty
-    @ApiModelProperty("id")
-    private Long id;
+    private UserApi user;
 
     @JsonProperty
-    @ApiModelProperty("User id")
-    private Long userId;
-
-    @JsonProperty
-    @ApiModelProperty(value = "value", example = "text")
     private String value;
 
     @JsonProperty
-    @ApiModelProperty("creationDate")
     private LocalDateTime creationDate;
 
     public CommentApi() {
@@ -31,8 +25,7 @@ public class CommentApi {
     }
 
     private CommentApi(Builder builder) {
-        id = builder.id;
-        userId = builder.userId;
+        user = builder.user;
         value = builder.value;
         creationDate = builder.creationDate;
     }
@@ -41,12 +34,8 @@ public class CommentApi {
         return new Builder();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
+    public UserApi getUser() {
+        return user;
     }
 
     public String getValue() {
@@ -59,21 +48,15 @@ public class CommentApi {
 
     public static final class Builder {
 
-        private Long id;
-        private Long userId;
+        private UserApi user;
         private String value;
         private LocalDateTime creationDate;
 
         private Builder() {
         }
 
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder userId(Long userId) {
-            this.userId = userId;
+        public Builder user(UserApi user) {
+            this.user = user;
             return this;
         }
 
