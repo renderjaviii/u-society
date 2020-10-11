@@ -55,7 +55,7 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
                     SENDING_GROUP_MESSAGE_ERROR_CODE);
         }
 
-        if (MessageTypeEnum.IMAGE == request.getType() && image.isEmpty()) {
+        if (MessageTypeEnum.IMAGE == request.getType() && Objects.nonNull(image) && image.isEmpty()) {
             throw new GenericException("Es obligatorio que envíe la imagen.", SENDING_GROUP_MESSAGE_ERROR_CODE);
         }
         processContent(request, image);

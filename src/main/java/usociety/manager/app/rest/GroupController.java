@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class GroupController extends CommonController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestPart("group") CreateGroupRequest request,
                                            @RequestPart(value = "photo", required = false) MultipartFile photo)
-            throws GenericException {
+            throws GenericException, MessagingException {
         return new ResponseEntity<>(groupService.create(getUser(), request, photo), CREATED);
     }
 
@@ -136,7 +137,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
-            throws GenericException {
+            throws GenericException, MessagingException {
         groupService.join(id, getUser());
         return ResponseEntity.ok().build();
     }

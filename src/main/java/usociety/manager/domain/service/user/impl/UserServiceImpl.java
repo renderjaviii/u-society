@@ -1,8 +1,12 @@
 package usociety.manager.domain.service.user.impl;
 
+import static java.lang.Boolean.TRUE;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +69,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
+    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException {
         if (validateOtp) {
             otpService.validate(request.getUsername(), request.getOtpCode());
         }
@@ -82,8 +86,7 @@ public class UserServiceImpl implements UserService {
             throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
 
-        String content = String.format("¡Hola %s!, bienvenido a U Society.", StringUtils.capitalize(request.getName()));
-        mailService.send(request.getEmail(), content);
+        mailService.send(request.getEmail(), buildEmailContent(request), TRUE);
         return Converter.user(user);
     }
 
@@ -176,6 +179,14 @@ public class UserServiceImpl implements UserService {
                 throw new GenericException(ex.getMessage());
             }
         }
+    }
+
+    private String buildEmailContent(CreateUserRequest request) {
+        return String.format("<html><body>" +
+                        "<h3>¡Hola <u>%s</u>!</h3>" +
+                        "<p>Bienvenido a <b>U Society</b>, logueate y descrubre todo lo que tenemos para ti.</p>" +
+                        "</html></body>",
+                StringUtils.capitalize(request.getName()));
     }
 
 }

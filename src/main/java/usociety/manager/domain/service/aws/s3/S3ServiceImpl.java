@@ -55,7 +55,7 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public String upload(MultipartFile multipartFile) throws GenericException {
-        if (!multipartFile.isEmpty()) {
+        if (Objects.nonNull(multipartFile) && !multipartFile.isEmpty()) {
             String fileName = generateFileName();
             File file = convertMultiPartToFile(multipartFile, fileName);
             String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);

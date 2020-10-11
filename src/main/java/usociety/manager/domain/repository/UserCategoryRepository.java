@@ -10,6 +10,8 @@ import usociety.manager.domain.model.UserCategory;
 @Repository
 public interface UserCategoryRepository extends JpaRepository<UserCategory, Long> {
 
-    List<UserCategory> findAllByUserId(Long id);
+    List<UserCategory> findAllByUserId(Long userId);
+
+    List<UserCategory> findAllByCategoryIdAndUserIdIsNot(Long categoryId, Long userId);
 
 }

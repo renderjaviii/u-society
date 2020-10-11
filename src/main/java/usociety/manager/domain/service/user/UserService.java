@@ -2,6 +2,8 @@ package usociety.manager.domain.service.user;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import usociety.manager.app.api.UserApi;
@@ -14,7 +16,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface UserService {
 
-    UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException;
+    UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
 
     void verify(String username, String email) throws GenericException;
 

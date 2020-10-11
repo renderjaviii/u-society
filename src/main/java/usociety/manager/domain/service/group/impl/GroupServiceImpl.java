@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CommonServiceImpl;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.group.SendAsyncEmail;
 import usociety.manager.domain.service.user.UserService;
 
 @Service
@@ -57,6 +59,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final UserGroupRepository userGroupRepository;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
+    private final SendAsyncEmail sendAsyncEmail;
     private final UserService userService;
     private final MailService mailService;
     private final S3Service s3Service;
@@ -67,21 +70,21 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                             GroupRepository groupRepository,
                             UserService userService,
                             MailService mailService,
-                            S3Service s3Service) {
+                            S3Service s3Service,
+                            SendAsyncEmail sendAsyncEmail) {
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
         this.userService = userService;
         this.mailService = mailService;
         this.s3Service = s3Service;
+        this.sendAsyncEmail = sendAsyncEmail;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GroupApi create(String username,
-                           CreateGroupRequest request,
-                           MultipartFile photo)
-            throws GenericException {
+    public GroupApi create(String username, CreateGroupRequest request, MultipartFile photo)
+            throws GenericException, MessagingException {
         Optional<Group> optionalGroup = groupRepository.findByName(request.getName());
         if (optionalGroup.isPresent()) {
             String errorMessage = String.format(GROUP_NAME_ERROR_FORMAT, request.getName());
@@ -90,6 +93,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
         Category category = categoryService.get(request.getCategory().getId());
         String photoUrl = s3Service.upload(photo);
+        UserApi userApi = getUser(username);
 
         Group savedGroup;
         try {
@@ -103,7 +107,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                     .build());
 
             userGroupRepository.save(UserGroup.newBuilder()
-                    .userId(getUser(username).getId())
+                    .userId(userApi.getId())
                     .role(ADMINISTRATOR_ROLE)
                     .status(ACTIVE.getCode())
                     .group(savedGroup)
@@ -113,6 +117,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
             s3Service.delete(photoUrl);
             throw new GenericException("Error general creando grupo.", CREATING_GROUP_ERROR_CODE);
         }
+        sendAsyncEmail.send(userApi, savedGroup, category);
+
         return Converter.group(savedGroup);
     }
 
@@ -120,26 +126,31 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     public GetGroupResponse get(Long id, String username) throws GenericException {
         Group group = getGroup(id);
         UserApi user = getUser(username);
-        Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserIdAndStatus(id, user.getId(), ACTIVE.getCode());
+        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
 
+        UserGroupStatusEnum membershipStatus = null;
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
-            List<UserGroup> groupMembers = userGroupRepository
-                    .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
 
-            return GetGroupResponse.newBuilder()
-                    .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
-                    .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
-                    .groupApi(Converter.group(group))
-                    .membershipStatus(ACTIVE)
-                    .build();
+            UserGroupStatusEnum userGroupStatusEnum = UserGroupStatusEnum.fromCode(userGroup.getStatus());
+            if (ACTIVE == userGroupStatusEnum) {
+                List<UserGroup> groupMembers = userGroupRepository
+                        .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
+
+                return GetGroupResponse.newBuilder()
+                        .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
+                        .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
+                        .groupApi(Converter.group(group))
+                        .membershipStatus(ACTIVE)
+                        .build();
+            }
+            membershipStatus = userGroupStatusEnum;
         }
 
         group.setRules(null);
         return GetGroupResponse.newBuilder()
+                .membershipStatus(membershipStatus)
                 .groupApi(Converter.group(group))
-                .membershipStatus(PENDING)
                 .build();
     }
 
@@ -199,7 +210,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
-                .photo(!photo.isEmpty() ? s3Service.upload(photo) : request.getPhoto())
+                .photo(Objects.nonNull(photo) && !photo.isEmpty() ? s3Service.upload(photo) : request.getPhoto())
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
@@ -221,7 +232,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     }
 
     @Override
-    public void join(Long id, String username) throws GenericException {
+    public void join(Long id, String username) throws GenericException, MessagingException {
         Group group = getGroup(id);
         UserApi user = getUser(username);
 
@@ -242,8 +253,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         if (optionalUserGroupAdmin.isPresent()) {
             UserGroup userGroupAdmin = optionalUserGroupAdmin.get();
             UserApi userAdmin = userService.getById(userGroupAdmin.getUserId());
-            mailService.send(userAdmin.getEmail(), String.format("%s ha solicitado unirse a tu grupo %s",
-                    StringUtils.capitalize(user.getName()), StringUtils.capitalize(group.getName())));
+            mailService.send(userAdmin.getEmail(), buildEmailContent(group, user, userAdmin), TRUE);
         }
     }
 
@@ -283,11 +293,23 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     private GroupApi buildGroupResponse(Group group) {
         return GroupApi.newBuilder()
+                .id(group.getId())
                 .category(Converter.category(group.getCategory()))
                 .description(group.getDescription())
                 .photo(group.getPhoto())
                 .name(group.getName())
                 .build();
+    }
+
+    private String buildEmailContent(Group group, UserApi user, UserApi userAdmin) {
+        return String.format("<html><body>" +
+                        "<h3>Hola %s.</h3>" +
+                        "<p>%s ha solicitado unirse a tu grupo: <u>%s</u></p>" +
+                        "<p>¡Dirígite a <b>U - Society</b> y permítele ingresar!</p>" +
+                        "</body></html>",
+                StringUtils.capitalize(userAdmin.getName()),
+                StringUtils.capitalize(user.getName()),
+                StringUtils.capitalize(group.getName()));
     }
 
 }

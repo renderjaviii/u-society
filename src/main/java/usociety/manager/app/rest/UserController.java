@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
@@ -62,7 +63,7 @@ public class UserController extends CommonController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
                                           @RequestPart(value = "photo", required = false) MultipartFile photo)
-            throws GenericException {
+            throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request, photo), CREATED);
     }
 

@@ -2,7 +2,7 @@ package usociety.manager.app.rest.response;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
@@ -11,7 +11,7 @@ import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel(value = "Get group response.")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class GetGroupResponse {
 
     @JsonProperty
