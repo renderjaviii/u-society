@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,7 @@ import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.UpdateUserRequest;
 import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
@@ -58,7 +60,7 @@ public class UserController extends CommonController {
     @PostMapping(path = "/",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserApi> create(@Valid @RequestPart("user") CreateUserRequest request,
+    public ResponseEntity<UserApi> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
                                           @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException {
         return new ResponseEntity<>(userService.create(request, photo), CREATED);
@@ -90,6 +92,21 @@ public class UserController extends CommonController {
             throws GenericException {
         validateUser(username);
         return ResponseEntity.ok(userService.get(username));
+    }
+
+    @ApiOperation(value = "Update.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "User updated."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserApi> update(@Valid @RequestPart(value = "user") UpdateUserRequest request,
+                                          @RequestPart(value = "photo", required = false) MultipartFile photo)
+            throws GenericException {
+        userService.update(getUser(), request, photo);
+        return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "Login.")

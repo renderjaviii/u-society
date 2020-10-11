@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.UpdateUserRequest;
 import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
@@ -30,5 +31,7 @@ public interface UserService {
     List<UserApi> getAll();
 
     void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException;
+
+    void update(String username, UpdateUserRequest request, MultipartFile photo) throws GenericException;
 
 }

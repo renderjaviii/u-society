@@ -15,12 +15,3 @@ INSERT INTO managerConfig(name, value) VALUES('web.authentication.client-id', 'c
 INSERT INTO managerConfig(name, value) VALUES('web.authentication.client-secret', 'admin');
 INSERT INTO managerConfig(name, value) VALUES('web.time-out', '30');
 INSERT INTO managerConfig(name, value) VALUES('config.user.validate-otp', '0');
-
--- Category list
-INSERT INTO category (id, name) VALUES(1, 'Deporte');
-INSERT INTO category (id, name) VALUES(2, 'Video juegos');
-INSERT INTO category (id, name) VALUES(3, 'Educacional');
-
--- Group for testing
-INSERT INTO `group` (id, description, name, objectives, photo, rules, category_id) VALUES(1, 'Este es un grupo de lolsito.', 'Lolsito pro players', '["Jugar LOL."]', 'https://u-society.s3.amazonaws.com/1602210585190-image', '["No ser manco."]', 2);
-INSERT INTO company_db.user_group (id, is_admin, `role`, status, user_id, group_id) VALUES(1, 1, 'Administrador', 0, 1, 1);

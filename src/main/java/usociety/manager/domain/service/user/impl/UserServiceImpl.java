@@ -1,6 +1,7 @@
 package usociety.manager.domain.service.user.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,14 +15,18 @@ import usociety.manager.app.api.TokenApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.UpdateUserRequest;
 import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.exception.WebException;
+import usociety.manager.domain.model.UserCategory;
 import usociety.manager.domain.provider.authentication.AuthenticationConnector;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
+import usociety.manager.domain.repository.CategoryRepository;
+import usociety.manager.domain.repository.UserCategoryRepository;
 import usociety.manager.domain.service.aws.s3.S3Service;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
@@ -32,6 +37,8 @@ import usociety.manager.domain.util.Constant;
 public class UserServiceImpl implements UserService {
 
     private final AuthenticationConnector authenticationConnector;
+    private final UserCategoryRepository userCategoryRepository;
+    private final CategoryRepository categoryRepository;
     private final UserConnector userConnector;
     private final MailService mailService;
     private final OtpService otpService;
@@ -45,12 +52,16 @@ public class UserServiceImpl implements UserService {
                            UserConnector userConnector,
                            MailService mailService,
                            OtpService otpService,
-                           S3Service s3Service) {
+                           S3Service s3Service,
+                           UserCategoryRepository userCategoryRepository,
+                           CategoryRepository categoryRepository) {
         this.authenticationConnector = authenticationConnector;
         this.userConnector = userConnector;
         this.mailService = mailService;
         this.otpService = otpService;
         this.s3Service = s3Service;
+        this.userCategoryRepository = userCategoryRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -103,7 +114,14 @@ public class UserServiceImpl implements UserService {
     public LoginResponse login(UserLoginRequest request) {
         UserDTO user = userConnector.get(request.getUsername());
         TokenApi token = authenticationConnector.login(request);
-        return new LoginResponse(Converter.user(user), token);
+
+        UserApi userApi = Converter.user(user);
+        userApi.setCategoryList(userCategoryRepository.findAllByUserId(userApi.getId())
+                .stream()
+                .map(userCategory -> Converter.category(userCategory.getCategory()))
+                .collect(Collectors.toList()));
+
+        return new LoginResponse(userApi, token);
     }
 
     @Override
@@ -123,6 +141,27 @@ public class UserServiceImpl implements UserService {
     public void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException {
         otpService.validate(username, otpCode);
         userConnector.changePassword(username, request);
+    }
+
+    @Override
+    public void update(String username, UpdateUserRequest request, MultipartFile photo) throws GenericException {
+        String photoUrl = null;
+        if (Objects.nonNull(photo) && !photo.isEmpty()) {
+            photoUrl = s3Service.upload(photo);
+        }
+
+        UserApi userApi = get(username);
+        userApi.setName(StringUtils.defaultString(request.getName(), request.getName()));
+        userApi.setPhoto(StringUtils.defaultString(photoUrl, userApi.getPhoto()));
+
+        List<UserCategory> userCategoryList = userCategoryRepository.findAllByUserId(userApi.getId());
+        userCategoryRepository.deleteInBatch(userCategoryList);
+
+        request.getCategoryList()
+                .forEach(categoryApi -> userCategoryRepository.save(UserCategory.newBuilder()
+                        .category(categoryRepository.getOne(categoryApi.getId()))
+                        .userId(userApi.getId())
+                        .build()));
     }
 
     private void validateUser(String username, String email) throws GenericException {

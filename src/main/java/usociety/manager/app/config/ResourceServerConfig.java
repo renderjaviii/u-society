@@ -3,6 +3,7 @@ package usociety.manager.app.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -22,7 +23,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private String signingKey;
 
     private static final RequestMatcher ENDPOINTS_WITHOUT_AUTH = new OrRequestMatcher(
-            new AntPathRequestMatcher("/services/users/"),
+            new AntPathRequestMatcher("/services/users/", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/services/users/**/verify"),
             new AntPathRequestMatcher("/services/categories/**"),
             new AntPathRequestMatcher("/services/users/login"));

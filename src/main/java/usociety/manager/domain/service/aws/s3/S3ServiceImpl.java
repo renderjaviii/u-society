@@ -60,13 +60,17 @@ public class S3ServiceImpl implements S3Service {
             File file = convertMultiPartToFile(multipartFile, fileName);
             String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
 
-            s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
             try {
-                Files.delete(file.toPath());
-            } catch (IOException e) {
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+                s3client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (Exception e) {
                 s3client.deleteObject(bucketName, fileName);
                 throw new GenericException("Error deleting file.", UPLOADING_FILE_ERROR_CODE);
+            } finally {
+                try {
+                    Files.delete(file.toPath());
+                } catch (IOException ignore) {
+                }
             }
             return fileUrl;
         }

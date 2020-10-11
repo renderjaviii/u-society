@@ -45,7 +45,7 @@ public class MessageController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Void> sendGroupMessage(@Valid @RequestPart("message") MessageApi request,
+    public ResponseEntity<Void> sendGroupMessage(@Valid @RequestPart(value = "message") MessageApi request,
                                                  @RequestPart(value = "image", required = false) MultipartFile image)
             throws GenericException {
         messageService.sendGroupMessage(getUser(), request, image);

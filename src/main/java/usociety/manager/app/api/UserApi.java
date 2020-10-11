@@ -2,6 +2,7 @@ package usociety.manager.app.api;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,6 +40,9 @@ public class UserApi extends BaseObject {
     @JsonProperty
     private String role;
 
+    @JsonProperty
+    private List<CategoryApi> categoryList;
+
     public UserApi() {
         super();
     }
@@ -51,6 +55,10 @@ public class UserApi extends BaseObject {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -61,6 +69,10 @@ public class UserApi extends BaseObject {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public LocalDate getCreatedAt() {
@@ -79,6 +91,14 @@ public class UserApi extends BaseObject {
         this.role = role;
     }
 
+    public List<CategoryApi> getCategoryList() {
+        return categoryList;
+    }
+
+    public void setCategoryList(List<CategoryApi> categoryList) {
+        this.categoryList = categoryList;
+    }
+
     private UserApi(Builder builder) {
         id = builder.id;
         name = builder.name;
@@ -88,6 +108,7 @@ public class UserApi extends BaseObject {
         createdAt = builder.createdAt;
         lastAccessAt = builder.lastAccessAt;
         role = builder.role;
+        categoryList = builder.categoryList;
     }
 
     public static Builder newBuilder() {
@@ -114,6 +135,7 @@ public class UserApi extends BaseObject {
         private LocalDate createdAt;
         private LocalDateTime lastAccessAt;
         private String role;
+        private List<CategoryApi> categoryList;
 
         private Builder() {
             super();
@@ -156,6 +178,11 @@ public class UserApi extends BaseObject {
 
         public Builder role(String role) {
             this.role = role;
+            return this;
+        }
+
+        public Builder categoryList(List<CategoryApi> categoryList) {
+            this.categoryList = categoryList;
             return this;
         }
 

@@ -54,7 +54,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestPart("post") CreatePostRequest request,
+    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestPart(value = "post") CreatePostRequest request,
                                                     @RequestPart(value = "image", required = false) MultipartFile image)
             throws GenericException, JsonProcessingException {
         return new ResponseEntity<>(postService.create(getUser(), request, image), CREATED);
