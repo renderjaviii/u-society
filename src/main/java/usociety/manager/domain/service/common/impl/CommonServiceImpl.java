@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.common;
+package usociety.manager.domain.service.common.impl;
 
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 
@@ -15,6 +15,7 @@ import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.repository.UserGroupRepository;
+import usociety.manager.domain.service.common.CommonService;
 
 @Service
 public abstract class CommonServiceImpl implements CommonService {

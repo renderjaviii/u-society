@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.aws.s3;
+package usociety.manager.domain.service.aws.s3.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +23,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import usociety.manager.domain.exception.GenericException;
+import usociety.manager.domain.service.aws.s3.S3Service;
 
 @Service
 public class S3ServiceImpl implements S3Service {

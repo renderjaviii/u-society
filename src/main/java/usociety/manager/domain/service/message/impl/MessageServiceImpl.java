@@ -17,7 +17,7 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Message;
 import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.aws.s3.S3Service;
-import usociety.manager.domain.service.common.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.message.MessageService;
 import usociety.manager.domain.service.user.UserService;

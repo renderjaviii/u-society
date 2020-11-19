@@ -18,7 +18,7 @@ import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Otp;
 import usociety.manager.domain.repository.OtpRepository;
-import usociety.manager.domain.service.common.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.otp.OtpService;
 
 @Service
