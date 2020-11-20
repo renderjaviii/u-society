@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel("Category")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class CategoryApi {
+public class CategoryApi extends BaseObject {
 
     @JsonProperty
     private Long id;
@@ -30,6 +31,16 @@ public class CategoryApi {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

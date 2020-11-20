@@ -10,9 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "otp")
-public class Otp {
+public class Otp extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -85,6 +87,16 @@ public class Otp {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

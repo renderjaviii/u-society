@@ -9,10 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Request to update group.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateGroupRequest {
+public class UpdateGroupRequest extends BaseObject {
 
     @NotNull
     @JsonProperty
@@ -83,6 +84,16 @@ public class UpdateGroupRequest {
 
     public CategoryApi getCategory() {
         return category;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

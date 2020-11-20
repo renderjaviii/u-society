@@ -4,8 +4,6 @@ import static java.lang.Boolean.TRUE;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -39,7 +37,7 @@ public class SendAsyncEmailDelegateImpl implements SendAsyncEmail {
 
     @Async
     @Override
-    public void send(UserApi user, Group group, Category category) throws GenericException, MessagingException {
+    public void send(UserApi user, Group group, Category category) throws GenericException {
         List<UserCategory> userCategoryList = userCategoryRepository
                 .findAllByCategoryIdAndUserIdIsNot(category.getId(), user.getId());
 

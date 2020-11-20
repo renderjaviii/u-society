@@ -8,9 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "category")
-public class Category {
+public class Category extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -39,6 +41,16 @@ public class Category {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

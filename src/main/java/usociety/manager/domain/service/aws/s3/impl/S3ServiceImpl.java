@@ -23,10 +23,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import usociety.manager.domain.exception.GenericException;
-import usociety.manager.domain.service.aws.s3.S3Service;
+import usociety.manager.domain.service.aws.s3.CloudStorageService;
 
 @Service
-public class S3ServiceImpl implements S3Service {
+public class S3ServiceImpl implements CloudStorageService {
 
     private static final String UPLOADING_FILE_ERROR_CODE = "FILE_UPLOADING_ERROR";
     private static final String FILE_URL_FORMAT = "%s/%s";

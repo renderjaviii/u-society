@@ -12,9 +12,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "survey", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
-public class Survey {
+public class Survey extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -64,6 +66,16 @@ public class Survey {
 
     public void setVote(Integer vote) {
         this.vote = vote;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

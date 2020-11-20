@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +29,7 @@ import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.repository.CategoryRepository;
 import usociety.manager.domain.repository.UserCategoryRepository;
-import usociety.manager.domain.service.aws.s3.S3Service;
+import usociety.manager.domain.service.aws.s3.CloudStorageService;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;
@@ -46,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private final UserConnector userConnector;
     private final MailService mailService;
     private final OtpService otpService;
-    private final S3Service s3Service;
+    private final CloudStorageService cloudStorageService;
 
     @Value("${config.user.validate-otp:0}")
     private boolean validateOtp;
@@ -56,33 +54,33 @@ public class UserServiceImpl implements UserService {
                            UserConnector userConnector,
                            MailService mailService,
                            OtpService otpService,
-                           S3Service s3Service,
+                           CloudStorageService cloudStorageService,
                            UserCategoryRepository userCategoryRepository,
                            CategoryRepository categoryRepository) {
         this.authenticationConnector = authenticationConnector;
         this.userConnector = userConnector;
         this.mailService = mailService;
         this.otpService = otpService;
-        this.s3Service = s3Service;
+        this.cloudStorageService = cloudStorageService;
         this.userCategoryRepository = userCategoryRepository;
         this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException {
+    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
         if (validateOtp) {
             otpService.validate(request.getUsername(), request.getOtpCode());
         }
         validateUser(request.getUsername(), request.getEmail());
 
-        String photoUrl = s3Service.upload(photo);
+        String photoUrl = cloudStorageService.upload(photo);
         request.setPhoto(photoUrl);
 
         UserDTO user;
         try {
             user = userConnector.create(request);
         } catch (Exception ex) {
-            s3Service.delete(photoUrl);
+            cloudStorageService.delete(photoUrl);
             throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
 
@@ -148,23 +146,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(String username, UpdateUserRequest request, MultipartFile photo) throws GenericException {
+        UserApi user = get(username);
         String photoUrl = null;
+        String currentUserPhoto = user.getPhoto();
         if (Objects.nonNull(photo) && !photo.isEmpty()) {
-            photoUrl = s3Service.upload(photo);
+            if (StringUtils.isNotEmpty(currentUserPhoto)) {
+                cloudStorageService.delete(currentUserPhoto);
+            }
+            photoUrl = cloudStorageService.upload(photo);
         }
 
-        UserApi userApi = get(username);
-        userApi.setName(StringUtils.defaultString(request.getName(), request.getName()));
-        userApi.setPhoto(StringUtils.defaultString(photoUrl, userApi.getPhoto()));
+        user.setName(StringUtils.defaultString(request.getName(), user.getName()));
+        user.setPhoto(StringUtils.defaultString(photoUrl, currentUserPhoto));
 
-        List<UserCategory> userCategoryList = userCategoryRepository.findAllByUserId(userApi.getId());
+        List<UserCategory> userCategoryList = userCategoryRepository.findAllByUserId(user.getId());
         userCategoryRepository.deleteInBatch(userCategoryList);
 
         request.getCategoryList()
                 .forEach(categoryApi -> userCategoryRepository.save(UserCategory.newBuilder()
                         .category(categoryRepository.getOne(categoryApi.getId()))
-                        .userId(userApi.getId())
+                        .userId(user.getId())
                         .build()));
+
+        userConnector.update(Converter.user(user));
     }
 
     private void validateUser(String username, String email) throws GenericException {

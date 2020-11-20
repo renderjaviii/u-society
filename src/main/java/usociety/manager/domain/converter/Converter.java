@@ -56,7 +56,7 @@ public class Converter {
         return modelMapper.map(user, UserApi.class);
     }
 
-    public static UserDTO user1(UserDTO user) {
+    public static UserDTO user(UserApi user) {
         return modelMapper.map(user, UserDTO.class);
     }
 

@@ -11,9 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "user_category", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category_id" }))
-public class UserCategory {
+public class UserCategory extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -51,6 +53,16 @@ public class UserCategory {
 
     public Category getCategory() {
         return category;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

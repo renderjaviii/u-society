@@ -16,7 +16,7 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Message;
 import usociety.manager.domain.repository.MessageRepository;
-import usociety.manager.domain.service.aws.s3.S3Service;
+import usociety.manager.domain.service.aws.s3.CloudStorageService;
 import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.message.MessageService;
@@ -31,16 +31,16 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
     private final MessageRepository messageRepository;
     private final GroupService groupService;
     private final UserService userService;
-    private final S3Service s3Service;
+    private final CloudStorageService cloudStorageService;
 
     @Autowired
     public MessageServiceImpl(MessageRepository messageRepository,
                               GroupService groupService,
-                              UserService userService, S3Service s3Service) {
+                              UserService userService, CloudStorageService cloudStorageService) {
         this.messageRepository = messageRepository;
         this.groupService = groupService;
         this.userService = userService;
-        this.s3Service = s3Service;
+        this.cloudStorageService = cloudStorageService;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
 
     private void processContent(MessageApi request, MultipartFile image) throws GenericException {
         if (MessageTypeEnum.IMAGE == request.getType()) {
-            String imageUrl = s3Service.upload(image);
+            String imageUrl = cloudStorageService.upload(image);
             request.setContent(imageUrl);
         }
     }

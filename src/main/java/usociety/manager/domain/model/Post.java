@@ -13,9 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "post")
-public class Post {
+public class Post extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -89,6 +91,16 @@ public class Post {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Update user request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateUserRequest {
+public class UpdateUserRequest extends BaseObject {
 
     @JsonProperty
     private String name;
@@ -33,6 +34,16 @@ public class UpdateUserRequest {
 
     public List<CategoryApi> getCategoryList() {
         return categoryList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

@@ -38,7 +38,7 @@ import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.aws.s3.S3Service;
+import usociety.manager.domain.service.aws.s3.CloudStorageService;
 import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
@@ -66,7 +66,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     private final GroupService groupService;
     private final ObjectMapper objectMapper;
     private final UserService userService;
-    private final S3Service s3Service;
+    private final CloudStorageService cloudStorageService;
 
     @Autowired
     public PostServiceImpl(UserGroupRepository userGroupRepository,
@@ -75,7 +75,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                            ReactRepository reactRepository,
                            PostRepository postRepository,
                            GroupService groupService,
-                           UserService userService, S3Service s3Service) {
+                           UserService userService, CloudStorageService cloudStorageService) {
         this.userGroupRepository = userGroupRepository;
         this.commentRepository = commentRepository;
         this.surveyRepository = surveyRepository;
@@ -83,7 +83,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         this.postRepository = postRepository;
         this.groupService = groupService;
         this.userService = userService;
-        this.s3Service = s3Service;
+        this.cloudStorageService = cloudStorageService;
         objectMapper = new ObjectMapper();
     }
 
@@ -252,7 +252,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                 surveyOption.setId(index);
             }
         } else if (PostTypeEnum.IMAGE == content.getType()) {
-            String imageUrl = s3Service.upload(image);
+            String imageUrl = cloudStorageService.upload(image);
             content.setValue(imageUrl);
         }
     }

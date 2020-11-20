@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Create user response.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateUserResponse {
+public class CreateUserResponse extends BaseObject {
 
     @JsonProperty(value = "expiresAt")
     private LocalDateTime expiresAt;
@@ -28,6 +29,16 @@ public class CreateUserResponse {
 
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

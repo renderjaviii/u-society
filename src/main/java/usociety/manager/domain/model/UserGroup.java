@@ -11,9 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "user_group", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
-public class UserGroup {
+public class UserGroup extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -83,6 +85,16 @@ public class UserGroup {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

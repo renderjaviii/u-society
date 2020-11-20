@@ -9,13 +9,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
 @ApiModel("Post")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(value = "public")
-public class PostApi {
+public class PostApi extends BaseObject {
 
     @JsonProperty
     private Long id;
@@ -52,6 +53,16 @@ public class PostApi {
 
     public PostApi() {
         super();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     private PostApi(Builder builder) {

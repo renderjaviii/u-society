@@ -12,9 +12,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "react", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
-public class React {
+public class React extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

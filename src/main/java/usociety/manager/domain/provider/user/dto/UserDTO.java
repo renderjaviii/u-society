@@ -62,6 +62,10 @@ public class UserDTO extends BaseObject {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -72,6 +76,10 @@ public class UserDTO extends BaseObject {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public LocalDate getCreatedAt() {

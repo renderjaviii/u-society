@@ -13,11 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.util.StringListConverter;
 
 @Entity
 @Table(name = "`group`")
-public class Group {
+public class Group extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -117,6 +118,16 @@ public class Group {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

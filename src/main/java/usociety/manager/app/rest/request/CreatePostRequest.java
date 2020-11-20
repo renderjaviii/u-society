@@ -12,13 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CommentApi;
 import usociety.manager.app.api.ReactApi;
+import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.validator.PostCreationConstraint;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
 @ApiModel("Create post request.")
 @PostCreationConstraint
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class CreatePostRequest {
+public class CreatePostRequest extends BaseObject {
 
     @JsonProperty
     private LocalDateTime expirationDate;
@@ -81,6 +82,16 @@ public class CreatePostRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

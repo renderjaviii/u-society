@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
+import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel(value = "Get group response.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class GetGroupResponse {
+public class GetGroupResponse extends BaseObject {
 
     @JsonProperty
     private GroupApi group;
@@ -59,6 +60,16 @@ public class GetGroupResponse {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

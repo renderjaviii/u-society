@@ -13,9 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "comment")
-public class Comment {
+public class Comment extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -45,6 +47,16 @@ public class Comment {
         userId = builder.userId;
         value = builder.value;
         creationDate = builder.creationDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static Builder newBuilder() {

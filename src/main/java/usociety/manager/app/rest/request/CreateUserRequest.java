@@ -8,10 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Request to create user")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateUserRequest {
+public class CreateUserRequest extends BaseObject {
 
     @NotBlank
     @ApiModelProperty(notes = "Name", required = true)
@@ -85,6 +86,16 @@ public class CreateUserRequest {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

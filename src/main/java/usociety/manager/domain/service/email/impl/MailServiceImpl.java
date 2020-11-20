@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.email.MailService;
 
 @Service
@@ -28,20 +29,24 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void send(String email, String content, boolean isHtml) throws MessagingException {
-        if (isHtml) {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setSubject(SIMPLE_SUBJECT);
-            helper.setText(content, TRUE);
-            helper.setTo(email);
-            javaMailSender.send(message);
-        } else {
-            SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setSubject(SIMPLE_SUBJECT);
-            msg.setText(content);
-            msg.setTo(email);
-            javaMailSender.send(msg);
+    public void send(String email, String content, boolean isHtml) throws GenericException {
+        try {
+            if (isHtml) {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message);
+                helper.setSubject(SIMPLE_SUBJECT);
+                helper.setText(content, TRUE);
+                helper.setTo(email);
+                javaMailSender.send(message);
+            } else {
+                SimpleMailMessage msg = new SimpleMailMessage();
+                msg.setSubject(SIMPLE_SUBJECT);
+                msg.setText(content);
+                msg.setTo(email);
+                javaMailSender.send(msg);
+            }
+        } catch (MessagingException e) {
+            throw new GenericException(e.getMessage(), "IMAGE_COULD_NOT_BE_UPLOADED.");
         }
     }
 

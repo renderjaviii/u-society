@@ -13,9 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import usociety.manager.app.util.BaseObject;
+
 @Entity
 @Table(name = "message")
-public class Message {
+public class Message extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -77,6 +79,16 @@ public class Message {
 
     public Long getUserId() {
         return userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

@@ -36,7 +36,7 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.aws.s3.S3Service;
+import usociety.manager.domain.service.aws.s3.CloudStorageService;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.email.MailService;
@@ -62,7 +62,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final SendAsyncEmail sendAsyncEmail;
     private final UserService userService;
     private final MailService mailService;
-    private final S3Service s3Service;
+    private final CloudStorageService cloudStorageService;
 
     @Autowired
     public GroupServiceImpl(UserGroupRepository userGroupRepository,
@@ -70,14 +70,14 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                             GroupRepository groupRepository,
                             UserService userService,
                             MailService mailService,
-                            S3Service s3Service,
+                            CloudStorageService cloudStorageService,
                             SendAsyncEmail sendAsyncEmail) {
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
         this.userService = userService;
         this.mailService = mailService;
-        this.s3Service = s3Service;
+        this.cloudStorageService = cloudStorageService;
         this.sendAsyncEmail = sendAsyncEmail;
     }
 
@@ -92,7 +92,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
 
         Category category = categoryService.get(request.getCategory().getId());
-        String photoUrl = s3Service.upload(photo);
+        String photoUrl = cloudStorageService.upload(photo);
         UserApi userApi = getUser(username);
 
         Group savedGroup;
@@ -114,7 +114,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                     .isAdmin(TRUE)
                     .build());
         } catch (Exception ex) {
-            s3Service.delete(photoUrl);
+            cloudStorageService.delete(photoUrl);
             throw new GenericException("Error general creando grupo.", CREATING_GROUP_ERROR_CODE);
         }
         sendAsyncEmail.send(userApi, savedGroup, category);
@@ -210,7 +210,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
-                .photo(Objects.nonNull(photo) && !photo.isEmpty() ? s3Service.upload(photo) : request.getPhoto())
+                .photo(Objects.nonNull(photo) && !photo.isEmpty()
+                        ? cloudStorageService.upload(photo) : request.getPhoto())
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
@@ -232,7 +233,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     }
 
     @Override
-    public void join(Long id, String username) throws GenericException, MessagingException {
+    public void join(Long id, String username) throws GenericException {
         Group group = getGroup(id);
         UserApi user = getUser(username);
 

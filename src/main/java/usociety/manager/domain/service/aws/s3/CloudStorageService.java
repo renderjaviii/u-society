@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import usociety.manager.domain.exception.GenericException;
 
-public interface S3Service {
+public interface CloudStorageService {
 
     String upload(MultipartFile multipartFile) throws GenericException;
 
