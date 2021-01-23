@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import usociety.manager.app.api.OtpApi;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.otp.OtpService;
 
+@CrossOrigin(origins = "*", maxAge = 86400)
 @Validated
 @RestController
 @RequestMapping(path = "services/otp")
