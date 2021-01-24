@@ -97,6 +97,8 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
+        logger.info("Trying to get token: {}{}", baseUrl, authPath);
+
         TokenDTO token = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
@@ -112,7 +114,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .bodyToMono(TokenDTO.class)
                 .block();
 
-        logger.info("Access token obtained successfully: {}", token);
+        logger.info("Access token obtained successfully.");
         return token;
     }
 
