@@ -114,7 +114,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .bodyToMono(TokenDTO.class)
                 .block();
 
-        logger.info("Access token obtained successfully: {}", token);
+        logger.info("Access token obtained successfully.");
         return token;
     }
 
