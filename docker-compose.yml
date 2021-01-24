@@ -1,6 +1,6 @@
 version: '2'
 services:
-  config-client:
+  u-society-manager:
     container_name: manager
     build:
       context: .
