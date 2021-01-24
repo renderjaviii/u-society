@@ -97,6 +97,8 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
+        logger.info("Trying to get token to: {}{}", baseUrl, authPath);
+
         TokenDTO token = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
