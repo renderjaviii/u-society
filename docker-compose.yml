@@ -1,0 +1,15 @@
+version: '2'
+services:
+  u-society-manager:
+    container_name: manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: u-society/manager:latest
+    entrypoint: ["java","-jar","/app.jar"]
+    env_file:
+      - ./src/main/resources/cloud.env
+    expose:
+      - 8080
+    ports:
+      - 8080:8080

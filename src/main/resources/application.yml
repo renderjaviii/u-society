@@ -8,15 +8,6 @@ spring:
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
-logging:
-  level:
-    root: DEBUG
-    org.springframework.web: TRACE
-    org.springframework.web-security: TRACE
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-    reactor.ipc.netty:
-      channel.ContextHandler: debug
-      reactor.ipc.netty.http.client.HttpClient: debug
 
 security:
   oauth2:
@@ -57,3 +48,16 @@ spring:
         format_sql: true
 config:
   timezone: ${SERVER_TIME_ZONE}
+
+---
+spring:
+  profiles: dev
+  logging:
+    level:
+      root: DEBUG
+      org.springframework.web: TRACE
+      org.springframework.web-security: TRACE
+      org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+      reactor.ipc.netty:
+        channel.ContextHandler: debug
+        reactor.ipc.netty.http.client.HttpClient: debug
