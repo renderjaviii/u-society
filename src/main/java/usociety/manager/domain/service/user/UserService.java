@@ -16,7 +16,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface UserService {
 
-    UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
+    LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
 
     void verify(String username, String email) throws GenericException;
 

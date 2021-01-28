@@ -118,8 +118,8 @@ public class Application {
 
     private ApiInfo buildApiInfo(String title) {
         return new ApiInfoBuilder()
-                .title(String.format("Rest Manager Base - %s.", title))
-                .description("REST Middleware Manager Base.")
+                .title(String.format("USociety REST Manager - %s.", title))
+                .description("REST Middleware Manager.")
                 .version("1.0")
                 .build();
     }

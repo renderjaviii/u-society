@@ -63,7 +63,7 @@ public class UserController extends CommonController {
     @PostMapping(path = "/",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserApi> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
+    public ResponseEntity<LoginResponse> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
                                           @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request, photo), CREATED);

@@ -101,13 +101,7 @@ public class UserServiceImplTest {
                 .name("name")
                 .build();
 
-        UserApi executed = subject.create(createUserRequest, multipartFile);
-        assertEquals(UserApi.newBuilder()
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L).build(),
-                executed);
+        LoginResponse executed = subject.create(createUserRequest, multipartFile);
 
         InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
         inOrder.verify(otpService).validate(USERNAME, "otp");

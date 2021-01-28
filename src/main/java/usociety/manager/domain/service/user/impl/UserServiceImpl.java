@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
+    public LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException {
         if (validateOtp) {
             otpService.validate(request.getUsername(), request.getOtpCode());
         }
@@ -76,16 +76,18 @@ public class UserServiceImpl implements UserService {
         String photoUrl = cloudStorageService.upload(photo);
         request.setPhoto(photoUrl);
 
-        UserDTO user;
         try {
-            user = userConnector.create(request);
+            userConnector.create(request);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
 
         mailService.send(request.getEmail(), buildEmailContent(request), TRUE);
-        return Converter.user(user);
+        return login(UserLoginRequest.newBuilder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .build());
     }
 
     @Override
