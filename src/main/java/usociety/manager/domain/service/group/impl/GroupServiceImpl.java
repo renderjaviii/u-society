@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.slugify.Slugify;
+
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
@@ -63,6 +65,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final UserService userService;
     private final MailService mailService;
     private final CloudStorageService cloudStorageService;
+    private final Slugify slugify;
 
     @Autowired
     public GroupServiceImpl(UserGroupRepository userGroupRepository,
@@ -71,7 +74,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                             UserService userService,
                             MailService mailService,
                             CloudStorageService cloudStorageService,
-                            SendAsyncEmail sendAsyncEmail) {
+                            SendAsyncEmail sendAsyncEmail, Slugify slugify) {
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
@@ -79,6 +82,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         this.mailService = mailService;
         this.cloudStorageService = cloudStorageService;
         this.sendAsyncEmail = sendAsyncEmail;
+        this.slugify = slugify;
     }
 
     @Override
@@ -259,6 +263,11 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
     }
 
+    @Override
+    public GetGroupResponse getBySlug(Long slug, String user) {
+        return null;
+    }
+
     private String removeCommas(String value) {
         return value.replace(",", EMPTY);
     }
@@ -300,6 +309,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(group.getDescription())
                 .photo(group.getPhoto())
                 .name(group.getName())
+                .slug(slugify.slugify(group.getName()))
                 .build();
     }
 

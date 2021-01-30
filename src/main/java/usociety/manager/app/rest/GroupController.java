@@ -77,6 +77,18 @@ public class GroupController extends CommonController {
         return ResponseEntity.ok(groupService.get(id, getUser()));
     }
 
+    @ApiOperation(value = "Get by slug.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") Long slug)
+            throws GenericException {
+        return ResponseEntity.ok(groupService.getBySlug(slug, getUser()));
+    }
+
     @ApiOperation(value = "Update.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),

@@ -250,5 +250,7 @@
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.10.5" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-models:1.11.133" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-swf-libraries:1.11.22" level="project" />
+    <orderEntry type="library" name="Maven: com.github.slugify:slugify:2.4" level="project" />
+    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:64.2" level="project" />
   </component>
 </module>
