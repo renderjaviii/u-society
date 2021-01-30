@@ -140,8 +140,9 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 return GetGroupResponse.newBuilder()
                         .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
                         .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
-                        .groupApi(Converter.group(group))
+                        .group(Converter.group(group))
                         .membershipStatus(ACTIVE)
+                        .isAdmin(userGroup.isAdmin())
                         .build();
             }
             membershipStatus = userGroupStatusEnum;
@@ -150,7 +151,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         group.setRules(null);
         return GetGroupResponse.newBuilder()
                 .membershipStatus(membershipStatus)
-                .groupApi(Converter.group(group))
+                .group(Converter.group(group))
                 .build();
     }
 
