@@ -28,6 +28,9 @@ public class Group extends BaseObject {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
+
     @Column(name = "description")
     private String description;
 
@@ -120,6 +123,14 @@ public class Group extends BaseObject {
         this.category = category;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
@@ -139,6 +150,7 @@ public class Group extends BaseObject {
         private List<String> objectives;
         private List<String> rules;
         private Category category;
+        private String slug;
 
         private Builder() {
         }
@@ -150,6 +162,11 @@ public class Group extends BaseObject {
 
         public Builder name(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder slug(String slug) {
+            this.slug = slug;
             return this;
         }
 

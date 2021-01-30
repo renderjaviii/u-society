@@ -84,7 +84,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") Long slug)
+    public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") String slug)
             throws GenericException {
         return ResponseEntity.ok(groupService.getBySlug(slug, getUser()));
     }

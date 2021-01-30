@@ -36,6 +36,6 @@ public interface GroupService {
 
     void join(Long id, String username) throws GenericException, MessagingException;
 
-    GetGroupResponse getBySlug(Long slug, String user);
+    GetGroupResponse getBySlug(String slug, String user) throws GenericException;
 
 }
