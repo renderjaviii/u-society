@@ -75,11 +75,10 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{username}/verify")
-    public ResponseEntity<Void> verify(@PathVariable(value = "username") final String username,
-                                       @Email @RequestParam(name = "email") final String email)
+    @PostMapping(path = "/verifyEmail")
+    public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email)
             throws GenericException {
-        userService.verify(username, email);
+        userService.verify(email);
         return ResponseEntity.ok().build();
     }
 

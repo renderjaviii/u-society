@@ -184,12 +184,12 @@ public class UserServiceImplTest {
     @Test
     public void shouldCreateSendOtpForLogUpCorrectly() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenReturn(null);
-        when(otpService.create(any(), any())).thenReturn(OtpApi.newBuilder()
+        when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
                 .otpCode("otp")
                 .build());
-        subject.verify(USERNAME, EMAIL);
+        subject.verify(EMAIL);
         verify(userConnector).get(null, USERNAME, EMAIL);
-        verify(otpService).create(USERNAME, EMAIL);
+        verify(otpService).create(EMAIL);
         verify(mailService).sendOtp(EMAIL, "otp");
     }
 

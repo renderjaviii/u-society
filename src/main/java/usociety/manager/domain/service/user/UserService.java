@@ -18,7 +18,7 @@ public interface UserService {
 
     LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
 
-    void verify(String username, String email) throws GenericException;
+    void verify(String email) throws GenericException;
 
     UserApi get(String username) throws GenericException;
 

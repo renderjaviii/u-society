@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException {
         if (validateOtp) {
-            otpService.validate(request.getUsername(), request.getOtpCode());
+            otpService.validate(request.getEmail(), request.getOtpCode());
         }
         validateUser(request.getUsername(), request.getEmail());
 
@@ -91,9 +91,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verify(String username, String email) throws GenericException {
-        validateUser(username, email);
-        OtpApi userOtp = otpService.create(username, email);
+    public void verify(String email) throws GenericException {
+        validateUser(null, email);
+        OtpApi userOtp = otpService.create(email);
         mailService.sendOtp(email, userOtp.getOtpCode());
     }
 
@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserService {
         try {
             UserDTO user = userConnector.get(null, username, email);
             if (user != null) {
-                throw new GenericException("Usuario ya registrado, por favor verifique el alias y el correo.",
+                throw new GenericException("Usuario ya registrado, por favor verifica la información.",
                         "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {

@@ -39,8 +39,8 @@ public class OtpController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/")
-    public ResponseEntity<OtpApi> create(@RequestParam(name = "username") final String username) {
-        return new ResponseEntity<>(otpService.create(username, null), CREATED);
+    public ResponseEntity<OtpApi> create(@RequestParam(name = "email") final String email) {
+        return new ResponseEntity<>(otpService.create(email), CREATED);
     }
 
     @ApiOperation(value = "Validate user OTP.")

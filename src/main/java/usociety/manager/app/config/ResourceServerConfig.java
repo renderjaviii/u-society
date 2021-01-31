@@ -24,7 +24,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     private static final RequestMatcher ENDPOINTS_WITHOUT_AUTH = new OrRequestMatcher(
             new AntPathRequestMatcher("/services/users/", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/services/users/**/verify"),
+            new AntPathRequestMatcher("/services/users/verifyEmail"),
             new AntPathRequestMatcher("/services/categories/**"),
             new AntPathRequestMatcher("/services/users/login"));
 

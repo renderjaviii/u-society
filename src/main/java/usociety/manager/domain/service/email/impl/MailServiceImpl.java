@@ -17,7 +17,7 @@ import usociety.manager.domain.service.email.MailService;
 @Service
 public class MailServiceImpl implements MailService {
 
-    private static final String SIGN_IN_MESSAGE = "Este es tu código de verificación: %s. Ingrésalo en la página para continuar con el registro.";
+    private static final String SIGN_IN_MESSAGE = "<html><body><p> Este es tu código de verificación: <b>%s</b>. Ingrésalo en la página para continuar con el registro.</p></body></html>";
     private static final String WELCOME_SUBJECT = "Bienvenido a U Society - Verificación de cuenta.";
     private static final String SIMPLE_SUBJECT = "U Society.";
 
@@ -46,17 +46,23 @@ public class MailServiceImpl implements MailService {
                 javaMailSender.send(msg);
             }
         } catch (MessagingException e) {
-            throw new GenericException(e.getMessage(), "IMAGE_COULD_NOT_BE_UPLOADED.");
+            throw new GenericException(e.getMessage(), "EMAIL_COULD_NOT_BE_SEND");
         }
     }
 
     @Override
-    public void sendOtp(String email, String otpCode) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setText(String.format(SIGN_IN_MESSAGE, otpCode));
-        msg.setSubject(WELCOME_SUBJECT);
-        msg.setTo(email);
-        javaMailSender.send(msg);
+    public void sendOtp(String email, String otpCode) throws GenericException {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+            helper.setSubject(WELCOME_SUBJECT);
+            helper.setText(String.format(SIGN_IN_MESSAGE, otpCode), TRUE);
+            helper.setTo(email);
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            throw new GenericException(e.getMessage(), "EMAIL_COULD_NOT_BE_SEND");
+        }
+
     }
 
 }
