@@ -68,10 +68,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException {
+        validateUser(request.getUsername(), request.getEmail());
+
         if (validateOtp) {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
-        validateUser(request.getUsername(), request.getEmail());
 
         String photoUrl = cloudStorageService.upload(photo);
         request.setPhoto(photoUrl);
@@ -91,8 +92,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verify(String email) throws GenericException {
-        validateUser(null, email);
+    public void verify(String email, boolean resendCode) throws GenericException {
+        if (!resendCode) {
+            validateUser(null, email);
+        }
         OtpApi userOtp = otpService.create(email);
         mailService.sendOtp(email, userOtp.getOtpCode());
     }
@@ -108,9 +111,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enableAccount(String username, String otpCode) throws GenericException {
-        otpService.validate(username, otpCode);
-        userConnector.enableAccount(username);
+    public void enableAccount(String email, String otpCode) throws GenericException {
+        otpService.validate(email, otpCode);
+        UserDTO user = userConnector.get(null, null, email);
+        userConnector.enableAccount(user.getUsername());
     }
 
     @Override

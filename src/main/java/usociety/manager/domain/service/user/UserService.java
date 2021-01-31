@@ -18,13 +18,13 @@ public interface UserService {
 
     LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
 
-    void verify(String email) throws GenericException;
+    void verify(String email, boolean resendCode) throws GenericException;
 
     UserApi get(String username) throws GenericException;
 
     UserApi getById(Long id) throws GenericException;
 
-    void enableAccount(String username, String otpCode) throws GenericException;
+    void enableAccount(String email, String otpCode) throws GenericException;
 
     LoginResponse login(UserLoginRequest request) throws GenericException;
 

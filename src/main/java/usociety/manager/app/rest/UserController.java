@@ -8,6 +8,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -64,7 +65,7 @@ public class UserController extends CommonController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
-                                          @RequestPart(value = "photo", required = false) MultipartFile photo)
+                                                @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request, photo), CREATED);
     }
@@ -76,9 +77,24 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/verifyEmail")
-    public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email)
+    public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email,
+                                       @RequestParam(name = "resendCode", required = false) final boolean resendCode)
             throws GenericException {
-        userService.verify(email);
+        userService.verify(email, resendCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "Enable account across otp.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Account enabled."),
+            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
+            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @PostMapping(path = "/enableAccount")
+    public ResponseEntity<Void> enableAccount(@Email @RequestParam(name = "email") final String email,
+                                              @NotEmpty @RequestParam(name = "otpCode") final String otpCode)
+            throws GenericException {
+        userService.enableAccount(email, otpCode);
         return ResponseEntity.ok().build();
     }
 
@@ -88,11 +104,9 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/{username}",
-            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> get(@PathVariable(value = "username") final String username)
             throws GenericException {
-        validateUser(username);
         return ResponseEntity.ok(userService.get(username));
     }
 

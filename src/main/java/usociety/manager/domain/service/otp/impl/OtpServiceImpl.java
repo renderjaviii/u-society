@@ -72,7 +72,7 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
             }
 
             if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
-                throw new GenericException(getErrorMessage("OTP expirado: %s.", otpCode), "EXPIRED_OTP");
+                throw new GenericException(getErrorMessage("OTP expirado: %s.", otpCode), INVALID_OTP_MESSAGE);
             }
 
             otp.setActive(FALSE);
