@@ -96,11 +96,10 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Void> update(@Valid @RequestPart(value = "group") UpdateGroupRequest request,
-                                       @RequestPart(value = "photo", required = false) MultipartFile photo)
+    public ResponseEntity<GetGroupResponse> update(@Valid @RequestPart(value = "group") UpdateGroupRequest request,
+                                                   @RequestPart(value = "photo", required = false) MultipartFile photo)
             throws GenericException, JsonProcessingException {
-        groupService.update(request, getUser(), photo);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(groupService.update(request, getUser(), photo));
     }
 
     @ApiOperation(value = "Get user groups.")

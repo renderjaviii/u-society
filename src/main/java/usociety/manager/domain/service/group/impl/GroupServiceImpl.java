@@ -175,7 +175,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void update(UpdateGroupRequest request, String username, MultipartFile photo) throws GenericException {
+    public GetGroupResponse update(UpdateGroupRequest request, String username, MultipartFile photo)
+            throws GenericException {
         Group group = getGroup(request.getId());
 
         UserApi user = userService.get(username);
@@ -185,7 +186,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
 
         Category category = categoryService.get(request.getCategory().getId());
-        groupRepository.save(Group.newBuilder()
+        Group updatedGroup = groupRepository.save(Group.newBuilder()
                 .slug(slugify.slugify(request.getName()))
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
@@ -196,6 +197,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .category(category)
                 .id(group.getId())
                 .build());
+
+        return buildGetGroupResponse(updatedGroup, username);
     }
 
     @Override

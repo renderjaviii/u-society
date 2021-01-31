@@ -76,7 +76,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/verifyEmail")
+    @PatchMapping(path = "/verifyEmail")
     public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email,
                                        @RequestParam(name = "resendCode", required = false) final boolean resendCode)
             throws GenericException {
@@ -90,7 +90,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/enableAccount")
+    @PatchMapping(path = "/enableAccount")
     public ResponseEntity<Void> enableAccount(@Email @RequestParam(name = "email") final String email,
                                               @NotEmpty @RequestParam(name = "otpCode") final String otpCode)
             throws GenericException {
