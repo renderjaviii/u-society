@@ -186,6 +186,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
         Category category = categoryService.get(request.getCategory().getId());
         groupRepository.save(Group.newBuilder()
+                .slug(slugify.slugify(request.getName()))
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())

@@ -58,6 +58,7 @@ public class Group extends BaseObject {
         name = builder.name;
         description = builder.description;
         photo = builder.photo;
+        slug = builder.slug;
         objectives = builder.objectives;
         rules = builder.rules;
         category = builder.category;
