@@ -101,13 +101,7 @@ public class UserServiceImplTest {
                 .name("name")
                 .build();
 
-        UserApi executed = subject.create(createUserRequest, multipartFile);
-        assertEquals(UserApi.newBuilder()
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L).build(),
-                executed);
+        LoginResponse executed = subject.create(createUserRequest, multipartFile);
 
         InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
         inOrder.verify(otpService).validate(USERNAME, "otp");
@@ -190,12 +184,12 @@ public class UserServiceImplTest {
     @Test
     public void shouldCreateSendOtpForLogUpCorrectly() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenReturn(null);
-        when(otpService.create(any(), any())).thenReturn(OtpApi.newBuilder()
+        when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
                 .otpCode("otp")
                 .build());
-        subject.verify(USERNAME, EMAIL);
+        subject.verify(EMAIL, false);
         verify(userConnector).get(null, USERNAME, EMAIL);
-        verify(otpService).create(USERNAME, EMAIL);
+        verify(otpService).create(EMAIL);
         verify(mailService).sendOtp(EMAIL, "otp");
     }
 

@@ -2,6 +2,7 @@ package usociety.manager.app.rest.request;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -24,6 +25,7 @@ public class CreateGroupRequest extends BaseObject {
     @JsonProperty
     private String description;
 
+    @Valid
     @NotNull
     @JsonProperty
     private CategoryApi category;

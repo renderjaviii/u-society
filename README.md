@@ -32,6 +32,7 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 - Apache tomcat.
 - Jackson databind.
 - Apache commons lang3.
+- JUnit 4 + Mockito.
 
 #### Additional considerations
 1. If you want to change the general server configurations (as port), you can change the environment variables from this file `src/main/resources/development.env`.

@@ -8,6 +8,10 @@ spring:
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 security:
   oauth2:
@@ -28,6 +32,15 @@ spring.mail.properties.mail.smtp:
   writetimeout: 5000
 spring.mail.properties.mail.smtp.starttls.enable: true
 
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: TRACE
+    org.springframework.web-security: TRACE
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    reactor.ipc.netty:
+      channel.ContextHandler: debug
+      reactor.ipc.netty.http.client.HttpClient: debug
 
 ---
 spring:
@@ -48,16 +61,3 @@ spring:
         format_sql: true
 config:
   timezone: ${SERVER_TIME_ZONE}
-
----
-spring:
-  profiles: dev
-  logging:
-    level:
-      root: DEBUG
-      org.springframework.web: TRACE
-      org.springframework.web-security: TRACE
-      org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-      reactor.ipc.netty:
-        channel.ContextHandler: debug
-        reactor.ipc.netty.http.client.HttpClient: debug

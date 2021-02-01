@@ -40,17 +40,16 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
     }
 
     @Override
-    public OtpApi create(String username, String email) {
+    public OtpApi create(String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
                 .active(TRUE)
                 .createdAt(LocalDateTime.now(clock))
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))
                 .otpCode(generateOtpCode())
-                .ownerUsername(username)
                 .emailOwner(email)
                 .build());
 
-        LOGGER.debug("Created OTP {} for username = {}.", otp.getOtpCode(), username);
+        LOGGER.debug("Created OTP {} for email = {}.", otp.getOtpCode(), email);
         return Converter.otp(otp);
     }
 
@@ -63,23 +62,23 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
     }
 
     @Override
-    public void validate(String username, String otpCode) throws GenericException {
-        Optional<Otp> optionalOTP = otpRepository.findByUsernameOwnerAndOtpCode(username, otpCode);
+    public void validate(String email, String otpCode) throws GenericException {
+        Optional<Otp> optionalOTP = otpRepository.findByEmailOwnerAndOtpCode(email, otpCode);
         if (optionalOTP.isPresent()) {
             Otp otp = optionalOTP.get();
 
             if (!otp.isActive()) {
-                throw new GenericException(getErrorMessage("OTP already used: %s.", otpCode), INVALID_OTP_MESSAGE);
+                throw new GenericException(getErrorMessage("Este OTP es obsoleto: %s.", otpCode), INVALID_OTP_MESSAGE);
             }
 
             if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
-                throw new GenericException(getErrorMessage("Expired OTP: %s.", otpCode), "EXPIRED_OTP");
+                throw new GenericException(getErrorMessage("OTP expirado: %s.", otpCode), INVALID_OTP_MESSAGE);
             }
 
             otp.setActive(FALSE);
             otpRepository.save(otp);
         } else {
-            throw new GenericException(getErrorMessage("Invalid OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
+            throw new GenericException(getErrorMessage("OTP inválido: %s.", otpCode), INVALID_OTP_MESSAGE);
         }
     }
 

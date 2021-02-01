@@ -1,5 +1,7 @@
 package usociety.manager.app.api;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,6 +12,7 @@ import usociety.manager.app.util.BaseObject;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CategoryApi extends BaseObject {
 
+    @NotNull
     @JsonProperty
     private Long id;
 

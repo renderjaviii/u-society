@@ -33,6 +33,9 @@ public class GroupApi extends BaseObject {
     @JsonProperty
     private CategoryApi category;
 
+    @JsonProperty
+    private String slug;
+
     public GroupApi() {
         super();
     }
@@ -45,6 +48,7 @@ public class GroupApi extends BaseObject {
         objectives = builder.objectives;
         rules = builder.rules;
         category = builder.category;
+        slug = builder.slug;
     }
 
     public static Builder newBuilder() {
@@ -79,20 +83,8 @@ public class GroupApi extends BaseObject {
         return category;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public String getSlug() {
+        return slug;
     }
 
     public void setObjectives(List<String> objectives) {
@@ -101,10 +93,6 @@ public class GroupApi extends BaseObject {
 
     public void setRules(List<String> rules) {
         this.rules = rules;
-    }
-
-    public void setCategory(CategoryApi category) {
-        this.category = category;
     }
 
     @Override
@@ -126,6 +114,7 @@ public class GroupApi extends BaseObject {
         private List<String> objectives;
         private List<String> rules;
         private CategoryApi category;
+        private String slug;
 
         private Builder() {
         }
@@ -162,6 +151,11 @@ public class GroupApi extends BaseObject {
 
         public Builder category(CategoryApi category) {
             this.category = category;
+            return this;
+        }
+
+        public Builder slug(String slug) {
+            this.slug = slug;
             return this;
         }
 

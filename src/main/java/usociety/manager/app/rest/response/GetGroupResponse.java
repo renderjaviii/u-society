@@ -27,15 +27,23 @@ public class GetGroupResponse extends BaseObject {
     @JsonProperty
     private UserGroupStatusEnum membershipStatus;
 
+    @JsonProperty
+    private boolean isAdmin;
+
     public GetGroupResponse() {
         super();
     }
 
     private GetGroupResponse(Builder builder) {
-        group = builder.groupApi;
+        group = builder.group;
         activeMembers = builder.activeMembers;
         pendingMembers = builder.pendingMembers;
         membershipStatus = builder.membershipStatus;
+        isAdmin = builder.isAdmin;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public GroupApi getGroup() {
@@ -54,12 +62,8 @@ public class GetGroupResponse extends BaseObject {
         return membershipStatus;
     }
 
-    public void setMembershipStatus(UserGroupStatusEnum membershipStatus) {
-        this.membershipStatus = membershipStatus;
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
     @Override
@@ -74,16 +78,18 @@ public class GetGroupResponse extends BaseObject {
 
     public static final class Builder {
 
-        private GroupApi groupApi;
+        private GroupApi group;
         private List<UserApi> activeMembers;
         private List<UserApi> pendingMembers;
         private UserGroupStatusEnum membershipStatus;
+        private boolean isAdmin;
 
         private Builder() {
+            super();
         }
 
-        public Builder groupApi(GroupApi groupApi) {
-            this.groupApi = groupApi;
+        public Builder group(GroupApi group) {
+            this.group = group;
             return this;
         }
 
@@ -99,6 +105,11 @@ public class GetGroupResponse extends BaseObject {
 
         public Builder membershipStatus(UserGroupStatusEnum membershipStatus) {
             this.membershipStatus = membershipStatus;
+            return this;
+        }
+
+        public Builder isAdmin(boolean isAdmin) {
+            this.isAdmin = isAdmin;
             return this;
         }
 

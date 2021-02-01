@@ -6,6 +6,6 @@ public interface MailService {
 
     void send(String email, String content, boolean isHtml) throws GenericException;
 
-    void sendOtp(String email, String otpCode);
+    void sendOtp(String email, String otpCode) throws GenericException;
 
 }
