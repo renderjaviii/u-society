@@ -2,6 +2,17 @@ server:
   servlet:
     context-path: ${SERVER_CONTEXT_PATH}
   port: ${SERVER_PORT}
+  ssl:
+    key-store: classpath:keystore/keystore.p12
+    key-store-password: password
+    keyStoreType: PKCS12
+    keyAlias: renderjaviii
+    enabled: true
+
+trust:
+  store: classpath:keystore/keystore.p12
+  store.password: password
+
 spring:
   profiles:
     active: ${SERVER_ACTIVE_PROFILE}
@@ -32,15 +43,6 @@ spring.mail.properties.mail.smtp:
   writetimeout: 5000
 spring.mail.properties.mail.smtp.starttls.enable: true
 
-logging:
-  level:
-    root: DEBUG
-    org.springframework.web: TRACE
-    org.springframework.web-security: TRACE
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-    reactor.ipc.netty:
-      channel.ContextHandler: debug
-      reactor.ipc.netty.http.client.HttpClient: debug
 
 ---
 spring:
