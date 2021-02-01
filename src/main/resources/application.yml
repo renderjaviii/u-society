@@ -27,6 +27,7 @@ spring:
 security:
   oauth2:
     resource.filter-order: 3
+    require-ssl: true
 config:
   table: ${SERVER_CONFIG_TABLE_NAME}
 
