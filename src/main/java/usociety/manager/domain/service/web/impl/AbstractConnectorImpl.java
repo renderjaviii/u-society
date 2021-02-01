@@ -120,7 +120,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
         logger.info("Trying to get token: {}{}", baseUrl, authPath);
 
         TokenDTO token = WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(buildHttpClient(30)))
+                .clientConnector(new ReactorClientHttpConnector(buildHttpClient(5000)))
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
