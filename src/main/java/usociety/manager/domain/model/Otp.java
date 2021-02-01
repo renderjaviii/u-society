@@ -36,7 +36,7 @@ public class Otp extends BaseObject {
     @Column(name = "username_owner")
     private String usernameOwner;
 
-    @Column(name = "email_owner")
+    @Column(name = "email_owner", nullable = false)
     private String emailOwner;
 
     public Otp() {

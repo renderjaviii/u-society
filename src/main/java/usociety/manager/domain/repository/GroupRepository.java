@@ -13,6 +13,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     Optional<Group> findByName(String name);
 
+    Optional<Group> findBySlug(String slug);
+
     List<Group> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name);
 
     List<Group> findByCategoryIdOrNameContainingIgnoreCase(Long categoryId, String name);

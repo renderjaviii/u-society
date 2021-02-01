@@ -6,8 +6,8 @@ import usociety.manager.domain.service.common.CommonService;
 
 public interface OtpService extends CommonService {
 
-    OtpApi create(String username, String email);
+    OtpApi create(String email);
 
-    void validate(String username, String otpCode) throws GenericException;
+    void validate(String email, String otpCode) throws GenericException;
 
 }

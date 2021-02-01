@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.slugify.Slugify;
+
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
@@ -63,6 +65,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     private final UserService userService;
     private final MailService mailService;
     private final CloudStorageService cloudStorageService;
+    private final Slugify slugify;
 
     @Autowired
     public GroupServiceImpl(UserGroupRepository userGroupRepository,
@@ -71,7 +74,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                             UserService userService,
                             MailService mailService,
                             CloudStorageService cloudStorageService,
-                            SendAsyncEmail sendAsyncEmail) {
+                            SendAsyncEmail sendAsyncEmail, Slugify slugify) {
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
@@ -79,6 +82,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         this.mailService = mailService;
         this.cloudStorageService = cloudStorageService;
         this.sendAsyncEmail = sendAsyncEmail;
+        this.slugify = slugify;
     }
 
     @Override
@@ -101,6 +105,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                     .description(request.getDescription())
                     .objectives(request.getObjectives().stream().map(this::removeCommas).collect(Collectors.toList()))
                     .rules(request.getRules().stream().map(this::removeCommas).collect(Collectors.toList()))
+                    .slug(slugify.slugify(request.getName()))
                     .name(request.getName())
                     .category(category)
                     .photo(photoUrl)
@@ -125,33 +130,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     @Override
     public GetGroupResponse get(Long id, String username) throws GenericException {
         Group group = getGroup(id);
-        UserApi user = getUser(username);
-        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
-
-        UserGroupStatusEnum membershipStatus = null;
-        if (optionalUserGroup.isPresent()) {
-            UserGroup userGroup = optionalUserGroup.get();
-
-            UserGroupStatusEnum userGroupStatusEnum = UserGroupStatusEnum.fromCode(userGroup.getStatus());
-            if (ACTIVE == userGroupStatusEnum) {
-                List<UserGroup> groupMembers = userGroupRepository
-                        .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
-
-                return GetGroupResponse.newBuilder()
-                        .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
-                        .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
-                        .groupApi(Converter.group(group))
-                        .membershipStatus(ACTIVE)
-                        .build();
-            }
-            membershipStatus = userGroupStatusEnum;
-        }
-
-        group.setRules(null);
-        return GetGroupResponse.newBuilder()
-                .membershipStatus(membershipStatus)
-                .groupApi(Converter.group(group))
-                .build();
+        return buildGetGroupResponse(group, username);
     }
 
     @Override
@@ -196,7 +175,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void update(UpdateGroupRequest request, String username, MultipartFile photo) throws GenericException {
+    public GetGroupResponse update(UpdateGroupRequest request, String username, MultipartFile photo)
+            throws GenericException {
         Group group = getGroup(request.getId());
 
         UserApi user = userService.get(username);
@@ -206,7 +186,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
 
         Category category = categoryService.get(request.getCategory().getId());
-        groupRepository.save(Group.newBuilder()
+        Group updatedGroup = groupRepository.save(Group.newBuilder()
+                .slug(slugify.slugify(request.getName()))
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
@@ -216,6 +197,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .category(category)
                 .id(group.getId())
                 .build());
+
+        return buildGetGroupResponse(updatedGroup, username);
     }
 
     @Override
@@ -256,6 +239,48 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
             UserApi userAdmin = userService.getById(userGroupAdmin.getUserId());
             mailService.send(userAdmin.getEmail(), buildEmailContent(group, user, userAdmin), TRUE);
         }
+    }
+
+    @Override
+    public GetGroupResponse getBySlug(String slug, String user) throws GenericException {
+        Optional<Group> optionalGroup = groupRepository.findBySlug(slug);
+        if (!optionalGroup.isPresent()) {
+            throw new GenericException("Groupo no encontrado.", GETTING_GROUP_ERROR_CODE);
+        }
+
+        Group group = optionalGroup.get();
+        return buildGetGroupResponse(group, user);
+    }
+
+    private GetGroupResponse buildGetGroupResponse(Group group, String username) throws GenericException {
+        UserApi user = getUser(username);
+        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(group.getId(), user.getId());
+
+        UserGroupStatusEnum membershipStatus = null;
+        if (optionalUserGroup.isPresent()) {
+            UserGroup userGroup = optionalUserGroup.get();
+
+            UserGroupStatusEnum userGroupStatusEnum = UserGroupStatusEnum.fromCode(userGroup.getStatus());
+            if (ACTIVE == userGroupStatusEnum) {
+                List<UserGroup> groupMembers = userGroupRepository
+                        .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
+
+                return GetGroupResponse.newBuilder()
+                        .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
+                        .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
+                        .group(Converter.group(group))
+                        .membershipStatus(ACTIVE)
+                        .isAdmin(userGroup.isAdmin())
+                        .build();
+            }
+            membershipStatus = userGroupStatusEnum;
+        }
+
+        group.setRules(null);
+        return GetGroupResponse.newBuilder()
+                .membershipStatus(membershipStatus)
+                .group(Converter.group(group))
+                .build();
     }
 
     private String removeCommas(String value) {
@@ -299,6 +324,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(group.getDescription())
                 .photo(group.getPhoto())
                 .name(group.getName())
+                .slug(group.getSlug())
                 .build();
     }
 

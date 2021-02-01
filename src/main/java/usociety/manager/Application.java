@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.github.slugify.Slugify;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -30,6 +32,11 @@ public class Application {
     @Bean
     public Clock clock() {
         return Clock.systemDefaultZone();
+    }
+
+    @Bean
+    public Slugify slugify() {
+        return new Slugify();
     }
 
     @Bean
@@ -118,8 +125,8 @@ public class Application {
 
     private ApiInfo buildApiInfo(String title) {
         return new ApiInfoBuilder()
-                .title(String.format("Rest Manager Base - %s.", title))
-                .description("REST Middleware Manager Base.")
+                .title(String.format("USociety REST Manager - %s.", title))
+                .description("REST Middleware Manager.")
                 .version("1.0")
                 .build();
     }

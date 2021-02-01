@@ -67,31 +67,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserApi create(CreateUserRequest request, MultipartFile photo) throws GenericException {
-        if (validateOtp) {
-            otpService.validate(request.getUsername(), request.getOtpCode());
-        }
+    public LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException {
         validateUser(request.getUsername(), request.getEmail());
+
+        if (validateOtp) {
+            otpService.validate(request.getEmail(), request.getOtpCode());
+        }
 
         String photoUrl = cloudStorageService.upload(photo);
         request.setPhoto(photoUrl);
 
-        UserDTO user;
         try {
-            user = userConnector.create(request);
+            userConnector.create(request);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
 
         mailService.send(request.getEmail(), buildEmailContent(request), TRUE);
-        return Converter.user(user);
+        return login(UserLoginRequest.newBuilder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .build());
     }
 
     @Override
-    public void verify(String username, String email) throws GenericException {
-        validateUser(username, email);
-        OtpApi userOtp = otpService.create(username, email);
+    public void verify(String email, boolean resendCode) throws GenericException {
+        if (!resendCode) {
+            validateUser(null, email);
+        }
+        OtpApi userOtp = otpService.create(email);
         mailService.sendOtp(email, userOtp.getOtpCode());
     }
 
@@ -106,9 +111,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enableAccount(String username, String otpCode) throws GenericException {
-        otpService.validate(username, otpCode);
-        userConnector.enableAccount(username);
+    public void enableAccount(String email, String otpCode) throws GenericException {
+        otpService.validate(email, otpCode);
+        UserDTO user = userConnector.get(null, null, email);
+        userConnector.enableAccount(user.getUsername());
     }
 
     @Override
@@ -175,7 +181,7 @@ public class UserServiceImpl implements UserService {
         try {
             UserDTO user = userConnector.get(null, username, email);
             if (user != null) {
-                throw new GenericException("Usuario ya registrado, por favor verifique el alias y el correo.",
+                throw new GenericException("Usuario ya registrado, por favor verifica la información.",
                         "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {
