@@ -12,6 +12,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.net.ssl.SSLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,6 +28,9 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
 import io.netty.channel.ChannelOption;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.StringUtil;
 import reactor.core.publisher.Mono;
@@ -72,17 +77,27 @@ public class AbstractConnectorImpl implements AbstractConnector {
     }
 
     private void buildWebClient(int timeOut) {
-        HttpClient httpClient = HttpClient.create()
-                .tcpConfiguration(client -> client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                        .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))));
 
-        webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(TRUE)))
-                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .filter(responseFilter())
-                .build();
+        try {
+            HttpClient httpClient = HttpClient.create()
+                    .tcpConfiguration(client -> client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                            .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))));
+
+            SslContext sslContext = SslContextBuilder.forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .build();
+
+            httpClient.secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
+
+            webClient = WebClient.builder()
+                    .baseUrl(baseUrl)
+                    .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(TRUE)))
+                    .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
+                    .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .filter(responseFilter())
+                    .build();
+        } catch (SSLException ignore) {
+        }
     }
 
     private ExchangeFilterFunction responseFilter() {
@@ -156,7 +171,8 @@ public class AbstractConnectorImpl implements AbstractConnector {
     public <T> List<T> getList(URI uri, Class<T> responseClazz) {
         return webClient.get().uri(uri.toString())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<T>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<T>>() {
+                })
                 .block();
     }
 
