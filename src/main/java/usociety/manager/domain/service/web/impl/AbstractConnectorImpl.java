@@ -1,6 +1,5 @@
 package usociety.manager.domain.service.web.impl;
 
-import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -77,27 +76,33 @@ public class AbstractConnectorImpl implements AbstractConnector {
     }
 
     private void buildWebClient(int timeOut) {
+        HttpClient httpClient = buildHttpClient(timeOut);
 
+        webClient = WebClient.builder()
+                .baseUrl(baseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
+                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .filter(responseFilter())
+                .build();
+
+    }
+
+    private HttpClient buildHttpClient(int timeOut) {
         try {
-            HttpClient httpClient = HttpClient.create()
-                    .tcpConfiguration(client -> client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                            .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))));
-
             SslContext sslContext = SslContextBuilder.forClient()
                     .trustManager(InsecureTrustManagerFactory.INSTANCE)
                     .build();
 
-            httpClient.secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
-
-            webClient = WebClient.builder()
-                    .baseUrl(baseUrl)
-                    .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(TRUE)))
-                    .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                    .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .filter(responseFilter())
-                    .build();
-        } catch (SSLException ignore) {
+            return HttpClient.create()
+                    .tcpConfiguration(client ->
+                            client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                                    .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))))
+                    .secure(t -> t.sslContext(sslContext));
+        } catch (SSLException e) {
+            e.printStackTrace();
         }
+        return HttpClient.create();
     }
 
     private ExchangeFilterFunction responseFilter() {
@@ -115,6 +120,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
         logger.info("Trying to get token: {}{}", baseUrl, authPath);
 
         TokenDTO token = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(buildHttpClient(30)))
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
