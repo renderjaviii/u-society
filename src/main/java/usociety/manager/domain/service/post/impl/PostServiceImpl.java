@@ -252,8 +252,8 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                 surveyOption.setId(index);
             }
         } else if (PostTypeEnum.IMAGE == content.getType()) {
-            String imageUrl = cloudStorageService.upload(image);
-            content.setValue(imageUrl);
+        //    String imageUrl = cloudStorageService.upload(image);
+      //      content.setValue(imageUrl);
         }
     }
 

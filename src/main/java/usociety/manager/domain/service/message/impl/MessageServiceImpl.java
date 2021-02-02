@@ -82,8 +82,8 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
 
     private void processContent(MessageApi request, MultipartFile image) throws GenericException {
         if (MessageTypeEnum.IMAGE == request.getType()) {
-            String imageUrl = cloudStorageService.upload(image);
-            request.setContent(imageUrl);
+           // String imageUrl = cloudStorageService.upload(image);
+         //   request.setContent(imageUrl);
         }
     }
 

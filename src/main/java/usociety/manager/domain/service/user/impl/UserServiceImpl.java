@@ -74,13 +74,13 @@ public class UserServiceImpl implements UserService {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
 
-        String photoUrl = cloudStorageService.upload(photo);
-        request.setPhoto(photoUrl);
+/*        String photoUrl = cloudStorageService.upload(photo);
+        request.setPhoto(photoUrl);*/
 
         try {
             userConnector.create(request);
         } catch (Exception ex) {
-            cloudStorageService.delete(photoUrl);
+        //    cloudStorageService.delete(photoUrl);
             throw new GenericException("El usuario no pudo ser creado", "USER_NOT_CREATED_ERROR");
         }
 
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }
-            photoUrl = cloudStorageService.upload(photo);
+            //photoUrl = cloudStorageService.upload(photo);
         }
 
         user.setName(StringUtils.defaultString(request.getName(), user.getName()));

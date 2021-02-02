@@ -57,12 +57,11 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+            consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GroupApi> create(@Valid @RequestPart("group") CreateGroupRequest request,
-                                           @RequestPart(value = "photo", required = false) MultipartFile photo)
+    public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateGroupRequest request)
             throws GenericException, MessagingException {
-        return new ResponseEntity<>(groupService.create(getUser(), request, photo), CREATED);
+        return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
     }
 
     @ApiOperation(value = "Get.")
@@ -95,11 +94,10 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<GetGroupResponse> update(@Valid @RequestPart(value = "group") UpdateGroupRequest request,
-                                                   @RequestPart(value = "photo", required = false) MultipartFile photo)
+    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<GetGroupResponse> update(@Valid @RequestPart(value = "group") UpdateGroupRequest request)
             throws GenericException, JsonProcessingException {
-        return ResponseEntity.ok(groupService.update(request, getUser(), photo));
+        return ResponseEntity.ok(groupService.update(request, getUser()));
     }
 
     @ApiOperation(value = "Get user groups.")

@@ -6,7 +6,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface CloudStorageService {
 
-    String upload(MultipartFile multipartFile) throws GenericException;
+    String upload(String base64Image) throws GenericException;
 
     void delete(String fileUrl);
 

@@ -87,7 +87,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GroupApi create(String username, CreateGroupRequest request, MultipartFile photo)
+    public GroupApi create(String username, CreateGroupRequest request)
             throws GenericException, MessagingException {
         Optional<Group> optionalGroup = groupRepository.findByName(request.getName());
         if (optionalGroup.isPresent()) {
@@ -96,7 +96,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         }
 
         Category category = categoryService.get(request.getCategory().getId());
-        String photoUrl = cloudStorageService.upload(photo);
+        String photoUrl = cloudStorageService.upload(request.getPhoto());
         UserApi userApi = getUser(username);
 
         Group savedGroup;
@@ -175,7 +175,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GetGroupResponse update(UpdateGroupRequest request, String username, MultipartFile photo)
+    public GetGroupResponse update(UpdateGroupRequest request, String username)
             throws GenericException {
         Group group = getGroup(request.getId());
 
@@ -191,8 +191,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
-                .photo(Objects.nonNull(photo) && !photo.isEmpty()
-                        ? cloudStorageService.upload(photo) : request.getPhoto())
+               /* .photo(Objects.nonNull(photo) && !photo.isEmpty()
+                        ? cloudStorageService.upload(photo) : request.getPhoto())*/
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
