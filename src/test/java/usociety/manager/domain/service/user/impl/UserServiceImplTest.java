@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import usociety.manager.app.api.CategoryApi;
@@ -92,7 +91,6 @@ public class UserServiceImplTest {
     @Test
     public void shouldCreateUserCorrectly() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenReturn(null);
-        MockMultipartFile multipartFile = new MockMultipartFile("fileName", new byte[10]);
         CreateUserRequest createUserRequest = CreateUserRequest.newBuilder()
                 .username(USERNAME)
                 .password("pass")
@@ -106,7 +104,6 @@ public class UserServiceImplTest {
         InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
         inOrder.verify(userConnector).get(null, USERNAME, EMAIL);
         inOrder.verify(otpService).validate(EMAIL, "otp");
-        //inOrder.verify(cloudStorageService).upload(multipartFile);
         inOrder.verify(userConnector).create(createUserRequest);
         inOrder.verify(mailService).send(EMAIL,
                 "<html><body>" +
@@ -194,7 +191,6 @@ public class UserServiceImplTest {
     @Test(expected = GenericException.class)
     public void shouldDeleteImageIfUserCreationFails() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenReturn(null);
-        MockMultipartFile multipartFile = new MockMultipartFile("fileName", new byte[10]);
         CreateUserRequest createUserRequest = CreateUserRequest.newBuilder()
                 .username(USERNAME)
                 .password("pass")
@@ -345,7 +341,6 @@ public class UserServiceImplTest {
                 .id(10L)
                 .build());
 
-        MockMultipartFile mockMultipartFile = new MockMultipartFile("fileName", new byte[10]);
         subject.update(USERNAME, new UpdateUserRequest("Another Name",
                 Collections.singletonList(new CategoryApi(3L, "New Category"))));
 
@@ -355,7 +350,6 @@ public class UserServiceImplTest {
                 categoryRepository);
         inOrder.verify(userConnector).get(USERNAME);
         inOrder.verify(cloudStorageService).delete("photoUrl");
-        // inOrder.verify(cloudStorageService).upload(mockMultipartFile);
         inOrder.verify(userCategoryRepository).findAllByUserId(1L);
         inOrder.verify(userCategoryRepository).deleteInBatch(Collections.singletonList(userCategory));
         inOrder.verify(categoryRepository).getOne(3L);

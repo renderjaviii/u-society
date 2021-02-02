@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,14 +88,14 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     }
 
     @Override
-    public PostApi create(String username, CreatePostRequest request, MultipartFile image)
+    public PostApi create(String username, CreatePostRequest request)
             throws GenericException, JsonProcessingException {
         validateIfUserActiveIsMember(username, request.getGroupId(), CREATING_POST_ERROR_CODE);
-        if (PostTypeEnum.IMAGE == request.getContent().getType() && Objects.isNull(image)) {
+        if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isNotEmpty(request.getImage())) {
             throw new GenericException("Es obligatorio que envíes la imagen.", CREATING_POST_ERROR_CODE);
         }
 
-        processContent(request, image);
+        processContent(request, request.getImage());
         PostApi postApi = Converter.post(postRepository.save(Post.newBuilder()
                 .group(groupService.get(request.getGroupId()))
                 .creationDate(LocalDateTime.now(clock))
@@ -242,7 +242,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         postRepository.save(Converter.post(postApi));
     }
 
-    private void processContent(CreatePostRequest request, MultipartFile image) throws GenericException {
+    private void processContent(CreatePostRequest request, String image) throws GenericException {
         PostAdditionalData content = request.getContent();
         if (PostTypeEnum.SURVEY == content.getType()) {
             List<SurveyOption> surveyOptions = content.getOptions();
@@ -252,8 +252,8 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                 surveyOption.setId(index);
             }
         } else if (PostTypeEnum.IMAGE == content.getType()) {
-        //    String imageUrl = cloudStorageService.upload(image);
-      //      content.setValue(imageUrl);
+            String imageUrl = cloudStorageService.upload(image);
+            content.setValue(imageUrl);
         }
     }
 

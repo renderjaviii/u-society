@@ -59,7 +59,7 @@ public class S3ServiceImpl implements CloudStorageService {
     public String upload(String base64Image) throws GenericException {
         if (StringUtils.isNotEmpty(base64Image)) {
             String fileName = generateFileName();
-            File file = convertMultiPartToFile(base64Image, fileName);
+            File file = convertBase64ToFile(base64Image, fileName);
             String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
 
             try {
@@ -86,14 +86,14 @@ public class S3ServiceImpl implements CloudStorageService {
         }
     }
 
-    private File convertMultiPartToFile(String base64Image, String fileName) throws GenericException {
+    private File convertBase64ToFile(String base64Image, String fileName) throws GenericException {
         File file;
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception e) {
-            throw new GenericException("Error reading multipart file.", UPLOADING_FILE_ERROR_CODE);
+            throw new GenericException("Error reading base64 file.", UPLOADING_FILE_ERROR_CODE);
         }
 
         return file;

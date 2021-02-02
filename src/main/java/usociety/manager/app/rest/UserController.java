@@ -60,7 +60,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            consumes = { MediaType.APPLICATION_JSON_VALUE},
+            consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> create(@Valid @RequestBody CreateUserRequest request)
             throws GenericException, MessagingException {
@@ -113,7 +113,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {

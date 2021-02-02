@@ -2,8 +2,6 @@ package usociety.manager.domain.service.post;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import usociety.manager.app.api.PostApi;
@@ -14,7 +12,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface PostService {
 
-    PostApi create(String username, CreatePostRequest request, MultipartFile image)
+    PostApi create(String username, CreatePostRequest request)
             throws GenericException, JsonProcessingException;
 
     List<PostApi> getAll(String username, Long groupId, int page) throws GenericException;
