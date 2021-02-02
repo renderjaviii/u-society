@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import usociety.manager.app.api.MessageApi;
 import usociety.manager.app.api.UserApi;
@@ -44,7 +44,7 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
     }
 
     @Override
-    public void sendGroupMessage(String username, MessageApi request, MultipartFile image) throws GenericException {
+    public void sendGroupMessage(String username, MessageApi request) throws GenericException {
         UserApi user = getUser(username);
         Long groupId = request.getGroup().getId();
         Group group = groupService.get(groupId);
@@ -55,10 +55,10 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
                     SENDING_GROUP_MESSAGE_ERROR_CODE);
         }
 
-        if (MessageTypeEnum.IMAGE == request.getType() && Objects.nonNull(image) && image.isEmpty()) {
+        if (MessageTypeEnum.IMAGE == request.getType() && StringUtils.isNotEmpty(request.getImage())) {
             throw new GenericException("Es obligatorio que envíe la imagen.", SENDING_GROUP_MESSAGE_ERROR_CODE);
         }
-        processContent(request, image);
+        processContent(request, request.getImage());
 
         messageRepository.save(Message.newBuilder()
                 .content(request.getContent())
@@ -80,10 +80,10 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
         return messageApiList;
     }
 
-    private void processContent(MessageApi request, MultipartFile image) throws GenericException {
+    private void processContent(MessageApi request, String image) throws GenericException {
         if (MessageTypeEnum.IMAGE == request.getType()) {
-           // String imageUrl = cloudStorageService.upload(image);
-         //   request.setContent(imageUrl);
+            String imageUrl = cloudStorageService.upload(image);
+            request.setContent(imageUrl);
         }
     }
 

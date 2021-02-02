@@ -20,7 +20,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.github.slugify.Slugify;
 
@@ -191,8 +190,8 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
-               /* .photo(Objects.nonNull(photo) && !photo.isEmpty()
-                        ? cloudStorageService.upload(photo) : request.getPhoto())*/
+               .photo(StringUtils.isNotEmpty(request.getPhoto())
+                        ? cloudStorageService.upload(request.getPhoto()): group.getPhoto())
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())

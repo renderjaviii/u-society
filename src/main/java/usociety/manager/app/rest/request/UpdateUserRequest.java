@@ -17,6 +17,9 @@ public class UpdateUserRequest extends BaseObject {
     private String name;
 
     @JsonProperty
+    private String photo;
+
+    @JsonProperty
     private List<CategoryApi> categoryList;
 
     public UpdateUserRequest() {
@@ -30,6 +33,10 @@ public class UpdateUserRequest extends BaseObject {
 
     public String getName() {
         return name;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 
     public List<CategoryApi> getCategoryList() {
