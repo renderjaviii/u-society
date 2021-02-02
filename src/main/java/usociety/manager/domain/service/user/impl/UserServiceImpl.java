@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
         UserApi user = get(username);
         String photoUrl = null;
         String currentUserPhoto = user.getPhoto();
-        if (StringUtils.isNotEmpty(request.getName())) {
+        if (!request.getPhoto().equals(user.getPhoto())) {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }

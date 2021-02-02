@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -94,7 +93,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<GetGroupResponse> update(@Valid @RequestPart(value = "group") UpdateGroupRequest request)
+    public ResponseEntity<GetGroupResponse> update(@Valid @RequestBody UpdateGroupRequest request)
             throws GenericException, JsonProcessingException {
         return ResponseEntity.ok(groupService.update(request, getUser()));
     }
