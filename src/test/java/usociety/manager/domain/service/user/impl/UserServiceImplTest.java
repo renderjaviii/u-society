@@ -4,7 +4,6 @@ import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -86,7 +85,7 @@ public class UserServiceImplTest {
         when(userConnector.get(any(), any(), any())).thenReturn(user);
         when(userConnector.get(any())).thenReturn(user);
 
-       // when(cloudStorageService.upload(any())).thenReturn("urlImage");
+        // when(cloudStorageService.upload(any())).thenReturn("urlImage");
         when((userConnector.create(any()))).thenReturn(user);
     }
 
@@ -102,7 +101,7 @@ public class UserServiceImplTest {
                 .name("name")
                 .build();
 
-        LoginResponse executed = subject.create(createUserRequest, multipartFile);
+        LoginResponse executed = subject.create(createUserRequest);
 
         InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
         inOrder.verify(userConnector).get(null, USERNAME, EMAIL);
@@ -122,10 +121,9 @@ public class UserServiceImplTest {
     public void shouldNotCreateUserIfOtpCodeIsInvalid() throws GenericException {
         try {
             subject.create(CreateUserRequest.newBuilder()
-                            .username(USERNAME)
-                            .otpCode("otp")
-                            .build(),
-                    null);
+                    .username(USERNAME)
+                    .otpCode("otp")
+                    .build());
         } catch (GenericException e) {
             assertEquals("Usuario ya registrado, por favor verifica la información.", e.getMessage());
             verifyNoInteractions(cloudStorageService);
@@ -138,7 +136,7 @@ public class UserServiceImplTest {
     @Test(expected = GenericException.class)
     public void shouldNotCreateUserIfThisAlreadyExists() throws GenericException {
         try {
-            subject.create(new CreateUserRequest(), null);
+            subject.create(new CreateUserRequest());
         } catch (GenericException e) {
             assertEquals("USER_ALREADY_EXISTS", e.getErrorCode());
             verifyNoInteractions(cloudStorageService);
@@ -152,7 +150,7 @@ public class UserServiceImplTest {
     public void shouldNotCreateUserIfGettingFailsByConnectionProblems() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenThrow(new WebException("Connection time out."));
         try {
-            subject.create(new CreateUserRequest(), null);
+            subject.create(new CreateUserRequest());
         } catch (WebException e) {
             assertEquals("Connection time out.", e.getMessage());
             verifyNoInteractions(cloudStorageService);
@@ -169,10 +167,9 @@ public class UserServiceImplTest {
         when(cloudStorageService.upload(any())).thenThrow(new GenericException("Image could not be uploaded."));
         try {
             subject.create(CreateUserRequest.newBuilder()
-                            .username(USERNAME)
-                            .otpCode("otp")
-                            .build(),
-                    null);
+                    .username(USERNAME)
+                    .otpCode("otp")
+                    .build());
         } catch (GenericException e) {
             assertEquals("Image could not be uploaded.", e.getMessage());
             verifyNoInteractions(mailService);
@@ -210,7 +207,7 @@ public class UserServiceImplTest {
 
         when(userConnector.create(any())).thenThrow(new WebException("Error."));
         try {
-            subject.create(createUserRequest, multipartFile);
+            subject.create(createUserRequest);
         } catch (GenericException e) {
             assertEquals("USER_NOT_CREATED_ERROR", e.getErrorCode());
             verify(cloudStorageService).delete("newImageUrl");
@@ -350,8 +347,7 @@ public class UserServiceImplTest {
 
         MockMultipartFile mockMultipartFile = new MockMultipartFile("fileName", new byte[10]);
         subject.update(USERNAME, new UpdateUserRequest("Another Name",
-                        Collections.singletonList(new CategoryApi(3L, "New Category"))),
-                mockMultipartFile);
+                Collections.singletonList(new CategoryApi(3L, "New Category"))));
 
         InOrder inOrder = Mockito.inOrder(cloudStorageService,
                 userConnector,
@@ -359,7 +355,7 @@ public class UserServiceImplTest {
                 categoryRepository);
         inOrder.verify(userConnector).get(USERNAME);
         inOrder.verify(cloudStorageService).delete("photoUrl");
-       // inOrder.verify(cloudStorageService).upload(mockMultipartFile);
+        // inOrder.verify(cloudStorageService).upload(mockMultipartFile);
         inOrder.verify(userCategoryRepository).findAllByUserId(1L);
         inOrder.verify(userCategoryRepository).deleteInBatch(Collections.singletonList(userCategory));
         inOrder.verify(categoryRepository).getOne(3L);
@@ -378,7 +374,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldNotSaveNorUpdateUserPhotoIfTheseAreNotValid() throws GenericException {
         user.setPhoto("photoUrl");
-        subject.update(USERNAME, new UpdateUserRequest(null, Collections.emptyList()), null);
+        subject.update(USERNAME, new UpdateUserRequest(null, Collections.emptyList()));
         verifyNoInteractions(cloudStorageService);
         verifyNoInteractions(categoryRepository);
         verify(userConnector).update(user);
