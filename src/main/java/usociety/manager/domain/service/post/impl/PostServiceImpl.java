@@ -91,7 +91,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     public PostApi create(String username, CreatePostRequest request)
             throws GenericException, JsonProcessingException {
         validateIfUserActiveIsMember(username, request.getGroupId(), CREATING_POST_ERROR_CODE);
-        if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isNotEmpty(request.getImage())) {
+        if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isEmpty(request.getImage())) {
             throw new GenericException("Es obligatorio que envíes la imagen.", CREATING_POST_ERROR_CODE);
         }
 
