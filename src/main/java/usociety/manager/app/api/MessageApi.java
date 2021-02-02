@@ -21,6 +21,9 @@ public class MessageApi extends BaseObject {
     @JsonProperty
     private String content;
 
+    @JsonProperty
+    private String image;
+
     @NotNull
     @JsonProperty
     private MessageTypeEnum type;
@@ -82,6 +85,10 @@ public class MessageApi extends BaseObject {
 
     public GroupApi getGroup() {
         return group;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     @Override

@@ -30,6 +30,9 @@ public class CreatePostRequest extends BaseObject {
     @JsonProperty
     private boolean isPublic;
 
+    @JsonProperty
+    private String image;
+
     @Valid
     @NotNull
     @JsonProperty
@@ -82,6 +85,10 @@ public class CreatePostRequest extends BaseObject {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     @Override

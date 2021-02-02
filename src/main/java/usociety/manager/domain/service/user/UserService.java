@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
@@ -16,7 +14,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface UserService {
 
-    LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException, MessagingException;
+    LoginResponse create(CreateUserRequest request) throws GenericException, MessagingException;
 
     void verify(String email, boolean resendCode) throws GenericException;
 
@@ -34,6 +32,6 @@ public interface UserService {
 
     void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException;
 
-    void update(String username, UpdateUserRequest request, MultipartFile photo) throws GenericException;
+    void update(String username, UpdateUserRequest request) throws GenericException;
 
 }
