@@ -67,7 +67,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{id}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAll(@PathVariable("id") Long id,
-                                                @RequestParam("page") int page)
+                                                @RequestParam(value = "page", required = false) int page)
             throws GenericException {
         return ResponseEntity.ok(postService.getAll(getUser(), id, page));
     }
