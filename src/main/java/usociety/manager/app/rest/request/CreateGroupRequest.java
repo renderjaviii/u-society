@@ -21,7 +21,6 @@ public class CreateGroupRequest extends BaseObject {
     @JsonProperty
     private String name;
 
-    @NotNull
     @JsonProperty
     private String description;
 
