@@ -190,7 +190,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
                 .description(request.getDescription())
                 .objectives(request.getObjectives())
                 .rules(request.getRules())
-                .photo(!request.getPhoto().equals(group.getPhoto())
+                .photo(Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(group.getPhoto())
                         ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto())
                 .name(request.getName())
                 .category(category)

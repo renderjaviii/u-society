@@ -3,6 +3,7 @@ package usociety.manager.domain.service.user.impl;
 import static java.lang.Boolean.TRUE;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -153,7 +154,7 @@ public class UserServiceImpl implements UserService {
         UserApi user = get(username);
         String photoUrl = null;
         String currentUserPhoto = user.getPhoto();
-        if (!request.getPhoto().equals(user.getPhoto())) {
+        if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(user.getPhoto())) {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }
