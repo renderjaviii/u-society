@@ -52,7 +52,7 @@ public class SendAsyncEmailDelegateImpl implements SendAsyncEmail {
         return String.format("<html><body>" +
                         "<h3>Hola: %s</h3>" +
                         "<p>Nos contaste que te gustan los: %s y acaba nacer un grupo que te puede interesar llamado: <u>%s.</u></p>" +
-                        "<p>¡Dirígite a <b>U - Society</b> y échale un vistazo!</p>" +
+                        "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y échale un vistazo!</p>" +
                         "</body></html>",
                 StringUtils.capitalize(user.getName()),
                 categoryName.endsWith("s") ? categoryName : categoryName + "s",

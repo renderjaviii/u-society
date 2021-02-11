@@ -108,7 +108,7 @@ public class UserServiceImplTest {
         inOrder.verify(mailService).send(EMAIL,
                 "<html><body>" +
                         "<h3>¡Hola <u>Name</u>!</h3>" +
-                        "<p>Bienvenido a <b>U Society</b>, logueate y descrubre todo lo que tenemos para ti.</p>" +
+                        "<p>Bienvenido a <a href='https://usociety-68208.web.app/'>U Society</a>, logueate y descrubre todo lo que tenemos para ti.</p>" +
                         "</html></body>",
                 TRUE);
 

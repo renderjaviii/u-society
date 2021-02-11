@@ -331,7 +331,7 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
         return String.format("<html><body>" +
                         "<h3>Hola %s.</h3>" +
                         "<p>%s ha solicitado unirse a tu grupo: <u>%s</u></p>" +
-                        "<p>¡Dirígite a <b>U - Society</b> y permítele ingresar!</p>" +
+                        "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y permítele ingresar!</p>" +
                         "</body></html>",
                 StringUtils.capitalize(userAdmin.getName()),
                 StringUtils.capitalize(user.getName()),

@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
     private String buildEmailContent(CreateUserRequest request) {
         return String.format("<html><body>" +
                         "<h3>¡Hola <u>%s</u>!</h3>" +
-                        "<p>Bienvenido a <b>U Society</b>, logueate y descrubre todo lo que tenemos para ti.</p>" +
+                        "<p>Bienvenido a <a href='https://usociety-68208.web.app/'>U Society</a>, logueate y descrubre todo lo que tenemos para ti.</p>" +
                         "</html></body>",
                 StringUtils.capitalize(request.getName()));
     }
