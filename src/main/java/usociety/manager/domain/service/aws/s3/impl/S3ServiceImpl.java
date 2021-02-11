@@ -89,7 +89,9 @@ public class S3ServiceImpl implements CloudStorageService {
     private File convertBase64ToFile(String base64Image, String fileName) throws GenericException {
         File file;
         try {
-            byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
+            String encodingPrefix = "base64,";
+            int contentStartIndex = base64Image.indexOf(encodingPrefix) + encodingPrefix.length();
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Image.substring(contentStartIndex));
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception e) {
