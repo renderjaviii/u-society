@@ -2,6 +2,12 @@ server:
   servlet:
     context-path: ${SERVER_CONTEXT_PATH}
   port: ${SERVER_PORT}
+  ssl:
+    key-store: classpath:keystore/keystore.p12
+    key-store-password: password
+    keyStoreType: PKCS12
+    keyAlias: renderjaviii
+    enabled: true
 
 trust:
   store: classpath:keystore/keystore.p12
