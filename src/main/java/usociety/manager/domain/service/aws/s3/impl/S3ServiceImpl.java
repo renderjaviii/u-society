@@ -1,17 +1,18 @@
 package usociety.manager.domain.service.aws.s3.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -55,10 +56,10 @@ public class S3ServiceImpl implements CloudStorageService {
     }
 
     @Override
-    public String upload(MultipartFile multipartFile) throws GenericException {
-        if (Objects.nonNull(multipartFile) && !multipartFile.isEmpty()) {
+    public String upload(String base64Image) throws GenericException {
+        if (StringUtils.isNotEmpty(base64Image)) {
             String fileName = generateFileName();
-            File file = convertMultiPartToFile(multipartFile, fileName);
+            File file = convertBase64ToFile(base64Image, fileName);
             String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
 
             try {
@@ -85,15 +86,16 @@ public class S3ServiceImpl implements CloudStorageService {
         }
     }
 
-    private File convertMultiPartToFile(MultipartFile multipartFile, String fileName) throws GenericException {
+    private File convertBase64ToFile(String base64Image, String fileName) throws GenericException {
         File file;
         try {
+            String encodingPrefix = "base64,";
+            int contentStartIndex = base64Image.indexOf(encodingPrefix) + encodingPrefix.length();
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Image.substring(contentStartIndex));
             file = new File(fileName);
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(multipartFile.getBytes());
-            fos.close();
+            FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception e) {
-            throw new GenericException("Error reading multipart file.", UPLOADING_FILE_ERROR_CODE);
+            throw new GenericException("Error reading base64 file.", UPLOADING_FILE_ERROR_CODE);
         }
 
         return file;

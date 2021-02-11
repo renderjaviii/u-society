@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import usociety.manager.app.api.GroupApi;
@@ -18,8 +16,7 @@ import usociety.manager.domain.model.Group;
 
 public interface GroupService {
 
-    GroupApi create(String username, CreateGroupRequest request, MultipartFile photo)
-            throws GenericException, MessagingException;
+    GroupApi create(String username, CreateGroupRequest request) throws GenericException, MessagingException;
 
     GetGroupResponse get(Long id, String username) throws GenericException;
 
@@ -29,7 +26,7 @@ public interface GroupService {
 
     void updateMembership(Long id, UserGroupApi request) throws GenericException;
 
-    GetGroupResponse update(UpdateGroupRequest request, String username, MultipartFile photo)
+    GetGroupResponse update(UpdateGroupRequest request, String username)
             throws GenericException, JsonProcessingException;
 
     List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;

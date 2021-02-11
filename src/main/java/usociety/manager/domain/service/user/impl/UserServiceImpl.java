@@ -3,14 +3,12 @@ package usociety.manager.domain.service.user.impl;
 import static java.lang.Boolean.TRUE;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.app.api.TokenApi;
@@ -67,14 +65,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResponse create(CreateUserRequest request, MultipartFile photo) throws GenericException {
+    public LoginResponse create(CreateUserRequest request) throws GenericException {
         validateUser(request.getUsername(), request.getEmail());
 
         if (validateOtp) {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
 
-        String photoUrl = cloudStorageService.upload(photo);
+        String photoUrl = cloudStorageService.upload(request.getPhoto());
         request.setPhoto(photoUrl);
 
         try {
@@ -151,15 +149,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(String username, UpdateUserRequest request, MultipartFile photo) throws GenericException {
+    public void update(String username, UpdateUserRequest request) throws GenericException {
         UserApi user = get(username);
         String photoUrl = null;
         String currentUserPhoto = user.getPhoto();
-        if (Objects.nonNull(photo) && !photo.isEmpty()) {
+        if (!request.getPhoto().equals(user.getPhoto())) {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }
-            photoUrl = cloudStorageService.upload(photo);
+            photoUrl = cloudStorageService.upload(request.getPhoto());
         }
 
         user.setName(StringUtils.defaultString(request.getName(), user.getName()));

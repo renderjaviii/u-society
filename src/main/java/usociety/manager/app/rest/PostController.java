@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -55,11 +53,10 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestPart(value = "post") CreatePostRequest request,
-                                                    @RequestPart(value = "image", required = false) MultipartFile image)
+    @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestBody CreatePostRequest request)
             throws GenericException, JsonProcessingException {
-        return new ResponseEntity<>(postService.create(getUser(), request, image), CREATED);
+        return new ResponseEntity<>(postService.create(getUser(), request), CREATED);
     }
 
     @ApiOperation(value = "Get all group posts.")
@@ -70,7 +67,7 @@ public class PostController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{id}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAll(@PathVariable("id") Long id,
-                                                @RequestParam("page") int page)
+                                                @RequestParam(value = "page", required = false) int page)
             throws GenericException {
         return ResponseEntity.ok(postService.getAll(getUser(), id, page));
     }

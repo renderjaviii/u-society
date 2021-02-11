@@ -24,9 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -62,12 +60,11 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+            consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> create(@Valid @RequestPart(value = "user") CreateUserRequest request,
-                                                @RequestPart(value = "photo", required = false) MultipartFile photo)
+    public ResponseEntity<LoginResponse> create(@Valid @RequestBody CreateUserRequest request)
             throws GenericException, MessagingException {
-        return new ResponseEntity<>(userService.create(request, photo), CREATED);
+        return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
     @ApiOperation(value = "Verify user data and send otp.")
@@ -76,7 +73,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PatchMapping(path = "/verifyEmail")
+    @PostMapping(path = "/verifyEmail")
     public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email,
                                        @RequestParam(name = "resendCode", required = false) final boolean resendCode)
             throws GenericException {
@@ -90,7 +87,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PatchMapping(path = "/enableAccount")
+    @PostMapping(path = "/enableAccount")
     public ResponseEntity<Void> enableAccount(@Email @RequestParam(name = "email") final String email,
                                               @NotEmpty @RequestParam(name = "otpCode") final String otpCode)
             throws GenericException {
@@ -116,12 +113,11 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE },
+    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE },
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserApi> update(@Valid @RequestPart(value = "user") UpdateUserRequest request,
-                                          @RequestPart(value = "photo", required = false) MultipartFile photo)
+    public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
-        userService.update(getUser(), request, photo);
+        userService.update(getUser(), request);
         return ResponseEntity.ok().build();
     }
 

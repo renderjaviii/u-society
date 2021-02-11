@@ -21,9 +21,11 @@ public class CreateGroupRequest extends BaseObject {
     @JsonProperty
     private String name;
 
-    @NotNull
     @JsonProperty
     private String description;
+
+    @JsonProperty
+    private String photo;
 
     @Valid
     @NotNull
@@ -70,6 +72,10 @@ public class CreateGroupRequest extends BaseObject {
 
     public CategoryApi getCategory() {
         return category;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 
     @Override
