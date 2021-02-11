@@ -104,8 +104,8 @@ public class UserServiceImplTest {
         LoginResponse executed = subject.create(createUserRequest, multipartFile);
 
         InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
-        inOrder.verify(otpService).validate(USERNAME, "otp");
         inOrder.verify(userConnector).get(null, USERNAME, EMAIL);
+        inOrder.verify(otpService).validate(EMAIL, "otp");
         inOrder.verify(cloudStorageService).upload(multipartFile);
         inOrder.verify(userConnector).create(createUserRequest);
         inOrder.verify(mailService).send(EMAIL,
@@ -119,7 +119,6 @@ public class UserServiceImplTest {
 
     @Test(expected = GenericException.class)
     public void shouldNotCreateUserIfOtpCodeIsInvalid() throws GenericException {
-        doThrow(new GenericException("Invalid OTP")).when(otpService).validate(any(), any());
         try {
             subject.create(CreateUserRequest.newBuilder()
                             .username(USERNAME)
@@ -127,8 +126,7 @@ public class UserServiceImplTest {
                             .build(),
                     null);
         } catch (GenericException e) {
-            assertEquals("Invalid OTP", e.getMessage());
-            verifyNoInteractions(userConnector);
+            assertEquals("Usuario ya registrado, por favor verifica la información.", e.getMessage());
             verifyNoInteractions(cloudStorageService);
             verifyNoInteractions(mailService);
             throw e;
@@ -188,7 +186,7 @@ public class UserServiceImplTest {
                 .otpCode("otp")
                 .build());
         subject.verify(EMAIL, false);
-        verify(userConnector).get(null, USERNAME, EMAIL);
+        verify(userConnector).get(null, null, EMAIL);
         verify(otpService).create(EMAIL);
         verify(mailService).sendOtp(EMAIL, "otp");
     }

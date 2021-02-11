@@ -1,6 +1,5 @@
 package usociety.manager.domain.service.web.impl;
 
-import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -11,6 +10,8 @@ import static usociety.manager.domain.exception.UserValidationException.LOGIN_ER
 import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
+
+import javax.net.ssl.SSLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,9 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
 import io.netty.channel.ChannelOption;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.StringUtil;
 import reactor.core.publisher.Mono;
@@ -72,17 +76,33 @@ public class AbstractConnectorImpl implements AbstractConnector {
     }
 
     private void buildWebClient(int timeOut) {
-        HttpClient httpClient = HttpClient.create()
-                .tcpConfiguration(client -> client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                        .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))));
+        HttpClient httpClient = buildHttpClient(timeOut);
 
         webClient = WebClient.builder()
                 .baseUrl(baseUrl)
-                .clientConnector(new ReactorClientHttpConnector(httpClient.wiretap(TRUE)))
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .filter(responseFilter())
                 .build();
+
+    }
+
+    private HttpClient buildHttpClient(int timeOut) {
+        try {
+            SslContext sslContext = SslContextBuilder.forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .build();
+
+            return HttpClient.create()
+                    .tcpConfiguration(client ->
+                            client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                                    .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))))
+                    .secure(t -> t.sslContext(sslContext));
+        } catch (SSLException e) {
+            e.printStackTrace();
+        }
+        return HttpClient.create();
     }
 
     private ExchangeFilterFunction responseFilter() {
@@ -100,6 +120,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
         logger.info("Trying to get token: {}{}", baseUrl, authPath);
 
         TokenDTO token = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(buildHttpClient(5000)))
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
@@ -156,7 +177,8 @@ public class AbstractConnectorImpl implements AbstractConnector {
     public <T> List<T> getList(URI uri, Class<T> responseClazz) {
         return webClient.get().uri(uri.toString())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<T>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<T>>() {
+                })
                 .block();
     }
 

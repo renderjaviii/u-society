@@ -10,6 +10,6 @@ services:
     env_file:
       - ./src/main/resources/cloud.env
     expose:
-      - 8080
+      - 8443
     ports:
-      - 8080:8080
+      - 8443:8443
