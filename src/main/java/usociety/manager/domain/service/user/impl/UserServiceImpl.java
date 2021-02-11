@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.app.api.TokenApi;
@@ -167,11 +168,13 @@ public class UserServiceImpl implements UserService {
         List<UserCategory> userCategoryList = userCategoryRepository.findAllByUserId(user.getId());
         userCategoryRepository.deleteInBatch(userCategoryList);
 
-        request.getCategoryList()
-                .forEach(categoryApi -> userCategoryRepository.save(UserCategory.newBuilder()
-                        .category(categoryRepository.getOne(categoryApi.getId()))
-                        .userId(user.getId())
-                        .build()));
+        if (!CollectionUtils.isEmpty(request.getCategoryList())) {
+            request.getCategoryList()
+                    .forEach(categoryApi -> userCategoryRepository.save(UserCategory.newBuilder()
+                            .category(categoryRepository.getOne(categoryApi.getId()))
+                            .userId(user.getId())
+                            .build()));
+        }
 
         userConnector.update(Converter.user(user));
     }
