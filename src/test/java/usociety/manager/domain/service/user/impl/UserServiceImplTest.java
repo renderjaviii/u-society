@@ -220,6 +220,7 @@ public class UserServiceImplTest {
                         .name("First Name")
                         .email(EMAIL)
                         .id(1L)
+                        .categoryList(Collections.emptyList())
                         .build(),
                 executed);
         verify(userConnector).get(USERNAME);

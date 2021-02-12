@@ -102,7 +102,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserApi get(String username) {
-        return Converter.user(userConnector.get(username));
+        UserApi userApi = Converter.user(userConnector.get(username));
+        userApi.setCategoryList(userCategoryRepository.findAllByUserId(userApi.getId())
+                .stream()
+                .map(userCategory -> Converter.category(userCategory.getCategory()))
+                .collect(Collectors.toList()));
+
+        return userApi;
     }
 
     @Override
