@@ -9,6 +9,7 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -141,10 +142,10 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     public List<GroupApi> getAllUserGroups(String username) throws GenericException {
         UserApi user = getUser(username);
         return userGroupRepository
-                .findAllByUserIdAndStatus(user.getId(), ACTIVE.getCode())
-                .stream()
-                .map(userGroup -> buildGroupResponse(userGroup.getGroup()))
-                .collect(Collectors.toList());
+                .findAllByUserIdAndStatusIn(user.getId(), Arrays.asList(ACTIVE.getCode(), PENDING.getCode()))
+                        .stream()
+                        .map(userGroup -> buildGroupResponse(userGroup.getGroup()))
+                        .collect(Collectors.toList());
     }
 
     @Override

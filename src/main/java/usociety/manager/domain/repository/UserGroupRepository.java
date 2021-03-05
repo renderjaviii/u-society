@@ -11,7 +11,7 @@ import usociety.manager.domain.model.UserGroup;
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
-    List<UserGroup> findAllByUserIdAndStatus(Long userId, int status);
+    List<UserGroup> findAllByUserIdAndStatusIn(Long userId, List<Integer> validStatuses);
 
     Optional<UserGroup> findByGroupIdAndUserId(Long groupId, Long userId);
 
