@@ -94,6 +94,8 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isEmpty(request.getImage())) {
             throw new GenericException("Es obligatorio que envíes la imagen.", CREATING_POST_ERROR_CODE);
         }
+        UserApi user = getUser(username);
+
 
         processContent(request, request.getImage());
         PostApi postApi = Converter.post(postRepository.save(Post.newBuilder()
@@ -103,6 +105,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
                 .isPublic(PostTypeEnum.SURVEY == request.getContent().getType() ? FALSE : request.isPublic())
                 .content(objectMapper.writeValueAsString(request.getContent()))
                 .description(request.getDescription())
+                .userId(user.getId())
                 .build()));
         postApi.setGroup(null);
         return postApi;
@@ -147,12 +150,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
             }
             postApi.setGroup(null);
             responseList.add(postApi);
-            UserGroup userGroup = userGroupRepository.findByGroupId(groupId)
-                    .stream()
-                    .findFirst()
-                    .orElseThrow(() -> new GenericException("Error", "Error general"));
-
-            postApi.setOwner(userService.getById(userGroup.getUserId()));
+            postApi.setOwner(userService.getById(post.getUserId()));
         }
         return responseList;
     }

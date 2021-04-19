@@ -43,18 +43,22 @@ public class Post extends BaseObject {
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     public Post() {
         super();
     }
 
     private Post(Builder builder) {
-        id = builder.id;
-        creationDate = builder.creationDate;
-        expirationDate = builder.expirationDate;
-        isPublic = builder.isPublic;
-        content = builder.content;
-        description = builder.description;
-        group = builder.group;
+        setId(builder.id);
+        setCreationDate(builder.creationDate);
+        setExpirationDate(builder.expirationDate);
+        setPublic(builder.isPublic);
+        setContent(builder.content);
+        setDescription(builder.description);
+        setGroup(builder.group);
+        setUserId(builder.userId);
     }
 
     public static Builder newBuilder() {
@@ -65,16 +69,32 @@ public class Post extends BaseObject {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDateTime getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     public boolean isPublic() {
         return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 
     public String getContent() {
@@ -85,12 +105,28 @@ public class Post extends BaseObject {
         this.content = content;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Group getGroup() {
         return group;
     }
 
-    public String getDescription() {
-        return description;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -110,11 +146,11 @@ public class Post extends BaseObject {
         private LocalDateTime expirationDate;
         private boolean isPublic;
         private String content;
-        private Group group;
         private String description;
+        private Group group;
+        private Long userId;
 
         private Builder() {
-            super();
         }
 
         public Builder id(Long id) {
@@ -149,6 +185,11 @@ public class Post extends BaseObject {
 
         public Builder group(Group group) {
             this.group = group;
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
             return this;
         }
 
