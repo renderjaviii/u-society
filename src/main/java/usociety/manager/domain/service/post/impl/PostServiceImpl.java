@@ -148,6 +148,8 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
             postApi.setGroup(null);
             responseList.add(postApi);
             UserGroup userGroup = userGroupRepository.findByGroupId(groupId)
+                    .stream()
+                    .findFirst()
                     .orElseThrow(() -> new GenericException("Error", "Error general"));
 
             postApi.setOwner(userService.getById(userGroup.getUserId()));
