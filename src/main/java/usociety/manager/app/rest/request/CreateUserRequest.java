@@ -2,6 +2,7 @@ package usociety.manager.app.rest.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +25,8 @@ public class CreateUserRequest extends BaseObject {
     @JsonProperty(value = "username")
     private String username;
 
+    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\\.)?[a-zA-Z]+\\.)?(correo.usa|usa)\\.edu.co$",
+            message = "Debes utilizar un correo válido")
     @ApiModelProperty(notes = "Email", required = true)
     @Email
     @NotBlank
