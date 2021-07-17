@@ -15,12 +15,12 @@ import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserCategory;
 import usociety.manager.domain.repository.UserCategoryRepository;
-import usociety.manager.domain.service.email.AsyncEmailDelegate;
 import usociety.manager.domain.service.email.MailService;
+import usociety.manager.domain.service.email.SendAsyncEmailDelegate;
 import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
+public class SendAsyncEmailDelegateImpl implements SendAsyncEmailDelegate {
 
     private static final String EMAIL_CONTENT_FORMAT = "<html><body>" +
             "<h3>Hola: %s</h3>" +
@@ -35,9 +35,9 @@ public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
     private final MailService mailService;
 
     @Autowired
-    public AsyncEmailDelegateImpl(UserCategoryRepository userCategoryRepository,
-                                  MailService mailService,
-                                  UserService userService) {
+    public SendAsyncEmailDelegateImpl(UserCategoryRepository userCategoryRepository,
+                                      MailService mailService,
+                                      UserService userService) {
         this.userCategoryRepository = userCategoryRepository;
         this.mailService = mailService;
         this.userService = userService;
@@ -45,7 +45,7 @@ public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
 
     @Async
     @Override
-    public void send(UserApi user, Group group, Category category) throws GenericException {
+    public void execute(UserApi user, Group group, Category category) throws GenericException {
         List<UserCategory> userCategoryList = userCategoryRepository
                 .findAllByCategoryIdAndUserIdIsNot(category.getId(), user.getId());
 

@@ -39,7 +39,7 @@ import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
@@ -48,7 +48,7 @@ import usociety.manager.domain.service.user.UserService;
 import usociety.manager.domain.util.PageableUtils;
 
 @Service
-public class PostServiceImpl extends CommonServiceImpl implements PostService {
+public class PostServiceImpl extends AbstractDelegateImpl implements PostService {
 
     private static final String REACTING_IN_POST_ERROR_CODE = "ERROR_REACTING_IN_POST";
     private static final String REACTING_POST_ERROR_CODE = "ERROR_REACTING_TO_POST";
@@ -90,12 +90,11 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     @Override
     public PostApi create(String username, CreatePostRequest request)
             throws GenericException, JsonProcessingException {
-        validateIfUserActiveIsMember(username, request.getGroupId(), CREATING_POST_ERROR_CODE);
+        validateIfUserIsMember(username, request.getGroupId(), ACTIVE, REACTING_POST_ERROR_CODE);
         if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isEmpty(request.getImage())) {
             throw new GenericException("Es obligatorio que envíes la imagen.", CREATING_POST_ERROR_CODE);
         }
         UserApi user = getUser(username);
-
 
         processContent(request, request.getImage());
         PostApi postApi = Converter.post(postRepository.save(Post.newBuilder()
@@ -169,7 +168,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
         }
 
         UserApi user = getUser(username);
-        validateIfUserActiveIsMember(username, post.getGroup().getId(), REACTING_POST_ERROR_CODE);
+        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
 
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(postId, user.getId());
         if (optionalReact.isPresent()) {
@@ -198,7 +197,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
             throw new GenericException("Información de post corrupta.", REACTING_IN_POST_ERROR_CODE);
         }
 
-        validateIfUserActiveIsMember(username, post.getGroup().getId(), REACTING_POST_ERROR_CODE);
+        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
 
         UserApi user = getUser(username);
         commentRepository.save(Comment.newBuilder()
@@ -213,7 +212,7 @@ public class PostServiceImpl extends CommonServiceImpl implements PostService {
     @Override
     public void interactWithSurvey(String username, Long postId, Integer vote) throws GenericException {
         Post post = getPost(postId);
-        validateIfUserActiveIsMember(username, post.getGroup().getId(), VOTING_SURVEY_ERROR_CODE);
+        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
 
         PostApi postApi = Converter.post(post);
         PostAdditionalData postAdditionalData = postApi.getContent();

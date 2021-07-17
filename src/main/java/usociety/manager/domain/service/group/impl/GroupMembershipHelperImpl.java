@@ -6,6 +6,7 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.DELETED;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -16,105 +17,92 @@ import org.springframework.stereotype.Component;
 
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
-import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
-import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class GroupMembershipHelperImpl extends CommonServiceImpl implements GroupMembershipHelper {
+public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements GroupMembershipHelper {
+
+    private static final String JOIN_GROUP_EMAIL_FORMAT = "<html><body>" +
+            "<h3>Hola %s.</h3>" +
+            "<p>%s ha solicitado unirse a tu grupo: <u>%s</u></p>" +
+            "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y permítele ingresar!</p>" +
+            "</body></html>";
 
     private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
-    private static final String JOINING_TO_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
-    private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
+    private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
 
     private final UserGroupRepository userGroupRepository;
-    private final GroupRepository groupRepository;
     private final MailService mailService;
-    private final UserService userService;
 
     @Autowired
     public GroupMembershipHelperImpl(UserGroupRepository userGroupRepository,
-                                     GroupRepository groupRepository,
-                                     MailService mailService,
-                                     UserService userService) {
+                                     MailService mailService) {
         this.userGroupRepository = userGroupRepository;
-        this.groupRepository = groupRepository;
         this.mailService = mailService;
-        this.userService = userService;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void update(Long id, UserGroupApi request) throws GenericException {
-        Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserId(id, request.getUser().getId());
+    public void update(String username, Long id, UserGroupApi request) throws GenericException {
+        Optional<UserGroup> optionalUserGroup = getUserGroup(username, id);
         if (!optionalUserGroup.isPresent()) {
-            throw new GenericException("No se puede realizar esta operación con este usuario.",
-                    UPDATING_MEMBERSHIP_ERROR_CODE);
+            throw new GenericException("No es posible realizar la actualización.", UPDATING_MEMBERSHIP_ERROR_CODE);
+
         }
 
         UserGroup userGroup = optionalUserGroup.get();
         if (!userGroup.isAdmin()) {
-            if (REJECTED == request.getStatus() || DELETED == request.getStatus()) {
+            UserGroupStatusEnum status = request.getStatus();
+
+            if (Arrays.asList(REJECTED, DELETED).contains(status)) {
                 userGroupRepository.delete(userGroup);
             } else {
                 userGroup.setRole(request.getRole());
-                userGroup.setStatus(request.getStatus().getCode());
+                userGroup.setStatus(status.getCode());
                 userGroupRepository.save(userGroup);
             }
-        } else {
-            throw new GenericException("El administrador del grupo no puede realizar esta operación.",
-                    UPDATING_MEMBERSHIP_ERROR_CODE);
         }
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void join(Long id, String username) throws GenericException {
+    public void join(String username, Long id) throws GenericException {
         Group group = getGroup(id);
-        UserApi user = getUser(username);
 
-        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
+        Optional<UserGroup> optionalUserGroup = getUserGroup(username, id);
         if (optionalUserGroup.isPresent()) {
-            throw new GenericException("El usuario ya solicitó ingresar al grupo o ya es miembro activo.",
-                    JOINING_TO_GROUP_ERROR_CODE);
+            throw new GenericException("El usuario ya solicitó ingresar al grupo", JOINING_GROUP_ERROR_CODE);
         }
 
+        UserApi user = getUser(username);
         userGroupRepository.save(UserGroup.newBuilder()
-                .group(group)
-                .isAdmin(FALSE)
                 .status(PENDING.getCode())
                 .userId(user.getId())
+                .isAdmin(FALSE)
+                .group(group)
                 .build());
 
+        sendJoiningRequestEmailToAdmin(id, group, user);
+    }
+
+    private void sendJoiningRequestEmailToAdmin(Long id, Group group, UserApi user) throws GenericException {
         Optional<UserGroup> optionalUserGroupAdmin = userGroupRepository.findByGroupIdAndIsAdmin(id, TRUE);
         if (optionalUserGroupAdmin.isPresent()) {
             UserGroup userGroupAdmin = optionalUserGroupAdmin.get();
             UserApi userAdmin = userService.getById(userGroupAdmin.getUserId());
-            mailService.send(userAdmin.getEmail(), buildEmailContent(group, user, userAdmin), TRUE);
+            mailService.send(userAdmin.getEmail(), buildEmail(group, user, userAdmin), TRUE);
         }
     }
 
-    private Group getGroup(Long id) throws GenericException {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-        if (!optionalGroup.isPresent()) {
-            throw new GenericException(String.format("Grupo con id: %s no existe.", id), GETTING_GROUP_ERROR_CODE);
-        }
-        return optionalGroup.get();
-    }
-
-    private String buildEmailContent(Group group, UserApi user, UserApi userAdmin) {
-        return String.format("<html><body>" +
-                        "<h3>Hola %s.</h3>" +
-                        "<p>%s ha solicitado unirse a tu grupo: <u>%s</u></p>" +
-                        "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y permítele ingresar!</p>" +
-                        "</body></html>",
+    private String buildEmail(Group group, UserApi user, UserApi userAdmin) {
+        return String.format(JOIN_GROUP_EMAIL_FORMAT,
                 StringUtils.capitalize(userAdmin.getName()),
                 StringUtils.capitalize(user.getName()),
                 StringUtils.capitalize(group.getName()));

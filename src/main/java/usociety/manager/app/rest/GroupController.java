@@ -119,7 +119,7 @@ public class GroupController extends CommonController {
     public ResponseEntity<Void> updateMembership(@PathVariable("id") Long id,
                                                  @RequestBody UserGroupApi request)
             throws GenericException {
-        groupService.updateMembership(id, request);
+        groupService.updateMembership(getUser(), id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -145,7 +145,7 @@ public class GroupController extends CommonController {
     @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException, MessagingException {
-        groupService.join(id, getUser());
+        groupService.join(getUser(), id);
         return ResponseEntity.ok().build();
     }
 

@@ -15,7 +15,7 @@ public interface GetGroupHelper {
 
     List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
 
-    GetGroupResponse getBySlug(String user, String slug) throws GenericException;
+    GetGroupResponse getBySlug(String username, String slug) throws GenericException;
 
     List<GroupApi> getAllUserGroups(String username) throws GenericException;
 

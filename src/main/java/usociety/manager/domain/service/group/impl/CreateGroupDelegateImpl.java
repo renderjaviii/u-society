@@ -1,9 +1,12 @@
 package usociety.manager.domain.service.group.impl;
 
+import static com.amazonaws.util.StringUtils.COMMA_SEPARATOR;
 import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
+import static usociety.manager.domain.enums.UserTypeEnum.ADMIN;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,20 +29,19 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
-import usociety.manager.domain.service.email.AsyncEmailDelegate;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.email.SendAsyncEmailDelegate;
 import usociety.manager.domain.service.group.CreateGroupDelegate;
 
 @Component
-public class CreateGroupDelegateImpl extends CommonServiceImpl implements CreateGroupDelegate {
+public class CreateGroupDelegateImpl extends AbstractDelegateImpl implements CreateGroupDelegate {
 
     private static final String GROUP_NAME_ERROR_FORMAT = "Grupo con nombre: %s ya existe, prueba un nombre diferente.";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";
-    private static final String ADMINISTRATOR_ROLE = "Administrador";
 
+    private final SendAsyncEmailDelegate sendAsyncEmailDelegate;
     private final UserGroupRepository userGroupRepository;
     private final CloudStorageService cloudStorageService;
-    private final AsyncEmailDelegate asyncEmailDelegate;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
     private final Slugify slugify;
@@ -47,13 +49,13 @@ public class CreateGroupDelegateImpl extends CommonServiceImpl implements Create
     @Autowired
     public CreateGroupDelegateImpl(UserGroupRepository userGroupRepository,
                                    CloudStorageService cloudStorageService,
-                                   AsyncEmailDelegate asyncEmailDelegate,
+                                   SendAsyncEmailDelegate sendAsyncEmailDelegate,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
                                    Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
-        this.asyncEmailDelegate = asyncEmailDelegate;
+        this.sendAsyncEmailDelegate = sendAsyncEmailDelegate;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
         this.slugify = slugify;
@@ -72,13 +74,13 @@ public class CreateGroupDelegateImpl extends CommonServiceImpl implements Create
         Group savedGroup;
         try {
             savedGroup = saveGroup(request, category, photoUrl);
-            associateGroupWithUser(userApi, savedGroup);
+            associateUserGroup(userApi, savedGroup);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("Error general creando grupo.", CREATING_GROUP_ERROR_CODE);
         }
 
-        asyncEmailDelegate.send(userApi, savedGroup, category);
+        sendAsyncEmailDelegate.execute(userApi, savedGroup, category);
         return Converter.group(savedGroup);
     }
 
@@ -92,25 +94,27 @@ public class CreateGroupDelegateImpl extends CommonServiceImpl implements Create
 
     private Group saveGroup(CreateGroupRequest request, Category category, String photoUrl) {
         return groupRepository.save(Group.newBuilder()
-                .description(request.getDescription())
-                .objectives(request.getObjectives().stream().map(this::removeCommas).collect(Collectors.toList()))
-                .rules(request.getRules().stream().map(this::removeCommas).collect(Collectors.toList()))
+                .objectives(removeCommas(request.getObjectives()))
                 .slug(slugify.slugify(request.getName()))
+                .rules(removeCommas(request.getRules()))
+                .description(request.getDescription())
                 .name(request.getName())
                 .category(category)
                 .photo(photoUrl)
                 .build());
     }
 
-    private String removeCommas(String value) {
-        return value.replace(",", EMPTY);
+    private List<String> removeCommas(List<String> values) {
+        return values.stream()
+                .map(value -> value.replace(COMMA_SEPARATOR, EMPTY))
+                .collect(Collectors.toList());
     }
 
-    private void associateGroupWithUser(UserApi userApi, Group savedGroup) {
+    private void associateUserGroup(UserApi userApi, Group savedGroup) {
         userGroupRepository.save(UserGroup.newBuilder()
                 .userId(userApi.getId())
-                .role(ADMINISTRATOR_ROLE)
                 .status(ACTIVE.getCode())
+                .role(ADMIN.getValue())
                 .group(savedGroup)
                 .isAdmin(TRUE)
                 .build());

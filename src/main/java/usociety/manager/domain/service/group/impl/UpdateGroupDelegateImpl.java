@@ -1,9 +1,13 @@
 package usociety.manager.domain.service.group.impl;
 
+import static com.amazonaws.util.StringUtils.COMMA_SEPARATOR;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
+import static usociety.manager.domain.util.Constant.FORBIDDEN_ACCESS;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,12 +33,11 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
-import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class UpdateGroupDelegateImpl extends CommonServiceImpl implements UpdateGroupDelegate {
+public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements UpdateGroupDelegate {
 
     private static final String ERROR_UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
     private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
@@ -43,7 +46,6 @@ public class UpdateGroupDelegateImpl extends CommonServiceImpl implements Update
     private final CloudStorageService cloudStorageService;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
-    private final UserService userService;
     private final Slugify slugify;
 
     @Autowired
@@ -51,13 +53,11 @@ public class UpdateGroupDelegateImpl extends CommonServiceImpl implements Update
                                    CloudStorageService cloudStorageService,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
-                                   UserService userService,
                                    Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
-        this.userService = userService;
         this.slugify = slugify;
     }
 
@@ -66,87 +66,95 @@ public class UpdateGroupDelegateImpl extends CommonServiceImpl implements Update
     public GetGroupResponse execute(String username, UpdateGroupRequest request) throws GenericException {
         Group group = getGroup(request.getId());
 
-        UserApi user = userService.get(username);
-        UserGroup userGroup = getUserGroup(request.getId(), user.getId());
+        UserApi user = getUser(username);
+        UserGroup userGroup = getUserGroup(user.getId(), request.getId());
         if (!userGroup.isAdmin()) {
-            throw new GenericException("No eres administrador de este grupo.", "FORBIDDEN_ACCESS");
+            throw new GenericException("No eres administrador de este grupo.", FORBIDDEN_ACCESS);
         }
 
         Category category = categoryService.get(request.getCategory().getId());
         Group updatedGroup = groupRepository.save(Group.newBuilder()
+                .objectives(removeCommas(request.getObjectives()))
                 .slug(slugify.slugify(request.getName()))
+                .rules(removeCommas(request.getRules()))
                 .description(request.getDescription())
-                .objectives(request.getObjectives())
-                .rules(request.getRules())
-                .photo(Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(group.getPhoto())
-                        ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto())
+                .photo(getNewPhoto(request, group))
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
                 .build());
 
-        return buildGetGroupResponse(updatedGroup, username);
+        return buildResponse(user, updatedGroup);
     }
 
-    private Group getGroup(Long id) throws GenericException {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-        if (!optionalGroup.isPresent()) {
-            throw new GenericException(String.format("Grupo con id: %s no existe.", id), GETTING_GROUP_ERROR_CODE);
-        }
-        return optionalGroup.get();
-    }
-
-    private UserGroup getUserGroup(Long groupId, Long userId) throws GenericException {
+    private UserGroup getUserGroup(Long userId, Long groupId) throws GenericException {
         return userGroupRepository.findByGroupIdAndUserIdAndStatus(groupId, userId, ACTIVE.getCode())
-                .orElseThrow(() -> new GenericException("El usario no es miembro activo del grupo.",
+                .orElseThrow(() -> new GenericException("El usuario no es miembro activo del grupo.",
                         ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
     }
 
-    private GetGroupResponse buildGetGroupResponse(Group group, String username) throws GenericException {
-        UserApi user = getUser(username);
+    private String getNewPhoto(UpdateGroupRequest request, Group group) throws GenericException {
+        boolean photoHasNotChanged = Objects.nonNull(request.getPhoto())
+                && !request.getPhoto().equals(group.getPhoto());
+
+        return photoHasNotChanged ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto();
+    }
+
+    private List<String> removeCommas(List<String> values) {
+        return values.stream()
+                .map(value -> value.replace(COMMA_SEPARATOR, EMPTY))
+                .collect(Collectors.toList());
+    }
+
+    private GetGroupResponse buildResponse(UserApi user, Group group) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(group.getId(), user.getId());
 
-        UserGroupStatusEnum membershipStatus = null;
+        GetGroupResponse.Builder builder = GetGroupResponse.newBuilder();
+
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
 
-            UserGroupStatusEnum userGroupStatusEnum = UserGroupStatusEnum.fromCode(userGroup.getStatus());
-            if (ACTIVE == userGroupStatusEnum) {
+            UserGroupStatusEnum userGroupStatus = UserGroupStatusEnum.fromCode(userGroup.getStatus());
+            if (ACTIVE == userGroupStatus) {
                 List<UserGroup> groupMembers = userGroupRepository
                         .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
 
-                return GetGroupResponse.newBuilder()
-                        .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
-                        .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
-                        .group(Converter.group(group))
-                        .membershipStatus(ACTIVE)
-                        .isAdmin(userGroup.isAdmin())
-                        .build();
+                builder.pendingMembers(getPendingMembers(userGroup, groupMembers))
+                        .activeMembers(getActiveMembers(groupMembers))
+                        .isAdmin(userGroup.isAdmin());
             }
-            membershipStatus = userGroupStatusEnum;
+            builder.membershipStatus(userGroupStatus);
         }
 
-        group.setRules(null);
-        return GetGroupResponse.newBuilder()
-                .membershipStatus(membershipStatus)
+        return builder
                 .group(Converter.group(group))
                 .build();
     }
 
-    private List<UserApi> getMembersDataByStatus(List<UserGroup> userList, UserGroupStatusEnum userGroupStatus)
+    private List<UserApi> getPendingMembers(UserGroup userGroup, List<UserGroup> groupMembers) throws GenericException {
+        return userGroup.isAdmin()
+                ? getMembersFilteredByStatus(groupMembers, PENDING)
+                : Collections.emptyList();
+    }
+
+    private List<UserApi> getActiveMembers(List<UserGroup> groupMembers) throws GenericException {
+        return getMembersFilteredByStatus(groupMembers, ACTIVE);
+    }
+
+    private List<UserApi> getMembersFilteredByStatus(List<UserGroup> userGroupList, UserGroupStatusEnum status)
             throws GenericException {
-        List<UserGroup> membersGroup = userList
+        List<UserGroup> membersGroup = userGroupList
                 .stream()
-                .filter(userGroup -> userGroupStatus.getCode() == userGroup.getStatus())
+                .filter(userGroup -> status.getCode() == userGroup.getStatus())
                 .collect(Collectors.toList());
 
-        List<UserApi> usersDataList = new ArrayList<>();
+        List<UserApi> users = new ArrayList<>();
         for (UserGroup userGroup : membersGroup) {
-            UserApi memberUser = userService.getById(userGroup.getUserId());
-            memberUser.setRole(userGroup.getRole());
-            usersDataList.add(memberUser);
+            UserApi user = userService.getById(userGroup.getUserId());
+            user.setRole(userGroup.getRole());
+            users.add(user);
         }
-        return usersDataList;
+        return users;
     }
 
 }

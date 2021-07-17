@@ -5,8 +5,8 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface GroupMembershipHelper {
 
-    void update(Long id, UserGroupApi request) throws GenericException;
+    void update(String username, Long id, UserGroupApi request) throws GenericException;
 
-    void join(Long id, String username) throws GenericException;
+    void join(String username, Long id) throws GenericException;
 
 }

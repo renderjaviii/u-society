@@ -5,8 +5,8 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Group;
 
-public interface AsyncEmailDelegate {
+public interface SendAsyncEmailDelegate {
 
-    void send(UserApi user, Group group, Category category) throws GenericException;
+    void execute(UserApi user, Group group, Category category) throws GenericException;
 
 }

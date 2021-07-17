@@ -5,6 +5,7 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,26 +25,22 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.group.GetGroupHelper;
-import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class GetGroupHelperImpl extends CommonServiceImpl implements GetGroupHelper {
+public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroupHelper {
 
     private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
 
     private final UserGroupRepository userGroupRepository;
     private final GroupRepository groupRepository;
-    private final UserService userService;
 
     @Autowired
     public GetGroupHelperImpl(UserGroupRepository userGroupRepository,
-                              GroupRepository groupRepository,
-                              UserService userService) {
+                              GroupRepository groupRepository) {
         this.userGroupRepository = userGroupRepository;
         this.groupRepository = groupRepository;
-        this.userService = userService;
     }
 
     @Override
@@ -53,78 +50,79 @@ public class GetGroupHelperImpl extends CommonServiceImpl implements GetGroupHel
 
     @Override
     public GetGroupResponse get(String username, Long id) throws GenericException {
-        Group group = getGroup(id);
-        return buildGetGroupResponse(group, username);
+        UserApi user = getUser(username);
+        return buildCompleteGroupResponse(user, getGroup(id));
     }
 
     @Override
     public List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException {
-        if (StringUtils.isEmpty(name) && Objects.isNull(categoryId)) {
-            throw new GenericException("Debe enviar ya sea el nombre y/o la categoría.", GETTING_GROUP_ERROR_CODE);
-        }
+        validateFields(name, categoryId);
 
-        List<Group> groupList = groupRepository.findByCategoryIdAndNameContainingIgnoreCase(categoryId, name);
-        groupList.addAll(groupRepository.findByCategoryIdOrNameContainingIgnoreCase(categoryId, name));
-        return groupList.stream()
+        return groupRepository.findDistinctByCategoryIdOrNameContainingIgnoreCase(categoryId, name)
+                .stream()
                 .distinct()
-                .map(this::buildGroupResponse)
+                .map(this::buildBasicGroupResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public GetGroupResponse getBySlug(String user, String slug) throws GenericException {
+    public GetGroupResponse getBySlug(String username, String slug) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findBySlug(slug);
         if (!optionalGroup.isPresent()) {
             throw new GenericException("Grupo no encontrado.", GETTING_GROUP_ERROR_CODE);
         }
 
-        Group group = optionalGroup.get();
-        return buildGetGroupResponse(group, user);
+        UserApi user = getUser(username);
+        return buildCompleteGroupResponse(user, optionalGroup.get());
     }
 
     @Override
     public List<GroupApi> getAllUserGroups(String username) throws GenericException {
         UserApi user = getUser(username);
+
         return userGroupRepository
                 .findAllByUserIdAndStatusIn(user.getId(), Arrays.asList(ACTIVE.getCode(), PENDING.getCode()))
                 .stream()
-                .map(userGroup -> buildGroupResponse(userGroup.getGroup()))
+                .map(userGroup -> buildBasicGroupResponse(userGroup.getGroup()))
                 .collect(Collectors.toList());
     }
 
-    private GetGroupResponse buildGetGroupResponse(Group group, String username) throws GenericException {
-
-        UserApi user = getUser(username);
+    private GetGroupResponse buildCompleteGroupResponse(UserApi user, Group group) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(group.getId(), user.getId());
 
-        UserGroupStatusEnum membershipStatus = null;
+        GetGroupResponse.Builder builder = GetGroupResponse.newBuilder();
+
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
 
-            UserGroupStatusEnum userGroupStatusEnum = UserGroupStatusEnum.fromCode(userGroup.getStatus());
-            if (ACTIVE == userGroupStatusEnum) {
+            UserGroupStatusEnum userGroupStatus = UserGroupStatusEnum.fromCode(userGroup.getStatus());
+            if (ACTIVE == userGroupStatus) {
                 List<UserGroup> groupMembers = userGroupRepository
                         .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
 
-                return GetGroupResponse.newBuilder()
-                        .pendingMembers(userGroup.isAdmin() ? getMembersDataByStatus(groupMembers, PENDING) : null)
-                        .activeMembers(getMembersDataByStatus(groupMembers, ACTIVE))
-                        .group(Converter.group(group))
-                        .membershipStatus(ACTIVE)
-                        .isAdmin(userGroup.isAdmin())
-                        .build();
+                builder.pendingMembers(getPendingMembers(userGroup, groupMembers))
+                        .activeMembers(getActiveMembers(groupMembers))
+                        .isAdmin(userGroup.isAdmin());
             }
-            membershipStatus = userGroupStatusEnum;
+            builder.membershipStatus(userGroupStatus);
         }
 
-        group.setRules(null);
-        return GetGroupResponse.newBuilder()
-                .membershipStatus(membershipStatus)
+        return builder
                 .group(Converter.group(group))
                 .build();
     }
 
-    private List<UserApi> getMembersDataByStatus(List<UserGroup> userList, UserGroupStatusEnum userGroupStatus)
+    private List<UserApi> getPendingMembers(UserGroup userGroup, List<UserGroup> groupMembers) throws GenericException {
+        return userGroup.isAdmin()
+                ? getMembersFilteredByStatus(groupMembers, PENDING)
+                : Collections.emptyList();
+    }
+
+    private List<UserApi> getActiveMembers(List<UserGroup> groupMembers) throws GenericException {
+        return getMembersFilteredByStatus(groupMembers, ACTIVE);
+    }
+
+    private List<UserApi> getMembersFilteredByStatus(List<UserGroup> userList, UserGroupStatusEnum userGroupStatus)
             throws GenericException {
         List<UserGroup> membersGroup = userList
                 .stream()
@@ -137,26 +135,25 @@ public class GetGroupHelperImpl extends CommonServiceImpl implements GetGroupHel
             memberUser.setRole(userGroup.getRole());
             usersDataList.add(memberUser);
         }
+
         return usersDataList;
     }
 
-    private GroupApi buildGroupResponse(Group group) {
+    private void validateFields(String name, Long categoryId) throws GenericException {
+        if (StringUtils.isEmpty(name) && Objects.isNull(categoryId)) {
+            throw new GenericException("Debe enviar el nombre del grupo y/o la categoría.", GETTING_GROUP_ERROR_CODE);
+        }
+    }
+
+    private GroupApi buildBasicGroupResponse(Group group) {
         return GroupApi.newBuilder()
-                .id(group.getId())
                 .category(Converter.category(group.getCategory()))
                 .description(group.getDescription())
                 .photo(group.getPhoto())
                 .name(group.getName())
                 .slug(group.getSlug())
+                .id(group.getId())
                 .build();
-    }
-
-    private Group getGroup(Long id) throws GenericException {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-        if (!optionalGroup.isPresent()) {
-            throw new GenericException(String.format("Grupo con id: %s no existe.", id), GETTING_GROUP_ERROR_CODE);
-        }
-        return optionalGroup.get();
     }
 
 }

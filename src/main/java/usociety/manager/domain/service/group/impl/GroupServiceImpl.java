@@ -12,7 +12,6 @@ import usociety.manager.app.rest.request.UpdateGroupRequest;
 import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.CreateGroupDelegate;
 import usociety.manager.domain.service.group.GetGroupHelper;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
@@ -20,7 +19,7 @@ import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
 
 @Service
-public class GroupServiceImpl extends CommonServiceImpl implements GroupService {
+public class GroupServiceImpl implements GroupService {
 
     private final GroupMembershipHelper groupMembershipHelper;
     private final UpdateGroupDelegate updateGroupDelegate;
@@ -51,14 +50,14 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     }
 
     @Override
-    public void join(Long id, String username) throws GenericException {
-        groupMembershipHelper.join(id, username);
+    public void join(String username, Long id) throws GenericException {
+        groupMembershipHelper.join(username, id);
     }
 
     @Override
-    public void updateMembership(Long id, UserGroupApi request)
+    public void updateMembership(String username, Long id, UserGroupApi request)
             throws GenericException {
-        groupMembershipHelper.update(id, request);
+        groupMembershipHelper.update(username, id, request);
     }
 
     @Override
@@ -78,9 +77,9 @@ public class GroupServiceImpl extends CommonServiceImpl implements GroupService 
     }
 
     @Override
-    public GetGroupResponse getBySlug(String user, String slug)
+    public GetGroupResponse getBySlug(String username, String slug)
             throws GenericException {
-        return getGroupHelper.getBySlug(user, slug);
+        return getGroupHelper.getBySlug(username, slug);
     }
 
     @Override

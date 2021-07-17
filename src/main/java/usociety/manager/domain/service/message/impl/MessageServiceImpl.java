@@ -12,43 +12,38 @@ import org.springframework.stereotype.Service;
 import usociety.manager.app.api.MessageApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.enums.MessageTypeEnum;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Message;
 import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
-import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.message.MessageService;
-import usociety.manager.domain.service.user.UserService;
 
 @Service
-public class MessageServiceImpl extends CommonServiceImpl implements MessageService {
+public class MessageServiceImpl extends AbstractDelegateImpl implements MessageService {
 
     private static final String GETTING_GROUP_MESSAGES_ERROR_CODE = "ERROR_GETTING_GROUP_MESSAGES";
     private static final String SENDING_GROUP_MESSAGE_ERROR_CODE = "ERROR_SENDING_GROUP_MESSAGE";
 
-    private final MessageRepository messageRepository;
-    private final GroupService groupService;
-    private final UserService userService;
     private final CloudStorageService cloudStorageService;
+    private final MessageRepository messageRepository;
 
     @Autowired
-    public MessageServiceImpl(MessageRepository messageRepository,
-                              GroupService groupService,
-                              UserService userService, CloudStorageService cloudStorageService) {
-        this.messageRepository = messageRepository;
-        this.groupService = groupService;
-        this.userService = userService;
+    public MessageServiceImpl(CloudStorageService cloudStorageService,
+                              MessageRepository messageRepository) {
         this.cloudStorageService = cloudStorageService;
+        this.messageRepository = messageRepository;
     }
 
     @Override
     public void sendGroupMessage(String username, MessageApi request) throws GenericException {
         UserApi user = getUser(username);
         Long groupId = request.getGroup().getId();
-        Group group = groupService.get(groupId);
-        validateIfUserActiveIsMember(username, groupId, SENDING_GROUP_MESSAGE_ERROR_CODE);
+        Group group = getGroup(groupId);
+
+        validateIfUserIsMember(username, groupId, UserGroupStatusEnum.ACTIVE, SENDING_GROUP_MESSAGE_ERROR_CODE);
 
         if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
             throw new GenericException("El content es requerido para mensajes de tipo texto.",
@@ -71,7 +66,7 @@ public class MessageServiceImpl extends CommonServiceImpl implements MessageServ
 
     @Override
     public List<MessageApi> getGroupMessages(String username, Long groupId) throws GenericException {
-        validateIfUserActiveIsMember(username, groupId, GETTING_GROUP_MESSAGES_ERROR_CODE);
+        validateIfUserIsMember(username, groupId, UserGroupStatusEnum.ACTIVE, GETTING_GROUP_MESSAGES_ERROR_CODE);
 
         List<MessageApi> messageApiList = new ArrayList<>();
         for (Message message : messageRepository.findAllByGroupIdOrderByCreationDateDesc(groupId)) {

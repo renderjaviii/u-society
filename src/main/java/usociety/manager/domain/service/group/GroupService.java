@@ -18,9 +18,9 @@ public interface GroupService {
 
     GetGroupResponse update(String username, UpdateGroupRequest request) throws GenericException;
 
-    void join(Long id, String username) throws GenericException, MessagingException;
+    void join(String username, Long id) throws GenericException, MessagingException;
 
-    void updateMembership(Long id, UserGroupApi request) throws GenericException;
+    void updateMembership(String username, Long id, UserGroupApi request) throws GenericException;
 
     Group get(Long id) throws GenericException;
 
@@ -28,7 +28,7 @@ public interface GroupService {
 
     List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
 
-    GetGroupResponse getBySlug(String user, String slug) throws GenericException;
+    GetGroupResponse getBySlug(String username, String slug) throws GenericException;
 
     List<GroupApi> getAllUserGroups(String username) throws GenericException;
 

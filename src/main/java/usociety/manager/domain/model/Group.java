@@ -161,6 +161,7 @@ public class Group extends BaseObject {
         private String slug;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {
