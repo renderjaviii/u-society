@@ -18,7 +18,7 @@ import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.util.StringListConverter;
 
 @Entity
-@Table(name = "`group`")
+@Table(name = "`groups`")
 public class Group extends BaseObject {
 
     @Id

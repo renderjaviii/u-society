@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category extends BaseObject {
 
     @Id

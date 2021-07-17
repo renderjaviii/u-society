@@ -17,7 +17,7 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "survey", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
+@Table(name = "surveys", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
 public class Survey extends BaseObject {
 
     @Id

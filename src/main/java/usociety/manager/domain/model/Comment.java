@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "comment")
+@Table(name = "comments")
 public class Comment extends BaseObject {
 
     @Id

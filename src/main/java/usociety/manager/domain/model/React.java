@@ -17,7 +17,7 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "react", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
+@Table(name = "reacts", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
 public class React extends BaseObject {
 
     @Id

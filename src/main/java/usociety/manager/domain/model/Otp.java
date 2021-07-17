@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "otp")
+@Table(name = "otps")
 public class Otp extends BaseObject {
 
     @Id
