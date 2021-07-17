@@ -16,7 +16,6 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Comment;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.CommentRepository;
-import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.comment.CommentService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
@@ -24,23 +23,17 @@ import usociety.manager.domain.service.post.dto.PostAdditionalData;
 @Service
 public class CommentServiceImpl extends AbstractDelegateImpl implements CommentService {
 
-    private static final String COMMENTING_IN_POST_ERROR_CODE = "ERROR_COmMENTING_IN_POST";
-    private static final String COMMENTING_POST_ERROR_CODE = "ERROR_COMMENTING_TO_POST";
-    private static final String GETTING_POST_ERROR_CODE = "POST_NOT_FOUND";
+    private static final String COMMENTING_POST_ERROR_CODE = "ERROR_COMMENTING_POST";
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              PostRepository postRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
     }
 
     @Override
-    public void create(String username, Long postId, CommentPostRequest request) throws GenericException {
-        Post post = getPost(postId);
+    public void create(String username, Post post, CommentPostRequest request) throws GenericException {
         UserApi user = getUser(username);
         validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, COMMENTING_POST_ERROR_CODE);
 
@@ -59,17 +52,11 @@ public class CommentServiceImpl extends AbstractDelegateImpl implements CommentS
         try {
             PostAdditionalData postAdditionalData = objectMapper.readValue(post.getContent(), PostAdditionalData.class);
             if (PostTypeEnum.SURVEY == postAdditionalData.getType()) {
-                throw new GenericException("No es posible comentar en encuestas.",
-                        COMMENTING_IN_POST_ERROR_CODE);
+                throw new GenericException("No es posible comentar en encuestas.", COMMENTING_POST_ERROR_CODE);
             }
         } catch (JsonProcessingException e) {
-            throw new GenericException("Información de post corrupta.", COMMENTING_IN_POST_ERROR_CODE);
+            throw new GenericException("Información de post corrupta.", COMMENTING_POST_ERROR_CODE);
         }
-    }
-
-    private Post getPost(Long postId) throws GenericException {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new GenericException("Post no encontrado.", GETTING_POST_ERROR_CODE));
     }
 
 }

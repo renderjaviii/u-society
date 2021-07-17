@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.api.UserApi;
@@ -25,8 +26,7 @@ import usociety.manager.domain.service.survey.SurveyService;
 @Service
 public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveyService {
 
-    private static final String VOTING_SURVEY_ERROR_CODE = "ERROR_VOTING_INTO_POST";
-    private static final String GETTING_POST_ERROR_CODE = "POST_NOT_FOUND";
+    private static final String VOTING_SURVEY_ERROR_CODE = "ERROR_INTERACTING_WITH_SURVEY";
 
     private static final int ONE = 1;
 
@@ -41,8 +41,17 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
     }
 
     @Override
-    public void create(String username, Long postId, Integer vote) throws GenericException {
-        Post post = getPost(postId);
+    public void validateIfUserHasAlreadyInteracted(String username, Post post) throws GenericException {
+        UserApi user = getUser(username);
+        Optional<Survey> optionalSurvey = surveyRepository.findByPostIdAndUserId(post.getId(), user.getId());
+        if (optionalSurvey.isPresent()) {
+            throw new GenericException("El usuario ya participó en esta encuesta.", VOTING_SURVEY_ERROR_CODE);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void create(String username, Post post, Integer vote) throws GenericException {
         UserApi user = getUser(username);
         validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, VOTING_SURVEY_ERROR_CODE);
 
@@ -51,8 +60,6 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
 
         validateSurveyConstraints(vote, post, postAdditionalData);
 
-        validateIfUserHasAlreadyInteractedWithSurvey(user, postId);
-
         surveyRepository.save(Survey.newBuilder()
                 .userId(user.getId())
                 .post(post)
@@ -60,11 +67,6 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
                 .build());
 
         updatePostMetadata(vote, postApi, postAdditionalData);
-    }
-
-    private Post getPost(Long postId) throws GenericException {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new GenericException("Post no encontrado.", GETTING_POST_ERROR_CODE));
     }
 
     private void validateSurveyConstraints(Integer vote, Post post, PostAdditionalData postAdditionalData)
@@ -77,13 +79,6 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
         }
         if (vote >= postAdditionalData.getOptions().size()) {
             throw new GenericException("Voto no válido.", VOTING_SURVEY_ERROR_CODE);
-        }
-    }
-
-    private void validateIfUserHasAlreadyInteractedWithSurvey(UserApi user, Long postId) throws GenericException {
-        Optional<Survey> optionalSurvey = surveyRepository.findByPostIdAndUserId(postId, user.getId());
-        if (optionalSurvey.isPresent()) {
-            throw new GenericException("El usuario ya participó en esta encuesta.", VOTING_SURVEY_ERROR_CODE);
         }
     }
 

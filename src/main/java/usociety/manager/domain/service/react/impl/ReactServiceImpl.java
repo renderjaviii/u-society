@@ -15,7 +15,6 @@ import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.model.React;
-import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
@@ -26,27 +25,22 @@ public class ReactServiceImpl extends AbstractDelegateImpl implements ReactServi
 
     private static final String REACTING_IN_POST_ERROR_CODE = "ERROR_REACTING_IN_POST";
     private static final String REACTING_POST_ERROR_CODE = "ERROR_REACTING_TO_POST";
-    private static final String GETTING_POST_ERROR_CODE = "POST_NOT_FOUND";
 
     private final ReactRepository reactRepository;
-    private final PostRepository postRepository;
 
     @Autowired
-    public ReactServiceImpl(ReactRepository reactRepository,
-                            PostRepository postRepository) {
+    public ReactServiceImpl(ReactRepository reactRepository) {
         this.reactRepository = reactRepository;
-        this.postRepository = postRepository;
     }
 
     @Override
-    public void create(String username, Long postId, ReactTypeEnum value) throws GenericException {
-        Post post = getPost(postId);
+    public void create(String username, Post post, ReactTypeEnum value) throws GenericException {
         UserApi user = getUser(username);
 
         validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
         validatePostType(post);
 
-        Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(postId, user.getId());
+        Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(post.getId(), user.getId());
         if (optionalReact.isPresent()) {
             React savedReact = optionalReact.get();
             savedReact.setValue(value.getCode());
@@ -69,11 +63,6 @@ public class ReactServiceImpl extends AbstractDelegateImpl implements ReactServi
         } catch (JsonProcessingException e) {
             throw new GenericException("Información de post corrupta.", REACTING_IN_POST_ERROR_CODE);
         }
-    }
-
-    private Post getPost(Long postId) throws GenericException {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new GenericException("Post no encontrado.", GETTING_POST_ERROR_CODE));
     }
 
 }
