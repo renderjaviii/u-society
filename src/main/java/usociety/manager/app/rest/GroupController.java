@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -58,7 +56,7 @@ public class GroupController extends CommonController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateGroupRequest request)
-            throws GenericException, MessagingException {
+            throws GenericException {
         return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
     }
 
@@ -71,7 +69,7 @@ public class GroupController extends CommonController {
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
             throws GenericException {
-        return ResponseEntity.ok(groupService.get(id, getUser()));
+        return ResponseEntity.ok(groupService.get(getUser(), id));
     }
 
     @ApiOperation(value = "Get by slug.")
@@ -83,7 +81,7 @@ public class GroupController extends CommonController {
     @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") String slug)
             throws GenericException {
-        return ResponseEntity.ok(groupService.getBySlug(slug, getUser()));
+        return ResponseEntity.ok(groupService.getBySlug(getUser(), slug));
     }
 
     @ApiOperation(value = "Update.")
@@ -94,7 +92,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> update(@Valid @RequestBody UpdateGroupRequest request)
-            throws GenericException, JsonProcessingException {
+            throws GenericException {
         return ResponseEntity.ok(groupService.update(getUser(), request));
     }
 

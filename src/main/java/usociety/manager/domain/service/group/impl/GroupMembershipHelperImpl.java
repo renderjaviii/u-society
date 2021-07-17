@@ -8,6 +8,8 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,6 +50,7 @@ public class GroupMembershipHelperImpl extends CommonServiceImpl implements Grou
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void update(Long id, UserGroupApi request) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
                 .findByGroupIdAndUserId(id, request.getUser().getId());
@@ -72,6 +75,7 @@ public class GroupMembershipHelperImpl extends CommonServiceImpl implements Grou
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void join(Long id, String username) throws GenericException {
         Group group = getGroup(id);
         UserApi user = getUser(username);

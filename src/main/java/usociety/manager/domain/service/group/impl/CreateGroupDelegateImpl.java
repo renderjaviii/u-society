@@ -7,7 +7,7 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,8 +60,9 @@ public class CreateGroupDelegateImpl extends CommonServiceImpl implements Create
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public GroupApi execute(String username, CreateGroupRequest request)
-            throws GenericException, MessagingException {
+            throws GenericException {
         validateExistingGroup(request);
 
         Category category = categoryService.get(request.getCategory().getId());
