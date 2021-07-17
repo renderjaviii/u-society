@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.aws.s3.impl;
+package usociety.manager.domain.service.aws.storage;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import usociety.manager.domain.service.common.CloudStorageService;
 @Service
 public class S3ServiceImpl implements CloudStorageService {
 
-    private static final String UPLOADING_FILE_ERROR_CODE = "FILE_UPLOADING_ERROR";
+    private static final String UPLOADING_FILE_ERROR_CODE = "UPLOADING_FILE_FAILED";
     private static final String FILE_URL_FORMAT = "%s/%s";
 
     @Value("${config.aws.access-key}")
