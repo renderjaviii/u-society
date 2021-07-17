@@ -3,14 +3,16 @@ package usociety.manager.domain.service.aws.s3.impl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import usociety.manager.domain.exception.GenericException;
-import usociety.manager.domain.service.aws.s3.CloudStorageService;
+import usociety.manager.domain.service.common.CloudStorageService;
 
 @Service
 public class S3ServiceImpl implements CloudStorageService {
@@ -43,7 +45,14 @@ public class S3ServiceImpl implements CloudStorageService {
     @Value("${config.aws.bucket-name}")
     private String bucketName;
 
+    private final Clock clock;
+
     private AmazonS3 s3client;
+
+    @Autowired
+    public S3ServiceImpl(Clock clock) {
+        this.clock = clock;
+    }
 
     @PostConstruct
     private void init() {
@@ -103,7 +112,7 @@ public class S3ServiceImpl implements CloudStorageService {
     }
 
     private String generateFileName() {
-        return String.format("%s-image", new Date().getTime());
+        return String.format("%s-image", LocalDateTime.now(clock));
     }
 
 }

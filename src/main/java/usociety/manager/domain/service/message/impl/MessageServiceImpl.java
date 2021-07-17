@@ -16,7 +16,7 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Message;
 import usociety.manager.domain.repository.MessageRepository;
-import usociety.manager.domain.service.aws.s3.CloudStorageService;
+import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.message.MessageService;

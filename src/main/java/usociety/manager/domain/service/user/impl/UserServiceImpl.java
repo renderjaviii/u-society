@@ -29,7 +29,7 @@ import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.repository.CategoryRepository;
 import usociety.manager.domain.repository.UserCategoryRepository;
-import usociety.manager.domain.service.aws.s3.CloudStorageService;
+import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;

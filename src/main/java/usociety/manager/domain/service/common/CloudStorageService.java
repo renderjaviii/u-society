@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.aws.s3;
+package usociety.manager.domain.service.common;
 
 import usociety.manager.domain.exception.GenericException;
 

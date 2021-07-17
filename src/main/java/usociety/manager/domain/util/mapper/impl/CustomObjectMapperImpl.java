@@ -23,7 +23,6 @@ public class CustomObjectMapperImpl implements CustomObjectMapper {
         objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, FALSE);
         objectMapper.configure(FAIL_ON_NULL_FOR_PRIMITIVES, FALSE);
         objectMapper.configure(FAIL_ON_NUMBERS_FOR_ENUMS, FALSE);
-        //objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override

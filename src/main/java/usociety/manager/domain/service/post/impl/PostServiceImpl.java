@@ -38,7 +38,7 @@ import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.aws.s3.CloudStorageService;
+import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.PostService;

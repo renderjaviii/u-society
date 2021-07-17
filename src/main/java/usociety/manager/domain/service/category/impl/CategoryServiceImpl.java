@@ -1,7 +1,7 @@
 package usociety.manager.domain.service.category.impl;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import usociety.manager.domain.service.category.CategoryService;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
+    private static final String GETTING_CATEGORY_ERROR = "ERROR_GETTING_CATEGORY";
     private final CategoryRepository categoryRepository;
 
     @Autowired
@@ -25,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryApi> getAll() throws GenericException {
+    public List<CategoryApi> getAll() {
         return categoryRepository.findAll()
                 .stream()
                 .map(Converter::category)
@@ -34,11 +35,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category get(Long id) throws GenericException {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        if (!optionalCategory.isPresent()) {
-            throw new GenericException(String.format("Categoría con id: %s no existe.", id), "ERROR_GETTING_CATEGORY");
-        }
-        return optionalCategory.get();
+        return categoryRepository.findById(id)
+                .orElseThrow(buildCategoryNotFoundException(id));
+    }
+
+    private Supplier<GenericException> buildCategoryNotFoundException(Long id) {
+        return () -> new GenericException(String.format("Categoría con id: %s no existe.", id), GETTING_CATEGORY_ERROR);
     }
 
 }

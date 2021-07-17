@@ -22,6 +22,14 @@ import usociety.manager.domain.service.user.UserService;
 @Component
 public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
 
+    private static final String EMAIL_CONTENT_FORMAT = "<html><body>" +
+            "<h3>Hola: %s</h3>" +
+            "<p>Nos contaste que te gustan los: %s y acaba nacer un grupo que te puede interesar llamado: <u>%s.</u></p>" +
+            "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y échale un vistazo!</p>" +
+            "</body></html>";
+
+    private static final String PLURAL_SUFFIX = "s";
+
     private final UserCategoryRepository userCategoryRepository;
     private final UserService userService;
     private final MailService mailService;
@@ -49,13 +57,9 @@ public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
 
     private String buildHtmlContent(UserApi user, Group group, Category category) {
         String categoryName = StringUtils.capitalize(category.getName());
-        return String.format("<html><body>" +
-                        "<h3>Hola: %s</h3>" +
-                        "<p>Nos contaste que te gustan los: %s y acaba nacer un grupo que te puede interesar llamado: <u>%s.</u></p>" +
-                        "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y échale un vistazo!</p>" +
-                        "</body></html>",
+        return String.format(EMAIL_CONTENT_FORMAT,
                 StringUtils.capitalize(user.getName()),
-                categoryName.endsWith("s") ? categoryName : categoryName + "s",
+                categoryName.endsWith(PLURAL_SUFFIX) ? categoryName : categoryName + PLURAL_SUFFIX,
                 StringUtils.capitalize(group.getName()));
     }
 

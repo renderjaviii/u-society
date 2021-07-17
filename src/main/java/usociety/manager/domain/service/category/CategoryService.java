@@ -8,7 +8,7 @@ import usociety.manager.domain.model.Category;
 
 public interface CategoryService {
 
-    List<CategoryApi> getAll() throws GenericException;
+    List<CategoryApi> getAll();
 
     Category get(Long id) throws GenericException;
 

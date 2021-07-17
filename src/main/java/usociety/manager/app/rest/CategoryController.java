@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.CategoryApi;
-import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.category.CategoryService;
 
 @CrossOrigin(origins = "*", maxAge = 86400)
@@ -39,8 +38,7 @@ public class CategoryController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryApi>> getAll()
-            throws GenericException {
+    public ResponseEntity<List<CategoryApi>> getAll() {
         return ResponseEntity.ok(categoryService.getAll());
     }
 

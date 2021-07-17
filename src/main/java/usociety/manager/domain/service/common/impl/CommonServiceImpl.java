@@ -39,6 +39,7 @@ public abstract class CommonServiceImpl implements CommonService {
     protected void validateIfUserActiveIsMember(String username, Long groupId, String sendingGroupMessageErrorCode)
             throws GenericException {
         UserDTO user = userConnector.get(username);
+
         Optional<UserGroup> optionalUserGroup = userGroupRepository
                 .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getCode());
         if (!optionalUserGroup.isPresent()) {
@@ -49,7 +50,7 @@ public abstract class CommonServiceImpl implements CommonService {
     protected UserApi getUser(String username) throws GenericException {
         UserDTO user = userConnector.get(username);
         if (Objects.isNull(user)) {
-            throw new GenericException(String.format("Usuario con username: %s no existe.", username),
+            throw new GenericException(String.format("Usuario con alias: %s no existe.", username),
                     USER_NOT_FOUND_ERROR_CODE);
         }
         return Converter.user(user);
