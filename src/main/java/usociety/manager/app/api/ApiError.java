@@ -12,13 +12,15 @@ import usociety.manager.app.util.BaseObject;
 @ApiModel(value = "Api Error")
 public class ApiError extends BaseObject {
 
+    @ApiModelProperty(notes = "Description")
     @JsonProperty
     private String description;
 
+    @ApiModelProperty(notes = "Status code", example = "400")
     @JsonProperty
     private String statusCode;
 
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty(notes = "Error description", hidden = true)
     @JsonInclude(NON_NULL)
     @JsonProperty(value = "error_description")
     private String errorDescription;
