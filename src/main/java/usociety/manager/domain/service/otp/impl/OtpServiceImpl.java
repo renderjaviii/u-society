@@ -27,7 +27,9 @@ public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
 
     private static final String INVALID_OTP_MESSAGE = "INVALID_OTP";
-    private static final int OTP_LENGTH = 5;
+
+    @Value("${config.otp-length:5}")
+    private int otpLength;
 
     @Value("${config.otp-expiry-time}")
     private int otpExpiryTime;
@@ -42,11 +44,11 @@ public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
     @Override
     public OtpApi create(String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
-                .active(TRUE)
-                .createdAt(LocalDateTime.now(clock))
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))
+                .createdAt(LocalDateTime.now(clock))
                 .otpCode(generateOtpCode())
                 .emailOwner(email)
+                .active(TRUE)
                 .build());
 
         LOGGER.debug("Created OTP {} for email = {}.", otp.getOtpCode(), email);
@@ -56,7 +58,7 @@ public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
     private String generateOtpCode() {
         String otpCode;
         do {
-            otpCode = RandomStringUtils.random(OTP_LENGTH, FALSE, TRUE);
+            otpCode = RandomStringUtils.random(otpLength, FALSE, TRUE);
         } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != 0);
         return otpCode;
     }
@@ -67,7 +69,7 @@ public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
         if (optionalOTP.isPresent()) {
             Otp otp = optionalOTP.get();
 
-            if (!otp.isActive()) {
+            if (!Boolean.TRUE.equals(otp.isActive())) {
                 throw new GenericException(getErrorMessage("Este OTP es obsoleto: %s.", otpCode), INVALID_OTP_MESSAGE);
             }
 

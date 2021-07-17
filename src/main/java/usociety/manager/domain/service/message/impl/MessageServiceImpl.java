@@ -25,7 +25,7 @@ import usociety.manager.domain.service.message.MessageService;
 public class MessageServiceImpl extends AbstractDelegateImpl implements MessageService {
 
     private static final String GETTING_GROUP_MESSAGES_ERROR_CODE = "ERROR_GETTING_GROUP_MESSAGES";
-    private static final String SENDING_GROUP_MESSAGE_ERROR_CODE = "ERROR_SENDING_GROUP_MESSAGE";
+    private static final String SENDING_MESSAGE_ERROR_CODE = "ERROR_SENDING_GROUP_MESSAGE";
 
     private final CloudStorageService cloudStorageService;
     private final MessageRepository messageRepository;
@@ -43,22 +43,15 @@ public class MessageServiceImpl extends AbstractDelegateImpl implements MessageS
         Long groupId = request.getGroup().getId();
         Group group = getGroup(groupId);
 
-        validateIfUserIsMember(username, groupId, UserGroupStatusEnum.ACTIVE, SENDING_GROUP_MESSAGE_ERROR_CODE);
+        validateIfUserIsMember(username, groupId, UserGroupStatusEnum.ACTIVE, SENDING_MESSAGE_ERROR_CODE);
+        validateRequest(request);
 
-        if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
-            throw new GenericException("El content es requerido para mensajes de tipo texto.",
-                    SENDING_GROUP_MESSAGE_ERROR_CODE);
-        }
-
-        if (MessageTypeEnum.IMAGE == request.getType() && StringUtils.isNotEmpty(request.getImage())) {
-            throw new GenericException("Es obligatorio que envíe la imagen.", SENDING_GROUP_MESSAGE_ERROR_CODE);
-        }
         processContent(request, request.getImage());
 
         messageRepository.save(Message.newBuilder()
-                .content(request.getContent())
                 .creationDate(LocalDateTime.now(clock))
                 .type(request.getType().getCode())
+                .content(request.getContent())
                 .userId(user.getId())
                 .group(group)
                 .build());
@@ -68,11 +61,22 @@ public class MessageServiceImpl extends AbstractDelegateImpl implements MessageS
     public List<MessageApi> getGroupMessages(String username, Long groupId) throws GenericException {
         validateIfUserIsMember(username, groupId, UserGroupStatusEnum.ACTIVE, GETTING_GROUP_MESSAGES_ERROR_CODE);
 
-        List<MessageApi> messageApiList = new ArrayList<>();
+        List<MessageApi> groupMessages = new ArrayList<>();
         for (Message message : messageRepository.findAllByGroupIdOrderByCreationDateDesc(groupId)) {
-            messageApiList.add(buildGroupMessage(message));
+            groupMessages.add(buildGroupMessage(message));
         }
-        return messageApiList;
+
+        return groupMessages;
+    }
+
+    private void validateRequest(MessageApi request) throws GenericException {
+        if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
+            throw new GenericException("Es obligatorio que envíe información.", SENDING_MESSAGE_ERROR_CODE);
+        }
+
+        if (MessageTypeEnum.IMAGE == request.getType() && StringUtils.isNotEmpty(request.getImage())) {
+            throw new GenericException("Es obligatorio que envíe la imagen.", SENDING_MESSAGE_ERROR_CODE);
+        }
     }
 
     private void processContent(MessageApi request, String image) throws GenericException {

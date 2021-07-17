@@ -38,32 +38,37 @@ import usociety.manager.domain.util.Constant;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final String EMAIL_CONTENT = "<html><body>" +
+            "<h3>¡Hola <u>%s</u>!</h3>" +
+            "<p>Bienvenido a <a href='https://usociety-68208.web.app/'>U Society</a>, logueate y descrubre todo lo que tenemos para ti.</p>" +
+            "</html></body>";
+
     private final AuthenticationConnector authenticationConnector;
     private final UserCategoryRepository userCategoryRepository;
+    private final CloudStorageService cloudStorageService;
     private final CategoryRepository categoryRepository;
     private final UserConnector userConnector;
     private final MailService mailService;
     private final OtpService otpService;
-    private final CloudStorageService cloudStorageService;
 
     @Value("${config.user.validate-otp:0}")
     private boolean validateOtp;
 
     @Autowired
     public UserServiceImpl(AuthenticationConnector authenticationConnector,
+                           UserCategoryRepository userCategoryRepository,
+                           CloudStorageService cloudStorageService,
+                           CategoryRepository categoryRepository,
                            UserConnector userConnector,
                            MailService mailService,
-                           OtpService otpService,
-                           CloudStorageService cloudStorageService,
-                           UserCategoryRepository userCategoryRepository,
-                           CategoryRepository categoryRepository) {
+                           OtpService otpService) {
         this.authenticationConnector = authenticationConnector;
+        this.userCategoryRepository = userCategoryRepository;
+        this.cloudStorageService = cloudStorageService;
+        this.categoryRepository = categoryRepository;
         this.userConnector = userConnector;
         this.mailService = mailService;
         this.otpService = otpService;
-        this.cloudStorageService = cloudStorageService;
-        this.userCategoryRepository = userCategoryRepository;
-        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -102,13 +107,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserApi get(String username) {
-        UserApi userApi = Converter.user(userConnector.get(username));
-        userApi.setCategoryList(userCategoryRepository.findAllByUserId(userApi.getId())
+        UserApi user = Converter.user(userConnector.get(username));
+        user.setCategoryList(userCategoryRepository.findAllByUserId(user.getId())
                 .stream()
                 .map(userCategory -> Converter.category(userCategory.getCategory()))
                 .collect(Collectors.toList()));
 
-        return userApi;
+        return user;
     }
 
     @Override
@@ -159,17 +164,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(String username, UpdateUserRequest request) throws GenericException {
         UserApi user = get(username);
-        String photoUrl = null;
-        String currentUserPhoto = user.getPhoto();
-        if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(user.getPhoto())) {
-            if (StringUtils.isNotEmpty(currentUserPhoto)) {
-                cloudStorageService.delete(currentUserPhoto);
-            }
-            photoUrl = cloudStorageService.upload(request.getPhoto());
-        }
-
         user.setName(StringUtils.defaultString(request.getName(), user.getName()));
-        user.setPhoto(StringUtils.defaultString(photoUrl, currentUserPhoto));
+        user.setPhoto(processPhotoAndGetUrl(user, request));
 
         List<UserCategory> userCategoryList = userCategoryRepository.findAllByUserId(user.getId());
         userCategoryRepository.deleteInBatch(userCategoryList);
@@ -179,7 +175,8 @@ public class UserServiceImpl implements UserService {
                     .forEach(categoryApi -> userCategoryRepository.save(UserCategory.newBuilder()
                             .category(categoryRepository.getOne(categoryApi.getId()))
                             .userId(user.getId())
-                            .build()));
+                            .build())
+                    );
         }
 
         userConnector.update(Converter.user(user));
@@ -200,11 +197,19 @@ public class UserServiceImpl implements UserService {
     }
 
     private String buildEmailContent(CreateUserRequest request) {
-        return String.format("<html><body>" +
-                        "<h3>¡Hola <u>%s</u>!</h3>" +
-                        "<p>Bienvenido a <a href='https://usociety-68208.web.app/'>U Society</a>, logueate y descrubre todo lo que tenemos para ti.</p>" +
-                        "</html></body>",
-                StringUtils.capitalize(request.getName()));
+        return String.format(EMAIL_CONTENT, StringUtils.capitalize(request.getName()));
+    }
+
+    private String processPhotoAndGetUrl(UserApi user, UpdateUserRequest request)
+            throws GenericException {
+        String currentUserPhoto = user.getPhoto();
+        if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(user.getPhoto())) {
+            if (StringUtils.isNotEmpty(currentUserPhoto)) {
+                cloudStorageService.delete(currentUserPhoto);
+            }
+            return cloudStorageService.upload(request.getPhoto());
+        }
+        return currentUserPhoto;
     }
 
 }

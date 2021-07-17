@@ -95,9 +95,9 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
             throw new GenericException("Es obligatorio que envíes la imagen.", CREATING_POST_ERROR_CODE);
         }
         UserApi user = getUser(username);
-
         processContent(request, request.getImage());
-        PostApi postApi = Converter.post(postRepository.save(Post.newBuilder()
+
+        return Converter.post(postRepository.save(Post.newBuilder()
                 .group(groupService.get(request.getGroupId()))
                 .creationDate(LocalDateTime.now(clock))
                 .expirationDate(request.getExpirationDate())
@@ -106,8 +106,6 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
                 .description(request.getDescription())
                 .userId(user.getId())
                 .build()));
-        postApi.setGroup(null);
-        return postApi;
     }
 
     @Override
