@@ -9,14 +9,14 @@ import usociety.manager.domain.model.Group;
 
 public interface GetGroupHelper {
 
-    Group getById(Long id) throws GenericException;
+    Group byId(Long id) throws GenericException;
 
-    GetGroupResponse get(String username, Long id) throws GenericException;
+    GetGroupResponse byUserAndId(String username, Long id) throws GenericException;
 
-    List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
+    GetGroupResponse byUserAndSlug(String username, String slug) throws GenericException;
 
-    GetGroupResponse getBySlug(String username, String slug) throws GenericException;
+    List<GroupApi> byFilters(String name, Long categoryId) throws GenericException;
 
-    List<GroupApi> getAllUserGroups(String username) throws GenericException;
+    List<GroupApi> allUserGroups(String username) throws GenericException;
 
 }

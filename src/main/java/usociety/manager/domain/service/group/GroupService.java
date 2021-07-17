@@ -26,9 +26,9 @@ public interface GroupService {
 
     GetGroupResponse get(String username, Long id) throws GenericException;
 
-    List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
-
     GetGroupResponse getBySlug(String username, String slug) throws GenericException;
+
+    List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
 
     List<GroupApi> getAllUserGroups(String username) throws GenericException;
 

@@ -62,30 +62,30 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group get(Long id) throws GenericException {
-        return getGroupHelper.getById(id);
+        return getGroupHelper.byId(id);
     }
 
     @Override
     public GetGroupResponse get(String username, Long id) throws GenericException {
-        return getGroupHelper.get(username, id);
-    }
-
-    @Override
-    public List<GroupApi> getByFilters(String name, Long categoryId)
-            throws GenericException {
-        return getGroupHelper.getByFilters(name, categoryId);
+        return getGroupHelper.byUserAndId(username, id);
     }
 
     @Override
     public GetGroupResponse getBySlug(String username, String slug)
             throws GenericException {
-        return getGroupHelper.getBySlug(username, slug);
+        return getGroupHelper.byUserAndSlug(username, slug);
+    }
+
+    @Override
+    public List<GroupApi> getByFilters(String name, Long categoryId)
+            throws GenericException {
+        return getGroupHelper.byFilters(name, categoryId);
     }
 
     @Override
     public List<GroupApi> getAllUserGroups(String username)
             throws GenericException {
-        return getGroupHelper.getAllUserGroups(username);
+        return getGroupHelper.allUserGroups(username);
     }
 
 }

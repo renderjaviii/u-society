@@ -44,18 +44,18 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
     }
 
     @Override
-    public Group getById(Long id) throws GenericException {
+    public Group byId(Long id) throws GenericException {
         return getGroup(id);
     }
 
     @Override
-    public GetGroupResponse get(String username, Long id) throws GenericException {
+    public GetGroupResponse byUserAndId(String username, Long id) throws GenericException {
         UserApi user = getUser(username);
         return buildCompleteGroupResponse(user, getGroup(id));
     }
 
     @Override
-    public List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException {
+    public List<GroupApi> byFilters(String name, Long categoryId) throws GenericException {
         validateFields(name, categoryId);
 
         return groupRepository.findDistinctByCategoryIdOrNameContainingIgnoreCase(categoryId, name)
@@ -66,7 +66,7 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
     }
 
     @Override
-    public GetGroupResponse getBySlug(String username, String slug) throws GenericException {
+    public GetGroupResponse byUserAndSlug(String username, String slug) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findBySlug(slug);
         if (!optionalGroup.isPresent()) {
             throw new GenericException("Grupo no encontrado.", GETTING_GROUP_ERROR_CODE);
@@ -77,7 +77,7 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
     }
 
     @Override
-    public List<GroupApi> getAllUserGroups(String username) throws GenericException {
+    public List<GroupApi> allUserGroups(String username) throws GenericException {
         UserApi user = getUser(username);
 
         return userGroupRepository
