@@ -5,8 +5,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NUMB
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.lang.Boolean.FALSE;
 
-import java.io.IOException;
-
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,7 +24,7 @@ public class CustomObjectMapperImpl implements CustomObjectMapper {
     }
 
     @Override
-    public <T> T readValue(String content, Class<T> valueType) throws IOException {
+    public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException {
         return objectMapper.readValue(content, valueType);
     }
 

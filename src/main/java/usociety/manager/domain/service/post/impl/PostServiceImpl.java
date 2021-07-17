@@ -62,7 +62,7 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
     }
 
     @Override
-    public void interactWithSurvey(String username, Long postId, Integer vote) throws GenericException {
+    public void vote(String username, Long postId, Integer vote) throws GenericException {
         surveyService.create(username, postId, vote);
     }
 

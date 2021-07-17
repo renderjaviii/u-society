@@ -109,13 +109,13 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/{id}/survey")
+    @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
             @PathVariable("id") Long id,
             @PositiveOrZero @RequestParam("vote") Integer vote
     )
             throws GenericException {
-        postService.interactWithSurvey(getUser(), id, vote);
+        postService.vote(getUser(), id, vote);
         return ResponseEntity.ok().build();
     }
 

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.enums.PostTypeEnum;
@@ -32,14 +31,11 @@ public class ReactServiceImpl extends AbstractDelegateImpl implements ReactServi
     private final ReactRepository reactRepository;
     private final PostRepository postRepository;
 
-    private final ObjectMapper objectMapper;
-
     @Autowired
     public ReactServiceImpl(ReactRepository reactRepository,
                             PostRepository postRepository) {
         this.reactRepository = reactRepository;
         this.postRepository = postRepository;
-        objectMapper = new ObjectMapper();
     }
 
     @Override

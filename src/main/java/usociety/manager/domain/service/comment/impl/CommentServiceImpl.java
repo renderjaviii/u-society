@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
@@ -32,14 +31,11 @@ public class CommentServiceImpl extends AbstractDelegateImpl implements CommentS
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    private final ObjectMapper objectMapper;
-
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository,
                               PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
-        objectMapper = new ObjectMapper();
     }
 
     @Override

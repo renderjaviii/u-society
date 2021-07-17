@@ -20,6 +20,7 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.common.AbstractDelegate;
 import usociety.manager.domain.service.user.UserService;
+import usociety.manager.domain.util.mapper.CustomObjectMapper;
 
 @Component
 public abstract class AbstractDelegateImpl implements AbstractDelegate {
@@ -32,6 +33,9 @@ public abstract class AbstractDelegateImpl implements AbstractDelegate {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    protected CustomObjectMapper objectMapper;
 
     @Autowired
     private UserGroupRepository userGroupRepository;

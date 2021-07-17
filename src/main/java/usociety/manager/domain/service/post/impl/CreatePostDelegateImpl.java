@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.api.UserApi;
@@ -40,8 +39,6 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
     private final PostRepository postRepository;
     private final GroupService groupService;
 
-    private ObjectMapper objectMapper;
-
     @Autowired
     public CreatePostDelegateImpl(CloudStorageService cloudStorageService,
                                   PostRepository postRepository,
@@ -49,7 +46,6 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
         this.cloudStorageService = cloudStorageService;
         this.postRepository = postRepository;
         this.groupService = groupService;
-        objectMapper = new ObjectMapper();
     }
 
     @Override
