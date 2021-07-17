@@ -1,7 +1,7 @@
 INSERT INTO managerConfig(name, value) VALUES('config.otp-expiry-time', '1');
 INSERT INTO managerConfig(name, value) VALUES ('config.access-token.signing-key', '123');
 
--- AWS - S3
+-- AWS: S3
 INSERT INTO managerConfig(name, value) VALUES('config.aws.endpoint-url', 'https://u-society.s3.amazonaws.com');
 INSERT INTO managerConfig(name, value) VALUES('config.aws.bucket-name', 'u-society');
 INSERT INTO managerConfig(name, value) VALUES('config.aws.access-key', 'NONE');

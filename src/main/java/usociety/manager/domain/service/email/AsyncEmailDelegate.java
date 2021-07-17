@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.group;
+package usociety.manager.domain.service.email;
 
 import javax.mail.MessagingException;
 
@@ -7,7 +7,7 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Group;
 
-public interface SendAsyncEmail {
+public interface AsyncEmailDelegate {
 
     void send(UserApi user, Group group, Category category) throws GenericException, MessagingException;
 

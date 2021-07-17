@@ -50,9 +50,10 @@ public class OtpController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/validate")
-    public ResponseEntity<Void> validate(@RequestParam(name = "username") final String username,
-                                         @RequestParam(name = "otpCode") final String otpCode)
-            throws GenericException {
+    public ResponseEntity<Void> validate(
+            @RequestParam(name = "username") final String username,
+            @RequestParam(name = "otpCode") final String otpCode
+    ) throws GenericException {
         otpService.validate(username, otpCode);
         return ResponseEntity.ok().build();
     }

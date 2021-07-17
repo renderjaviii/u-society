@@ -26,7 +26,7 @@ public interface GroupService {
 
     void updateMembership(Long id, UserGroupApi request) throws GenericException;
 
-    GetGroupResponse update(UpdateGroupRequest request, String username)
+    GetGroupResponse update(String username, UpdateGroupRequest request)
             throws GenericException, JsonProcessingException;
 
     List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;

@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,19 +22,19 @@ public class Otp extends BaseObject {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "otp_code", nullable = false)
+    @Column(name = "otp_code", nullable = false, updatable = false)
     private String otpCode;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "expires_at", nullable = false)
+    @Column(name = "expires_at", nullable = false, updatable = false)
     private LocalDateTime expiresAt;
 
     @Column(name = "active", nullable = false)
-    private boolean active;
+    private Boolean active;
 
-    @Column(name = "username_owner")
+    @Column(name = "username_owner", nullable = false, updatable = false)
     private String usernameOwner;
 
     @Column(name = "email_owner", nullable = false)
@@ -69,11 +70,11 @@ public class Otp extends BaseObject {
         return expiresAt;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
@@ -90,8 +91,14 @@ public class Otp extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Otp)) {
+            return false;
+        }
+        return Objects.equals(((Otp) obj).id, id);
     }
 
     @Override
@@ -105,7 +112,7 @@ public class Otp extends BaseObject {
         private String otpCode;
         private LocalDateTime createdAt;
         private LocalDateTime expiresAt;
-        private boolean active;
+        private Boolean active;
         private String ownerUsername;
         private String emailOwner;
 
@@ -133,7 +140,7 @@ public class Otp extends BaseObject {
             return this;
         }
 
-        public Builder active(boolean active) {
+        public Builder active(Boolean active) {
             this.active = active;
             return this;
         }

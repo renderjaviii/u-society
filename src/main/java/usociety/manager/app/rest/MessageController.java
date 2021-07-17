@@ -45,7 +45,7 @@ public class MessageController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> sendGroupMessage(@Valid @RequestBody MessageApi request)
             throws GenericException {
         messageService.sendGroupMessage(getUser(), request);

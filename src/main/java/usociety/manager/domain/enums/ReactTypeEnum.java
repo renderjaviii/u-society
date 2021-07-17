@@ -3,6 +3,7 @@ package usociety.manager.domain.enums;
 import java.util.Arrays;
 
 public enum ReactTypeEnum {
+
     LIKE("LIKE", 0),
     DISLIKE("DISLIKE", 1),
     ANGRY("ANGRY", 2),

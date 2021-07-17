@@ -72,6 +72,7 @@ public class S3ServiceImpl implements CloudStorageService {
                 try {
                     Files.delete(file.toPath());
                 } catch (IOException ignore) {
+                    //Implementation is not required
                 }
             }
             return fileUrl;

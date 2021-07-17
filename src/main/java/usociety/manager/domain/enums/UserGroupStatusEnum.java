@@ -3,6 +3,7 @@ package usociety.manager.domain.enums;
 import java.util.Arrays;
 
 public enum UserGroupStatusEnum {
+
     ACTIVE("ACTIVE", 0),
     PENDING("PENDING", 1),
     REJECTED("REJECTED", 2),

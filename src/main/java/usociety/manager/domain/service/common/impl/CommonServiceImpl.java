@@ -3,6 +3,7 @@ package usociety.manager.domain.service.common.impl;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 
 import java.time.Clock;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public abstract class CommonServiceImpl implements CommonService {
     @Autowired
     private UserGroupRepository userGroupRepository;
 
-    public CommonServiceImpl() {
+    protected CommonServiceImpl() {
         super();
     }
 
@@ -47,7 +48,7 @@ public abstract class CommonServiceImpl implements CommonService {
 
     protected UserApi getUser(String username) throws GenericException {
         UserDTO user = userConnector.get(username);
-        if (user == null) {
+        if (Objects.isNull(user)) {
             throw new GenericException(String.format("Usuario con username: %s no existe.", username),
                     USER_NOT_FOUND_ERROR_CODE);
         }

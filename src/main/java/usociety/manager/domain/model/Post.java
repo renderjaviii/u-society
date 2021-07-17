@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,7 +22,7 @@ public class Post extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
@@ -40,10 +41,10 @@ public class Post extends BaseObject {
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    @JoinColumn(name = "group_id", referencedColumnName = "id", updatable = false)
     private Group group;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     public Post() {
@@ -51,14 +52,14 @@ public class Post extends BaseObject {
     }
 
     private Post(Builder builder) {
-        setId(builder.id);
-        setCreationDate(builder.creationDate);
-        setExpirationDate(builder.expirationDate);
-        setPublic(builder.isPublic);
-        setContent(builder.content);
-        setDescription(builder.description);
-        setGroup(builder.group);
-        setUserId(builder.userId);
+        id = builder.id;
+        creationDate = builder.creationDate;
+        expirationDate = builder.expirationDate;
+        isPublic = builder.isPublic;
+        content = builder.content;
+        description = builder.description;
+        group = builder.group;
+        userId = builder.userId;
     }
 
     public static Builder newBuilder() {
@@ -130,8 +131,14 @@ public class Post extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Post)) {
+            return false;
+        }
+        return Objects.equals(((Post) obj).id, id);
     }
 
     @Override
@@ -151,6 +158,7 @@ public class Post extends BaseObject {
         private Long userId;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {

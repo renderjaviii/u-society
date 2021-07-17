@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +22,7 @@ public class React extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -66,6 +68,17 @@ public class React extends BaseObject {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof React)) {
+            return false;
+        }
+        return Objects.equals(((React) obj).id, id);
     }
 
     public static final class Builder {

@@ -15,16 +15,17 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.email.MailService;
 
 @Service
-public class MailServiceImpl implements MailService {
+public class SimpleMailServiceImpl implements MailService {
 
     private static final String SIGN_IN_MESSAGE = "<html><body><p> Este es tu código de verificación: <b>%s</b>. Ingrésalo en la página para continuar con el registro.</p></body></html>";
     private static final String WELCOME_SUBJECT = "Bienvenido a U Society - Verificación de cuenta.";
     private static final String SIMPLE_SUBJECT = "U Society.";
+    private static final String SENDING_EMAIL_ERROR_CODE = "ERROR_SENDING_EMAIL";
 
     private final JavaMailSender javaMailSender;
 
     @Autowired
-    public MailServiceImpl(JavaMailSender javaMailSender) {
+    public SimpleMailServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
@@ -46,7 +47,7 @@ public class MailServiceImpl implements MailService {
                 javaMailSender.send(msg);
             }
         } catch (MessagingException e) {
-            throw new GenericException(e.getMessage(), "EMAIL_COULD_NOT_BE_SEND");
+            throw new GenericException(e.getMessage(), SENDING_EMAIL_ERROR_CODE);
         }
     }
 
@@ -60,7 +61,7 @@ public class MailServiceImpl implements MailService {
             helper.setTo(email);
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            throw new GenericException(e.getMessage(), "EMAIL_COULD_NOT_BE_SEND");
+            throw new GenericException(e.getMessage(), SENDING_EMAIL_ERROR_CODE);
         }
 
     }

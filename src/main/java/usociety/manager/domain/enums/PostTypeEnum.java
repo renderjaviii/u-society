@@ -1,6 +1,7 @@
 package usociety.manager.domain.enums;
 
 public enum PostTypeEnum {
+
     TEXT("TEXT", 0),
     IMAGE("IMAGE", 1),
     SURVEY("SURVEY", 2);

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.MessageTypeEnum;
 
@@ -21,6 +22,7 @@ public class MessageApi extends BaseObject {
     @JsonProperty
     private String content;
 
+    @ApiModelProperty("Base 64 image")
     @JsonProperty
     private String image;
 

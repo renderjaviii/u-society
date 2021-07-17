@@ -15,7 +15,6 @@ public class MessageCreationValidator implements ConstraintValidator<PostCreatio
         if (MessageTypeEnum.TEXT == message.getType()) {
             return Objects.nonNull(message.getContent());
         }
-
         return true;
     }
 

@@ -3,6 +3,7 @@ package usociety.manager.domain.enums;
 import java.util.Arrays;
 
 public enum MessageTypeEnum {
+
     TEXT("TEXT", 0),
     IMAGE("IMAGE", 1);
 

@@ -12,14 +12,12 @@ import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.app.api.PostApi;
-import usociety.manager.app.api.ReactApi;
 import usociety.manager.app.api.TokenApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Otp;
 import usociety.manager.domain.model.Post;
-import usociety.manager.domain.model.React;
 import usociety.manager.domain.provider.authentication.dto.TokenDTO;
 import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
@@ -93,10 +91,6 @@ public class Converter {
             //It's no necessary.
         }
         return post;
-    }
-
-    public static ReactApi react(React react) {
-        return modelMapper.map(react, ReactApi.class);
     }
 
 }

@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MessageCreationConstraint {
 
-    String message() default "Si el mensaje es de tipo texto, el message.content es requerido.";
+    String message() default "Si el mensaje es de tipo texto, el contenido es requerido.";
 
     Class<?>[] groups() default {};
 

@@ -20,16 +20,15 @@ public class CreateUserRequest extends BaseObject {
     @JsonProperty(value = "name")
     private String name;
 
-    @ApiModelProperty(notes = "Username", required = true)
     @NotBlank
+    @Pattern(regexp = "^[a-zA-Z\\d-_]+")
+    @ApiModelProperty(notes = "Username", required = true)
     @JsonProperty(value = "username")
     private String username;
 
-    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\\.)?[a-zA-Z]+\\.)?(correo.usa|usa)\\.edu.co$",
-            message = "Debes utilizar un correo válido")
-    @ApiModelProperty(notes = "Email", required = true)
-    @Email
     @NotBlank
+    @Email
+    @ApiModelProperty(notes = "Email", required = true)
     @JsonProperty(value = "email")
     private String email;
 
@@ -37,8 +36,8 @@ public class CreateUserRequest extends BaseObject {
     @JsonProperty(value = "photo")
     private String photo;
 
-    @ApiModelProperty(notes = "Password", required = true)
     @NotBlank
+    @ApiModelProperty(notes = "Password", required = true)
     @JsonProperty(value = "password")
     private String password;
 

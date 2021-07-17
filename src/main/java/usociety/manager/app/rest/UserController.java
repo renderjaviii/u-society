@@ -60,8 +60,9 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/",
-            consumes = { MediaType.APPLICATION_JSON_VALUE },
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<LoginResponse> create(@Valid @RequestBody CreateUserRequest request)
             throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request), CREATED);
@@ -74,9 +75,10 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/verifyEmail")
-    public ResponseEntity<Void> verify(@Email @RequestParam(name = "email") final String email,
-                                       @RequestParam(name = "resendCode", required = false) final boolean resendCode)
-            throws GenericException {
+    public ResponseEntity<Void> verify(
+            @Email @RequestParam(name = "email") final String email,
+            @RequestParam(name = "resendCode", required = false) final boolean resendCode
+    ) throws GenericException {
         userService.verify(email, resendCode);
         return ResponseEntity.ok().build();
     }
@@ -88,9 +90,10 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/enableAccount")
-    public ResponseEntity<Void> enableAccount(@Email @RequestParam(name = "email") final String email,
-                                              @NotEmpty @RequestParam(name = "otpCode") final String otpCode)
-            throws GenericException {
+    public ResponseEntity<Void> enableAccount(
+            @Email @RequestParam(name = "email") final String email,
+            @NotEmpty @RequestParam(name = "otpCode") final String otpCode
+    ) throws GenericException {
         userService.enableAccount(email, otpCode);
         return ResponseEntity.ok().build();
     }
@@ -113,7 +116,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE },
+    @PutMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
@@ -155,10 +158,11 @@ public class UserController extends CommonController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PatchMapping(path = "/{username}/changePassword", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserApi>> changePassword(@PathVariable(value = "username") final String username,
-                                                        @RequestParam(name = "otpCode") final String otpCode,
-                                                        @Valid @RequestBody ChangePasswordRequest request)
-            throws GenericException {
+    public ResponseEntity<List<UserApi>> changePassword(
+            @PathVariable(value = "username") final String username,
+            @RequestParam(name = "otpCode") final String otpCode,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) throws GenericException {
         userService.changePassword(validateUser(username), otpCode, request);
         return ResponseEntity.ok().build();
     }

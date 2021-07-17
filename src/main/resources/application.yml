@@ -4,14 +4,14 @@ server:
   port: ${SERVER_PORT}
   ssl:
     key-store: classpath:keystore/keystore.p12
-    key-store-password: password
+    key-store-password: ${KEYSTORE_PASSWORD:password}
     keyStoreType: PKCS12
-    keyAlias: renderjaviii
+    keyAlias: ${KEYSTORE_ALIAS}
     enabled: true
 
 trust:
   store: classpath:keystore/keystore.p12
-  store.password: password
+  store.password: ${KEYSTORE_PASSWORD:password}
 
 spring:
   profiles:

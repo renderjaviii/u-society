@@ -14,16 +14,22 @@ public class OtpApi extends BaseObject {
 
     @JsonProperty
     private Long id;
+
     @JsonProperty
     private String otpCode;
+
     @JsonProperty
     private LocalDateTime createdAt;
+
     @JsonProperty
     private LocalDateTime expiresAt;
+
     @JsonProperty
     private boolean active;
+
     @JsonProperty
     private String usernameOwner;
+
     @JsonProperty
     private String userEmailOwner;
 

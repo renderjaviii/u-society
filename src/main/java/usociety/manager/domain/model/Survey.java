@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +22,7 @@ public class Survey extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "vote", nullable = false)
@@ -69,8 +71,14 @@ public class Survey extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Survey)) {
+            return false;
+        }
+        return Objects.equals(((Survey) obj).id, id);
     }
 
     @Override

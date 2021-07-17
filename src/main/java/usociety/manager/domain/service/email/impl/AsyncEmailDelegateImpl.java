@@ -1,4 +1,4 @@
-package usociety.manager.domain.service.group.impl;
+package usociety.manager.domain.service.email.impl;
 
 import static java.lang.Boolean.TRUE;
 
@@ -15,23 +15,23 @@ import usociety.manager.domain.model.Category;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserCategory;
 import usociety.manager.domain.repository.UserCategoryRepository;
+import usociety.manager.domain.service.email.AsyncEmailDelegate;
 import usociety.manager.domain.service.email.MailService;
-import usociety.manager.domain.service.group.SendAsyncEmail;
 import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class SendAsyncEmailDelegateImpl implements SendAsyncEmail {
+public class AsyncEmailDelegateImpl implements AsyncEmailDelegate {
 
     private final UserCategoryRepository userCategoryRepository;
     private final UserService userService;
     private final MailService mailService;
 
     @Autowired
-    public SendAsyncEmailDelegateImpl(MailService mailService,
-                                      UserCategoryRepository userCategoryRepository,
-                                      UserService userService) {
-        this.mailService = mailService;
+    public AsyncEmailDelegateImpl(UserCategoryRepository userCategoryRepository,
+                                  MailService mailService,
+                                  UserService userService) {
         this.userCategoryRepository = userCategoryRepository;
+        this.mailService = mailService;
         this.userService = userService;
     }
 

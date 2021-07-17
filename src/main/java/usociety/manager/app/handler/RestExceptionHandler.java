@@ -49,12 +49,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
-        StringJoiner s = new StringJoiner(", ");
+        StringJoiner joiner = new StringJoiner(", ");
         ex.getBindingResult()
                 .getAllErrors()
-                .forEach(error -> getFieldErrorMessage(s, error));
+                .forEach(error -> getFieldErrorMessage(joiner, error));
 
-        String errorMessage = String.format(BASIC_FORMAT, "Fields validation failed:", s.toString());
+        String errorMessage = String.format(BASIC_FORMAT, "Fields validation failed:", joiner.toString());
         return new ResponseEntity<>(new ApiError(errorMessage, BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
@@ -105,12 +105,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ApiError(ex.getMessage(), ex.getErrorCode()), HttpStatus.FORBIDDEN);
     }
 
-    private StringJoiner getFieldErrorMessage(StringJoiner joiner, ObjectError error) {
+    private void getFieldErrorMessage(StringJoiner joiner, ObjectError error) {
         if (error instanceof FieldError) {
             String message = String.format(BASIC_FORMAT, ((FieldError) error).getField(), error.getDefaultMessage());
-            return joiner.add(message);
+            joiner.add(message);
         }
-        return joiner.add(error.getDefaultMessage());
+        joiner.add(error.getDefaultMessage());
     }
 
 }

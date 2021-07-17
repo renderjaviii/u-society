@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,20 +22,20 @@ public class Comment extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
     @Column(name = "value", nullable = false)
     private String value;
 
-    @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
+    @Column(name = "creation_date", nullable = false, updatable = false, columnDefinition = "DATETIME")
     private LocalDateTime creationDate;
 
     public Comment() {
@@ -47,16 +48,6 @@ public class Comment extends BaseObject {
         userId = builder.userId;
         value = builder.value;
         creationDate = builder.creationDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
     public static Builder newBuilder() {
@@ -81,6 +72,22 @@ public class Comment extends BaseObject {
 
     public LocalDateTime getCreationDate() {
         return creationDate;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Comment)) {
+            return false;
+        }
+        return Objects.equals(((Comment) obj).id, id);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static final class Builder {

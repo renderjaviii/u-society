@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,14 +22,14 @@ public class Message extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "type", nullable = false)
-    private int type;
+    private Integer type;
 
     @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime creationDate;
@@ -65,7 +66,7 @@ public class Message extends BaseObject {
         return content;
     }
 
-    public int getType() {
+    public Integer getType() {
         return type;
     }
 
@@ -82,8 +83,14 @@ public class Message extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Message)) {
+            return false;
+        }
+        return Objects.equals(((Message) obj).id, id);
     }
 
     @Override
@@ -95,7 +102,7 @@ public class Message extends BaseObject {
 
         private Long id;
         private String content;
-        private int type;
+        private Integer type;
         private LocalDateTime creationDate;
         private Group group;
         private Long userId;
@@ -114,7 +121,7 @@ public class Message extends BaseObject {
             return this;
         }
 
-        public Builder type(int type) {
+        public Builder type(Integer type) {
             this.type = type;
             return this;
         }

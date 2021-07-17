@@ -16,6 +16,7 @@ public class UserLoginRequest extends BaseObject {
     @JsonProperty(value = "username")
     private String username;
 
+    //TODO: Hide this data on logs
     @NotNull
     @JsonProperty(value = "password")
     private String password;

@@ -50,7 +50,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public void setUp(String url, int timeOut) {
-        logger.info("Creating WebClient for host: {}", url);
+        logger.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException("The base url is invalid.");
         }
@@ -59,7 +59,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public void setUp(String url, int timeOut, String authUrl) {
-        logger.info("Creating WebClient for host: {}", url);
+        logger.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException("The base url is invalid.");
         }

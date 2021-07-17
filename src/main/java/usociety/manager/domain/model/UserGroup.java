@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,17 +21,17 @@ public class UserGroup extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "status", nullable = false)
     private int status;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private String role;
 
     @Column(name = "is_admin")
-    private boolean isAdmin;
+    private Boolean isAdmin;
 
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id")
@@ -88,8 +90,14 @@ public class UserGroup extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof UserGroup)) {
+            return false;
+        }
+        return Objects.equals(((UserGroup) obj).id, id);
     }
 
     @Override
