@@ -33,4 +33,9 @@ public class CustomObjectMapperImpl implements CustomObjectMapper {
         return objectMapper.writeValueAsString(value);
     }
 
+    @Override
+    public <T> T convertValue(Object value, Class<T> valueType) {
+        return objectMapper.convertValue(value, valueType);
+    }
+
 }

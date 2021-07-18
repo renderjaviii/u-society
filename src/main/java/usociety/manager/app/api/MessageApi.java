@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +30,6 @@ public abstract class MessageApi extends BaseObject {
     private Long id;
 
     @JsonProperty
-    private MessageTypeEnum type;
-
-    @JsonProperty
     private LocalDateTime creationDate;
 
     @JsonProperty
@@ -51,14 +49,6 @@ public abstract class MessageApi extends BaseObject {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public MessageTypeEnum getType() {
-        return type;
-    }
-
-    public void setType(MessageTypeEnum type) {
-        this.type = type;
     }
 
     public LocalDateTime getCreationDate() {
@@ -114,7 +104,6 @@ public abstract class MessageApi extends BaseObject {
 
         private ImageMessageApi(Builder builder) {
             setId(builder.id);
-            setType(builder.type);
             setCreationDate(builder.creationDate);
             setUser(builder.user);
             setGroup(builder.group);
@@ -204,6 +193,7 @@ public abstract class MessageApi extends BaseObject {
     @ApiModel(value = "Text message")
     public static class TextMessageApi extends MessageApi {
 
+        @Pattern(regexp = "^[a-zA-Z\\d]+")
         @NotBlank
         @JsonProperty
         private String content;
@@ -214,7 +204,6 @@ public abstract class MessageApi extends BaseObject {
 
         private TextMessageApi(Builder builder) {
             setId(builder.id);
-            setType(builder.type);
             setCreationDate(builder.creationDate);
             setUser(builder.user);
             setGroup(builder.group);

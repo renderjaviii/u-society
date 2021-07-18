@@ -1,9 +1,7 @@
 package usociety.manager.domain.service.message.impl;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static usociety.manager.app.api.MessageApi.TextMessageApi;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +11,11 @@ import org.springframework.stereotype.Service;
 import usociety.manager.app.api.MessageApi;
 import usociety.manager.app.api.MessageApi.ImageMessageApi;
 import usociety.manager.app.api.UserApi;
-import usociety.manager.domain.enums.MessageTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
+import usociety.manager.domain.model.ImageMessage;
 import usociety.manager.domain.model.Message;
+import usociety.manager.domain.model.TextMessage;
 import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
@@ -44,16 +43,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
         Group group = getGroup(message.getGroup().getId());
         validateIfUserIsMember(username, group.getId(), SENDING_MESSAGE_ERROR_CODE);
 
-        String content = processContent(message);
-
-        messageRepository.save(Message.newBuilder()
-                .description(getMessageDescription(message))
-                .creationDate(LocalDateTime.now(clock))
-                .type(message.getType().getCode())
-                .userId(user.getId())
-                .content(content)
-                .group(group)
-                .build());
+        save(message, user, group);
     }
 
     @Override
@@ -73,27 +63,35 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
             ImageMessageApi imageMessage = (ImageMessageApi) message;
             return cloudStorageService.upload(imageMessage.getContent());
         }
-        if (message instanceof TextMessageApi) {
-            TextMessageApi textMessage = (TextMessageApi) message;
-            return textMessage.getContent();
-        }
-        throw new UnsupportedOperationException("Message type is not supported");
+        TextMessageApi textMessage = (TextMessageApi) message;
+        return textMessage.getContent();
     }
 
-    private String getMessageDescription(MessageApi message) {
+    private void save(MessageApi message, UserApi user, Group group) throws GenericException {
+        Message entity = convertFromApiToEntity(message);
+
+        entity.setContent(processContent(message));
+        entity.setUserId(user.getId());
+        entity.setGroup(group);
+        messageRepository.save(entity);
+    }
+
+    private Message convertFromApiToEntity(MessageApi message) {
         if (message instanceof ImageMessageApi) {
-            return ((ImageMessageApi) message).getDescription();
+            return objectMapper.convertValue(message, ImageMessage.class);
         }
-        return EMPTY;
+        return objectMapper.convertValue(message, TextMessage.class);
+
     }
 
     private MessageApi buildGroupMessage(Message message) throws GenericException {
-        if (MessageTypeEnum.IMAGE.getCode() == message.getType()) {
+        if (message instanceof ImageMessage) {
+            ImageMessage imageMessage = ((ImageMessage) message);
             return ImageMessageApi.newBuilder()
-                    .user(userService.getById(message.getUserId()))
-                    .creationDate(message.getCreationDate())
-                    .description(message.getDescription())
-                    .content(message.getContent())
+                    .user(userService.getById(imageMessage.getUserId()))
+                    .creationDate(imageMessage.getCreationDate())
+                    .description(imageMessage.getDescription())
+                    .content(imageMessage.getContent())
                     .build();
 
         }
