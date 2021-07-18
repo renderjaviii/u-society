@@ -2,7 +2,6 @@ package usociety.manager.domain.service.post.impl;
 
 import static java.lang.Boolean.FALSE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +22,6 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.CreatePostDelegate;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
@@ -37,33 +35,26 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
 
     private final CloudStorageService cloudStorageService;
     private final PostRepository postRepository;
-    private final GroupService groupService;
 
     @Autowired
     public CreatePostDelegateImpl(CloudStorageService cloudStorageService,
-                                  PostRepository postRepository,
-                                  GroupService groupService) {
+                                  PostRepository postRepository) {
         this.cloudStorageService = cloudStorageService;
         this.postRepository = postRepository;
-        this.groupService = groupService;
     }
 
     @Override
-    public PostApi execute(String username, CreatePostRequest request) throws GenericException {
-        groupService.validateIfUserIsMember(username, request.getGroupId(), ACTIVE, CREATING_POST_ERROR_CODE);
-
+    public PostApi execute(UserApi user, CreatePostRequest request) throws GenericException {
         validateRequest(request);
-
-        UserApi user = getUser(username);
         processContent(request);
 
         return Converter.post(postRepository.save(Post.newBuilder()
-                .group(groupService.get(request.getGroupId()))
                 .expirationDate(request.getExpirationDate())
                 .creationDate(LocalDateTime.now(clock))
                 .description(request.getDescription())
                 .isPublic(getPostVisibility(request))
                 .content(parseContentToJSON(request))
+                .group(getGroup(request.getGroupId()))
                 .userId(user.getId())
                 .build()));
     }

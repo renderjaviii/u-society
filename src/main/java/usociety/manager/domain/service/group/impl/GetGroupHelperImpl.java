@@ -49,14 +49,7 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
     }
 
     @Override
-    public Optional<UserGroup> byIdAndUser(Long id, String username) throws GenericException {
-        UserApi user = getUser(username);
-        return userGroupRepository.findByGroupIdAndUserId(id, user.getId());
-    }
-
-    @Override
-    public GetGroupResponse byUserAndId(String username, Long id) throws GenericException {
-        UserApi user = getUser(username);
+    public GetGroupResponse byUserAndId(UserApi user, Long id) throws GenericException {
         return buildCompleteGroupResponse(user, getGroupById(id));
     }
 
@@ -72,25 +65,33 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
     }
 
     @Override
-    public GetGroupResponse byUserAndSlug(String username, String slug) throws GenericException {
+    public GetGroupResponse byUserAndSlug(UserApi user, String slug) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findBySlug(slug);
         if (!optionalGroup.isPresent()) {
             throw new GenericException("Grupo no encontrado.", GETTING_GROUP_ERROR_CODE);
         }
-
-        UserApi user = getUser(username);
         return buildCompleteGroupResponse(user, optionalGroup.get());
     }
 
     @Override
-    public List<GroupApi> allUserGroups(String username) throws GenericException {
-        UserApi user = getUser(username);
-
+    public List<GroupApi> allUserGroups(UserApi user) {
         return userGroupRepository
                 .findAllByUserIdAndStatusIn(user.getId(), Arrays.asList(ACTIVE.getCode(), PENDING.getCode()))
                 .stream()
                 .map(userGroup -> buildBasicGroupResponse(userGroup.getGroup()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void validateIfUserIsMember(UserApi user,
+                                       Long groupId,
+                                       String errorCode)
+            throws GenericException {
+        Optional<UserGroup> optionalUserGroup = userGroupRepository
+                .findByGroupIdAndUserIdAndStatusIn(groupId, user.getId(), Collections.singletonList(ACTIVE.getCode()));
+        if (StringUtils.isNotEmpty(errorCode) && !optionalUserGroup.isPresent()) {
+            throw new GenericException("User is not an active member", errorCode);
+        }
     }
 
     private GetGroupResponse buildCompleteGroupResponse(UserApi user, Group group) throws GenericException {
@@ -160,23 +161,6 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
                 .slug(group.getSlug())
                 .id(group.getId())
                 .build();
-    }
-
-    @Override
-    public Optional<UserGroup> validateIfUserIsMember(String username,
-                                                      Long groupId,
-                                                      UserGroupStatusEnum status,
-                                                      String errorCode)
-            throws GenericException {
-        UserApi user = getUser(username);
-
-        Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), status.getCode());
-        if (StringUtils.isNotEmpty(errorCode) && !optionalUserGroup.isPresent()) {
-            throw new GenericException("User is not an active member", errorCode);
-        }
-
-        return optionalUserGroup;
     }
 
     private Group getGroupById(Long id) throws GenericException {

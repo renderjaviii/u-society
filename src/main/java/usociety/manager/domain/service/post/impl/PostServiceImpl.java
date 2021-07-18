@@ -1,5 +1,7 @@
 package usociety.manager.domain.service.post.impl;
 
+import static usociety.manager.domain.util.Constants.USER_IS_NOT_MEMBER;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.comment.CommentService;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.post.CreatePostDelegate;
 import usociety.manager.domain.service.post.GetAllGroupPostsDelegate;
 import usociety.manager.domain.service.post.PostService;
@@ -21,7 +23,7 @@ import usociety.manager.domain.service.react.ReactService;
 import usociety.manager.domain.service.survey.SurveyService;
 
 @Service
-public class PostServiceImpl extends AbstractDelegateImpl implements PostService {
+public class PostServiceImpl extends AbstractServiceImpl implements PostService {
 
     private static final String POST_NOT_FOUND_ERROR_CODE = "POST_DOES_NOT_FOUND";
 
@@ -50,17 +52,20 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
     @Override
     public PostApi create(String username, CreatePostRequest request)
             throws GenericException {
-        return createPostDelegate.execute(username, request);
+        validateIfUserIsMember(username, request.getGroupId(), USER_IS_NOT_MEMBER);
+        return createPostDelegate.execute(getUser(username), request);
     }
 
     @Override
     public List<PostApi> getAllByGroup(String username, Long groupId, int page) throws GenericException {
-        return getAllGroupPostsDelegate.execute(username, groupId, page);
+        return getAllGroupPostsDelegate.execute(getUser(username), groupId, page);
     }
 
     @Override
     public void react(String username, Long postId, ReactTypeEnum value) throws GenericException {
-        reactService.create(username, getPost(postId), value);
+        Post post = getPost(postId);
+        validateIfUserIsMember(username, post.getGroup().getId(), USER_IS_NOT_MEMBER);
+        reactService.create(username, post, value);
     }
 
     @Override
@@ -71,6 +76,7 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
     @Override
     public void vote(String username, Long postId, Integer vote) throws GenericException {
         Post post = getPost(postId);
+        validateIfUserIsMember(username, post.getGroup().getId(), USER_IS_NOT_MEMBER);
         surveyService.validateIfUserHasAlreadyInteracted(username, post);
         surveyService.create(username, post, vote);
     }

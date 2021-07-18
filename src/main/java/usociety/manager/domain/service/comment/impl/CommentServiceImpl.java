@@ -1,7 +1,5 @@
 package usociety.manager.domain.service.comment.impl;
 
-import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
-
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +15,25 @@ import usociety.manager.domain.model.Comment;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.CommentRepository;
 import usociety.manager.domain.service.comment.CommentService;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
 @Service
-public class CommentServiceImpl extends AbstractDelegateImpl implements CommentService {
+public class CommentServiceImpl extends AbstractServiceImpl implements CommentService {
 
     private static final String COMMENTING_POST_ERROR_CODE = "ERROR_COMMENTING_POST";
 
     private final CommentRepository commentRepository;
-    private final GroupService groupService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              GroupService groupService) {
+    public CommentServiceImpl(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
-        this.groupService = groupService;
     }
 
     @Override
     public void create(String username, Post post, CommentPostRequest request) throws GenericException {
         UserApi user = getUser(username);
-        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, COMMENTING_POST_ERROR_CODE);
+        validateIfUserIsMember(username, post.getGroup().getId(), COMMENTING_POST_ERROR_CODE);
 
         validatePostData(post);
 

@@ -1,7 +1,5 @@
 package usociety.manager.domain.service.message.impl;
 
-import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,36 +17,31 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Message;
 import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.message.MessageService;
 
 @Service
-public class MessageServiceImpl extends AbstractDelegateImpl implements MessageService {
+public class MessageServiceImpl extends AbstractServiceImpl implements MessageService {
 
     private static final String GETTING_GROUP_MESSAGES_ERROR_CODE = "ERROR_GETTING_GROUP_MESSAGES";
     private static final String SENDING_MESSAGE_ERROR_CODE = "ERROR_SENDING_GROUP_MESSAGE";
 
     private final CloudStorageService cloudStorageService;
     private final MessageRepository messageRepository;
-    private final GroupService groupService;
 
     @Autowired
     public MessageServiceImpl(CloudStorageService cloudStorageService,
-                              MessageRepository messageRepository,
-                              GroupService groupService) {
+                              MessageRepository messageRepository) {
         this.cloudStorageService = cloudStorageService;
         this.messageRepository = messageRepository;
-        this.groupService = groupService;
     }
 
     @Override
     public void sendGroupMessage(String username, MessageApi request) throws GenericException {
         UserApi user = getUser(username);
-        Long groupId = request.getGroup().getId();
-        Group group = groupService.get(groupId);
+        Group group = getGroup(request.getGroup().getId());
+        validateIfUserIsMember(username, group.getId(), SENDING_MESSAGE_ERROR_CODE);
 
-        groupService.validateIfUserIsMember(username, groupId, ACTIVE, SENDING_MESSAGE_ERROR_CODE);
         validateRequest(request);
 
         processContent(request, request.getImage());
@@ -64,7 +57,7 @@ public class MessageServiceImpl extends AbstractDelegateImpl implements MessageS
 
     @Override
     public List<MessageApi> getGroupMessages(String username, Long groupId) throws GenericException {
-        groupService.validateIfUserIsMember(username, groupId, ACTIVE, GETTING_GROUP_MESSAGES_ERROR_CODE);
+        validateIfUserIsMember(username, groupId, GETTING_GROUP_MESSAGES_ERROR_CODE);
 
         List<MessageApi> groupMessages = new ArrayList<>();
         for (Message message : messageRepository.findAllByGroupIdOrderByCreationDateDesc(groupId)) {

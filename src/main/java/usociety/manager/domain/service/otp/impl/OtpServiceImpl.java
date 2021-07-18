@@ -18,11 +18,11 @@ import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Otp;
 import usociety.manager.domain.repository.OtpRepository;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.otp.OtpService;
 
 @Service
-public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
+public class OtpServiceImpl extends AbstractServiceImpl implements OtpService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
 

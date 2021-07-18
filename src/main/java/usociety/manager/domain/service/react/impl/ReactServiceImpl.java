@@ -1,7 +1,5 @@
 package usociety.manager.domain.service.react.impl;
 
-import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +14,25 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.model.React;
 import usociety.manager.domain.repository.ReactRepository;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.react.ReactService;
 
 @Service
-public class ReactServiceImpl extends AbstractDelegateImpl implements ReactService {
+public class ReactServiceImpl extends AbstractServiceImpl implements ReactService {
 
     private static final String REACTING_IN_POST_ERROR_CODE = "ERROR_REACTING_IN_POST";
-    private static final String REACTING_POST_ERROR_CODE = "ERROR_REACTING_TO_POST";
 
     private final ReactRepository reactRepository;
-    private final GroupService groupService;
 
     @Autowired
-    public ReactServiceImpl(ReactRepository reactRepository,
-                            GroupService groupService) {
+    public ReactServiceImpl(ReactRepository reactRepository) {
         this.reactRepository = reactRepository;
-        this.groupService = groupService;
     }
 
     @Override
     public void create(String username, Post post, ReactTypeEnum value) throws GenericException {
         UserApi user = getUser(username);
-
-        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
         validatePostType(post);
 
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(post.getId(), user.getId());

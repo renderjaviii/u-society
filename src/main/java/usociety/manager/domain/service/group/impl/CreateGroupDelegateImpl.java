@@ -63,24 +63,23 @@ public class CreateGroupDelegateImpl extends AbstractDelegateImpl implements Cre
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GroupApi execute(String username, CreateGroupRequest request)
+    public GroupApi execute(UserApi user, CreateGroupRequest request)
             throws GenericException {
         validateExistingGroup(request);
 
         Category category = categoryService.get(request.getCategory().getId());
         String photoUrl = cloudStorageService.upload(request.getPhoto());
-        UserApi userApi = getUser(username);
 
         Group savedGroup;
         try {
             savedGroup = saveGroup(request, category, photoUrl);
-            associateUserGroup(userApi, savedGroup);
+            associateUserGroup(user, savedGroup);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("Error general creando grupo.", CREATING_GROUP_ERROR_CODE);
         }
 
-        sendAsyncEmailDelegate.execute(userApi, savedGroup, category);
+        sendAsyncEmailDelegate.execute(user, savedGroup, category);
         return Converter.group(savedGroup);
     }
 

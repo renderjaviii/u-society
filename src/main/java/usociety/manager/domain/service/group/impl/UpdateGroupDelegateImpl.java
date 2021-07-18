@@ -4,7 +4,7 @@ import static com.amazonaws.util.StringUtils.COMMA_SEPARATOR;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
-import static usociety.manager.domain.util.Constant.FORBIDDEN_ACCESS;
+import static usociety.manager.domain.util.Constants.FORBIDDEN_ACCESS;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,6 @@ import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
 
 @Component
@@ -46,7 +45,6 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
     private final CloudStorageService cloudStorageService;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
-    private final GroupService groupService;
     private final Slugify slugify;
 
     @Autowired
@@ -54,21 +52,19 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
                                    CloudStorageService cloudStorageService,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
-                                   GroupService groupService, Slugify slugify) {
+                                   Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
-        this.groupService = groupService;
         this.slugify = slugify;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public GetGroupResponse execute(String username, UpdateGroupRequest request) throws GenericException {
-        Group group = groupService.get(request.getId());
+    public GetGroupResponse execute(UserApi user, UpdateGroupRequest request) throws GenericException {
+        Group group = getGroup(request.getId());
 
-        UserApi user = getUser(username);
         UserGroup userGroup = getUserGroup(user.getId(), request.getId());
         if (!userGroup.isAdmin()) {
             throw new GenericException("No eres administrador de este grupo.", FORBIDDEN_ACCESS);
@@ -90,7 +86,8 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
     }
 
     private UserGroup getUserGroup(Long userId, Long groupId) throws GenericException {
-        return userGroupRepository.findByGroupIdAndUserIdAndStatus(groupId, userId, ACTIVE.getCode())
+        return userGroupRepository
+                .findByGroupIdAndUserIdAndStatusIn(groupId, userId, Collections.singletonList(ACTIVE.getCode()))
                 .orElseThrow(() -> new GenericException("El usuario no es miembro activo del grupo.",
                         ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
     }

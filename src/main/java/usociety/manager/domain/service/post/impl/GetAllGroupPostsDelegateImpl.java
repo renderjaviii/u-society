@@ -59,8 +59,7 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     }
 
     @Override
-    public List<PostApi> execute(String username, Long groupId, int page) throws GenericException {
-        UserApi user = getUser(username);
+    public List<PostApi> execute(UserApi user, Long groupId, int page) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
                 .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getCode());
 

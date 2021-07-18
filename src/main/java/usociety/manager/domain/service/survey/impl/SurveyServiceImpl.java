@@ -1,7 +1,5 @@
 package usociety.manager.domain.service.survey.impl;
 
-import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -18,14 +16,13 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.model.Survey;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.SurveyRepository;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.group.GroupService;
+import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
 import usociety.manager.domain.service.survey.SurveyService;
 
 @Service
-public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveyService {
+public class SurveyServiceImpl extends AbstractServiceImpl implements SurveyService {
 
     private static final String VOTING_SURVEY_ERROR_CODE = "ERROR_INTERACTING_WITH_SURVEY";
 
@@ -33,15 +30,12 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
 
     private final SurveyRepository surveyRepository;
     private final PostRepository postRepository;
-    private final GroupService groupService;
 
     @Autowired
     public SurveyServiceImpl(SurveyRepository surveyRepository,
-                             PostRepository postRepository,
-                             GroupService groupService) {
+                             PostRepository postRepository) {
         this.surveyRepository = surveyRepository;
         this.postRepository = postRepository;
-        this.groupService = groupService;
     }
 
     @Override
@@ -57,7 +51,6 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
     @Transactional(rollbackFor = Exception.class)
     public void create(String username, Post post, Integer vote) throws GenericException {
         UserApi user = getUser(username);
-        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, VOTING_SURVEY_ERROR_CODE);
 
         PostApi postApi = Converter.post(post);
         PostAdditionalData postAdditionalData = postApi.getContent();

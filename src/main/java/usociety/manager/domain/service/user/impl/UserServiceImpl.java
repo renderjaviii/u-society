@@ -33,7 +33,7 @@ import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.UserService;
-import usociety.manager.domain.util.Constant;
+import usociety.manager.domain.util.Constants;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
                 throw new GenericException("User already registered", "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {
-            if (!Constant.USER_NOT_FOUND.equals(ex.getErrorCode())) {
+            if (!Constants.USER_NOT_FOUND.equals(ex.getErrorCode())) {
                 throw new GenericException(ex.getMessage());
             }
         }
