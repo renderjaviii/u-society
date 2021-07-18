@@ -17,6 +17,7 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.model.React;
 import usociety.manager.domain.repository.ReactRepository;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.react.ReactService;
 
@@ -27,17 +28,20 @@ public class ReactServiceImpl extends AbstractDelegateImpl implements ReactServi
     private static final String REACTING_POST_ERROR_CODE = "ERROR_REACTING_TO_POST";
 
     private final ReactRepository reactRepository;
+    private final GroupService groupService;
 
     @Autowired
-    public ReactServiceImpl(ReactRepository reactRepository) {
+    public ReactServiceImpl(ReactRepository reactRepository,
+                            GroupService groupService) {
         this.reactRepository = reactRepository;
+        this.groupService = groupService;
     }
 
     @Override
     public void create(String username, Post post, ReactTypeEnum value) throws GenericException {
         UserApi user = getUser(username);
 
-        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
+        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, REACTING_POST_ERROR_CODE);
         validatePostType(post);
 
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(post.getId(), user.getId());

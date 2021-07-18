@@ -45,13 +45,19 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
 
     @Override
     public Group byId(Long id) throws GenericException {
-        return getGroup(id);
+        return getGroupById(id);
+    }
+
+    @Override
+    public Optional<UserGroup> byIdAndUser(Long id, String username) throws GenericException {
+        UserApi user = getUser(username);
+        return userGroupRepository.findByGroupIdAndUserId(id, user.getId());
     }
 
     @Override
     public GetGroupResponse byUserAndId(String username, Long id) throws GenericException {
         UserApi user = getUser(username);
-        return buildCompleteGroupResponse(user, getGroup(id));
+        return buildCompleteGroupResponse(user, getGroupById(id));
     }
 
     @Override
@@ -154,6 +160,32 @@ public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroup
                 .slug(group.getSlug())
                 .id(group.getId())
                 .build();
+    }
+
+    @Override
+    public Optional<UserGroup> validateIfUserIsMember(String username,
+                                                      Long groupId,
+                                                      UserGroupStatusEnum status,
+                                                      String errorCode)
+            throws GenericException {
+        UserApi user = getUser(username);
+
+        Optional<UserGroup> optionalUserGroup = userGroupRepository
+                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), status.getCode());
+        if (StringUtils.isNotEmpty(errorCode) && !optionalUserGroup.isPresent()) {
+            throw new GenericException("User is not an active member", errorCode);
+        }
+
+        return optionalUserGroup;
+    }
+
+    private Group getGroupById(Long id) throws GenericException {
+        Optional<Group> optionalGroup = groupRepository.findById(id);
+        if (!optionalGroup.isPresent()) {
+            String errorMessage = String.format("Group with id: %s does not exist.", id);
+            throw new GenericException(errorMessage, GETTING_GROUP_ERROR_CODE);
+        }
+        return optionalGroup.get();
     }
 
 }

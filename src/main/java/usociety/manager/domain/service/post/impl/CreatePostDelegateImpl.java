@@ -50,7 +50,7 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
 
     @Override
     public PostApi execute(String username, CreatePostRequest request) throws GenericException {
-        validateIfUserIsMember(username, request.getGroupId(), ACTIVE, CREATING_POST_ERROR_CODE);
+        groupService.validateIfUserIsMember(username, request.getGroupId(), ACTIVE, CREATING_POST_ERROR_CODE);
 
         validateRequest(request);
 

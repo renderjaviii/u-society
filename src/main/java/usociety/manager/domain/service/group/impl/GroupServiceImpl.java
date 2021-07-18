@@ -1,6 +1,7 @@
 package usociety.manager.domain.service.group.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +11,10 @@ import usociety.manager.app.api.UserGroupApi;
 import usociety.manager.app.rest.request.CreateGroupRequest;
 import usociety.manager.app.rest.request.UpdateGroupRequest;
 import usociety.manager.app.rest.response.GetGroupResponse;
+import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
+import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.service.group.CreateGroupDelegate;
 import usociety.manager.domain.service.group.GetGroupHelper;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
@@ -66,6 +69,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Optional<UserGroup> getByIdAndUser(Long id, String username) throws GenericException {
+        return getGroupHelper.byIdAndUser(id, username);
+    }
+
+    @Override
     public GetGroupResponse get(String username, Long id) throws GenericException {
         return getGroupHelper.byUserAndId(username, id);
     }
@@ -86,6 +94,15 @@ public class GroupServiceImpl implements GroupService {
     public List<GroupApi> getAllUserGroups(String username)
             throws GenericException {
         return getGroupHelper.allUserGroups(username);
+    }
+
+    @Override
+    public Optional<UserGroup> validateIfUserIsMember(String username,
+                                                      Long groupId,
+                                                      UserGroupStatusEnum status,
+                                                      String errorCode)
+            throws GenericException {
+        return getGroupHelper.validateIfUserIsMember(username, groupId, status, errorCode);
     }
 
 }

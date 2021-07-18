@@ -22,6 +22,7 @@ import usociety.manager.domain.service.user.UserService;
 @Component
 public class SendAsyncEmailDelegateImpl implements SendAsyncEmailDelegate {
 
+    //TODO: Dynamically
     private static final String EMAIL_CONTENT_FORMAT = "<html><body>" +
             "<h3>Hola: %s</h3>" +
             "<p>Nos contaste que te gustan los: %s y acaba nacer un grupo que te puede interesar llamado: <u>%s.</u></p>" +

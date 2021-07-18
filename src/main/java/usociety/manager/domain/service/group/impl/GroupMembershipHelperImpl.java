@@ -25,6 +25,7 @@ import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
+import usociety.manager.domain.service.group.GroupService;
 
 @Component
 public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements GroupMembershipHelper {
@@ -39,22 +40,24 @@ public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements G
     private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
 
     private final UserGroupRepository userGroupRepository;
+    private final GroupService groupService;
     private final MailService mailService;
 
     @Autowired
     public GroupMembershipHelperImpl(UserGroupRepository userGroupRepository,
+                                     GroupService groupService,
                                      MailService mailService) {
         this.userGroupRepository = userGroupRepository;
+        this.groupService = groupService;
         this.mailService = mailService;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void update(String username, Long id, UserGroupApi request) throws GenericException {
-        Optional<UserGroup> optionalUserGroup = getUserGroup(username, id);
+        Optional<UserGroup> optionalUserGroup = groupService.getByIdAndUser(id, username);
         if (!optionalUserGroup.isPresent()) {
             throw new GenericException("No es posible realizar la actualización.", UPDATING_MEMBERSHIP_ERROR_CODE);
-
         }
 
         UserGroup userGroup = optionalUserGroup.get();
@@ -74,9 +77,9 @@ public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements G
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void join(String username, Long id) throws GenericException {
-        Group group = getGroup(id);
+        Group group = groupService.get(id);
 
-        Optional<UserGroup> optionalUserGroup = getUserGroup(username, id);
+        Optional<UserGroup> optionalUserGroup = groupService.getByIdAndUser(id, username);
         if (optionalUserGroup.isPresent()) {
             throw new GenericException("El usuario ya solicitó ingresar al grupo", JOINING_GROUP_ERROR_CODE);
         }

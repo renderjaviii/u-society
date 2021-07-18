@@ -19,6 +19,7 @@ import usociety.manager.domain.model.Survey;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
 import usociety.manager.domain.service.survey.SurveyService;
@@ -32,12 +33,15 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
 
     private final SurveyRepository surveyRepository;
     private final PostRepository postRepository;
+    private final GroupService groupService;
 
     @Autowired
     public SurveyServiceImpl(SurveyRepository surveyRepository,
-                             PostRepository postRepository) {
+                             PostRepository postRepository,
+                             GroupService groupService) {
         this.surveyRepository = surveyRepository;
         this.postRepository = postRepository;
+        this.groupService = groupService;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
     @Transactional(rollbackFor = Exception.class)
     public void create(String username, Post post, Integer vote) throws GenericException {
         UserApi user = getUser(username);
-        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, VOTING_SURVEY_ERROR_CODE);
+        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, VOTING_SURVEY_ERROR_CODE);
 
         PostApi postApi = Converter.post(post);
         PostAdditionalData postAdditionalData = postApi.getContent();
@@ -82,6 +86,7 @@ public class SurveyServiceImpl extends AbstractDelegateImpl implements SurveySer
         }
     }
 
+    //TODO: Update with service
     private void updatePostMetadata(Integer vote, PostApi postApi, PostAdditionalData postAdditionalData) {
         SurveyOption surveyOption = postAdditionalData.getOptions().get(vote);
         Integer amount = surveyOption.getAmount();

@@ -18,6 +18,7 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.CommentRepository;
 import usociety.manager.domain.service.comment.CommentService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
 @Service
@@ -26,16 +27,19 @@ public class CommentServiceImpl extends AbstractDelegateImpl implements CommentS
     private static final String COMMENTING_POST_ERROR_CODE = "ERROR_COMMENTING_POST";
 
     private final CommentRepository commentRepository;
+    private final GroupService groupService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository,
+                              GroupService groupService) {
         this.commentRepository = commentRepository;
+        this.groupService = groupService;
     }
 
     @Override
     public void create(String username, Post post, CommentPostRequest request) throws GenericException {
         UserApi user = getUser(username);
-        validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, COMMENTING_POST_ERROR_CODE);
+        groupService.validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, COMMENTING_POST_ERROR_CODE);
 
         validatePostData(post);
 

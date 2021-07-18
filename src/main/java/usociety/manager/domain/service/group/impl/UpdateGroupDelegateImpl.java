@@ -34,18 +34,19 @@ import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
+import usociety.manager.domain.service.group.GroupService;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
 
 @Component
 public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements UpdateGroupDelegate {
 
     private static final String ERROR_UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
-    private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
 
     private final UserGroupRepository userGroupRepository;
     private final CloudStorageService cloudStorageService;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
+    private final GroupService groupService;
     private final Slugify slugify;
 
     @Autowired
@@ -53,18 +54,19 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
                                    CloudStorageService cloudStorageService,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
-                                   Slugify slugify) {
+                                   GroupService groupService, Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
+        this.groupService = groupService;
         this.slugify = slugify;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public GetGroupResponse execute(String username, UpdateGroupRequest request) throws GenericException {
-        Group group = getGroup(request.getId());
+        Group group = groupService.get(request.getId());
 
         UserApi user = getUser(username);
         UserGroup userGroup = getUserGroup(user.getId(), request.getId());
