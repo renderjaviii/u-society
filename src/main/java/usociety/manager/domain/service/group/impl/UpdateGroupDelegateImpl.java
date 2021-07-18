@@ -5,6 +5,7 @@ import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
 import static usociety.manager.domain.util.Constants.FORBIDDEN_ACCESS;
+import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,11 +34,11 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
+import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements UpdateGroupDelegate {
+public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
 
     private static final String ERROR_UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
 
@@ -45,6 +46,7 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
     private final CloudStorageService cloudStorageService;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
+    private final UserService userService;
     private final Slugify slugify;
 
     @Autowired
@@ -52,11 +54,12 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
                                    CloudStorageService cloudStorageService,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
-                                   Slugify slugify) {
+                                   UserService userService, Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
+        this.userService = userService;
         this.slugify = slugify;
     }
 
@@ -154,6 +157,11 @@ public class UpdateGroupDelegateImpl extends AbstractDelegateImpl implements Upd
             users.add(user);
         }
         return users;
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

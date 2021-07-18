@@ -32,6 +32,7 @@ import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.post.GetAllGroupPostsDelegate;
+import usociety.manager.domain.service.user.UserService;
 import usociety.manager.domain.util.PageableUtils;
 
 @Component
@@ -44,18 +45,21 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     private final SurveyRepository surveyRepository;
     private final ReactRepository reactRepository;
     private final PostRepository postRepository;
+    private final UserService userService;
 
     @Autowired
     public GetAllGroupPostsDelegateImpl(UserGroupRepository userGroupRepository,
                                         CommentRepository commentRepository,
                                         SurveyRepository surveyRepository,
                                         ReactRepository reactRepository,
-                                        PostRepository postRepository) {
+                                        PostRepository postRepository,
+                                        UserService userService) {
         this.userGroupRepository = userGroupRepository;
         this.commentRepository = commentRepository;
         this.surveyRepository = surveyRepository;
         this.reactRepository = reactRepository;
         this.postRepository = postRepository;
+        this.userService = userService;
     }
 
     @Override

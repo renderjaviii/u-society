@@ -5,9 +5,9 @@ import static java.lang.Boolean.TRUE;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.DELETED;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
+import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -22,13 +22,14 @@ import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
+import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
+import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements GroupMembershipHelper {
+public class GroupMembershipHelperImpl implements GroupMembershipHelper {
 
     private static final String JOIN_GROUP_EMAIL_FORMAT = "<html><body>" +
             "<h3>Hola %s.</h3>" +
@@ -40,19 +41,25 @@ public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements G
     private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
 
     private final UserGroupRepository userGroupRepository;
+    private final GroupRepository groupRepository;
     private final MailService mailService;
+    private final UserService userService;
 
     @Autowired
     public GroupMembershipHelperImpl(UserGroupRepository userGroupRepository,
-                                     MailService mailService) {
+                                     GroupRepository groupRepository,
+                                     MailService mailService,
+                                     UserService userService) {
         this.userGroupRepository = userGroupRepository;
+        this.groupRepository = groupRepository;
         this.mailService = mailService;
+        this.userService = userService;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void update(UserApi user, Long id, UserGroupApi request) throws GenericException {
-        Optional<UserGroup> optionalUserGroup = getUserGroup(user, id, Collections.emptyList());
+        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (!optionalUserGroup.isPresent()) {
             throw new GenericException("No es posible realizar la actualización.", UPDATING_MEMBERSHIP_ERROR_CODE);
         }
@@ -76,7 +83,7 @@ public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements G
     public void join(UserApi user, Long id) throws GenericException {
         Group group = getGroup(id);
 
-        Optional<UserGroup> optionalUserGroup = getUserGroup(user, id, Collections.emptyList());
+        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (optionalUserGroup.isPresent()) {
             throw new GenericException("El usuario ya solicitó ingresar al grupo", JOINING_GROUP_ERROR_CODE);
         }
@@ -105,6 +112,11 @@ public class GroupMembershipHelperImpl extends AbstractDelegateImpl implements G
                 StringUtils.capitalize(userAdmin.getName()),
                 StringUtils.capitalize(user.getName()),
                 StringUtils.capitalize(group.getName()));
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

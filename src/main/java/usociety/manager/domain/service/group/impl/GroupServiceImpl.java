@@ -33,7 +33,8 @@ public class GroupServiceImpl implements GroupService {
     public GroupServiceImpl(GroupMembershipHelper groupMembershipHelper,
                             UpdateGroupDelegate updateGroupDelegate,
                             CreateGroupDelegate createGroupDelegate,
-                            GetGroupHelper getGroupHelper, UserService userService) {
+                            GetGroupHelper getGroupHelper,
+                            UserService userService) {
         this.groupMembershipHelper = groupMembershipHelper;
         this.updateGroupDelegate = updateGroupDelegate;
         this.createGroupDelegate = createGroupDelegate;

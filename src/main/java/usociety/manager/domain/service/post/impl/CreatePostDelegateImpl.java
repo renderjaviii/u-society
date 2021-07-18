@@ -2,6 +2,7 @@ package usociety.manager.domain.service.post.impl;
 
 import static java.lang.Boolean.FALSE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +19,9 @@ import usociety.manager.app.rest.request.CreatePostRequest;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.enums.PostTypeEnum;
 import usociety.manager.domain.exception.GenericException;
+import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.Post;
+import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
@@ -34,12 +37,15 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
     private static final int ZERO = 0;
 
     private final CloudStorageService cloudStorageService;
+    private final GroupRepository groupRepository;
     private final PostRepository postRepository;
 
     @Autowired
     public CreatePostDelegateImpl(CloudStorageService cloudStorageService,
+                                  GroupRepository groupRepository,
                                   PostRepository postRepository) {
         this.cloudStorageService = cloudStorageService;
+        this.groupRepository = groupRepository;
         this.postRepository = postRepository;
     }
 
@@ -91,6 +97,11 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
             //Implementation is no required
         }
         return EMPTY;
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

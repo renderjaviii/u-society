@@ -29,12 +29,11 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.email.SendAsyncEmailDelegate;
 import usociety.manager.domain.service.group.CreateGroupDelegate;
 
 @Component
-public class CreateGroupDelegateImpl extends AbstractDelegateImpl implements CreateGroupDelegate {
+public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
     private static final String GROUP_NAME_ERROR_FORMAT = "Grupo con nombre: %s ya existe, prueba un nombre diferente.";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";

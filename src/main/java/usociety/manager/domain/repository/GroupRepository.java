@@ -17,6 +17,4 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findDistinctByCategoryIdOrNameContainingIgnoreCase(Long categoryId, String name);
 
-    List<Group> findByCategoryId(Long categoryId, String name);
-
 }

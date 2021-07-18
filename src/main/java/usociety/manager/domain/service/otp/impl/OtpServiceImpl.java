@@ -3,6 +3,7 @@ package usociety.manager.domain.service.otp.impl;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -18,11 +19,10 @@ import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Otp;
 import usociety.manager.domain.repository.OtpRepository;
-import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.otp.OtpService;
 
 @Service
-public class OtpServiceImpl extends AbstractServiceImpl implements OtpService {
+public class OtpServiceImpl implements OtpService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
 
@@ -35,10 +35,12 @@ public class OtpServiceImpl extends AbstractServiceImpl implements OtpService {
     private int otpExpiryTime;
 
     private final OtpRepository otpRepository;
+    private final Clock clock;
 
     @Autowired
-    public OtpServiceImpl(OtpRepository otpRepository) {
+    public OtpServiceImpl(OtpRepository otpRepository, Clock clock) {
         this.otpRepository = otpRepository;
+        this.clock = clock;
     }
 
     @Override

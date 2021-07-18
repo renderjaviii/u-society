@@ -25,22 +25,25 @@ import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
 import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
-import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.group.GetGroupHelper;
+import usociety.manager.domain.service.user.UserService;
 
 @Component
-public class GetGroupHelperImpl extends AbstractDelegateImpl implements GetGroupHelper {
+public class GetGroupHelperImpl implements GetGroupHelper {
 
     private static final String GETTING_GROUP_ERROR_CODE = "ERROR_GETTING_GROUP";
 
     private final UserGroupRepository userGroupRepository;
     private final GroupRepository groupRepository;
+    private final UserService userService;
 
     @Autowired
     public GetGroupHelperImpl(UserGroupRepository userGroupRepository,
-                              GroupRepository groupRepository) {
+                              GroupRepository groupRepository,
+                              UserService userService) {
         this.userGroupRepository = userGroupRepository;
         this.groupRepository = groupRepository;
+        this.userService = userService;
     }
 
     @Override
