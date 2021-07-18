@@ -61,13 +61,14 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
     public void update(UserApi user, Long id, UserGroupApi request) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (!optionalUserGroup.isPresent()) {
-            throw new GenericException("No es posible realizar la actualización.", UPDATING_MEMBERSHIP_ERROR_CODE);
+            throw new GenericException("It's not allowed to perform this operation.", UPDATING_MEMBERSHIP_ERROR_CODE);
         }
 
         UserGroup userGroup = optionalUserGroup.get();
+        //Only no admins can change his roles and/or status into the group
         if (!userGroup.isAdmin()) {
-            UserGroupStatusEnum status = request.getStatus();
 
+            UserGroupStatusEnum status = request.getStatus();
             if (Arrays.asList(REJECTED, DELETED).contains(status)) {
                 userGroupRepository.delete(userGroup);
             } else {
@@ -76,6 +77,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
                 userGroupRepository.save(userGroup);
             }
         }
+
     }
 
     @Override
@@ -85,7 +87,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
 
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (optionalUserGroup.isPresent()) {
-            throw new GenericException("El usuario ya solicitó ingresar al grupo", JOINING_GROUP_ERROR_CODE);
+            throw new GenericException("User has already required to join", JOINING_GROUP_ERROR_CODE);
         }
 
         userGroupRepository.save(UserGroup.newBuilder()

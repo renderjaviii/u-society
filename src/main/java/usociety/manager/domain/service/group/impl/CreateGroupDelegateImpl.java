@@ -35,7 +35,7 @@ import usociety.manager.domain.service.group.CreateGroupDelegate;
 @Component
 public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
-    private static final String GROUP_NAME_ERROR_FORMAT = "Grupo con nombre: %s ya existe, prueba un nombre diferente.";
+    private static final String GROUP_NAME_ERROR_FORMAT = "Group with name: %s already exists";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";
 
     private final SendAsyncEmailDelegate sendAsyncEmailDelegate;
@@ -75,7 +75,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
             associateUserGroup(user, savedGroup);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
-            throw new GenericException("Error general creando grupo.", CREATING_GROUP_ERROR_CODE);
+            throw new GenericException("Unexpected error creating group", CREATING_GROUP_ERROR_CODE);
         }
 
         sendAsyncEmailDelegate.execute(user, savedGroup, category);
@@ -102,6 +102,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
                 .build());
     }
 
+    //This is made due to database field format
     private List<String> removeCommas(List<String> values) {
         return values.stream()
                 .map(value -> value.replace(COMMA_SEPARATOR, EMPTY))

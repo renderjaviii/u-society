@@ -27,6 +27,7 @@ public class OtpServiceImpl implements OtpService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
 
     private static final String INVALID_OTP_MESSAGE = "INVALID_OTP";
+    private static final int ZERO = 0;
 
     @Value("${config.otp-length:5}")
     private int otpLength;
@@ -61,7 +62,7 @@ public class OtpServiceImpl implements OtpService {
         String otpCode;
         do {
             otpCode = RandomStringUtils.random(otpLength, FALSE, TRUE);
-        } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != 0);
+        } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != ZERO);
         return otpCode;
     }
 

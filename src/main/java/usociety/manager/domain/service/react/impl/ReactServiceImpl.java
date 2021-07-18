@@ -53,10 +53,10 @@ public class ReactServiceImpl extends AbstractServiceImpl implements ReactServic
         try {
             PostAdditionalData postAdditionalData = objectMapper.readValue(post.getContent(), PostAdditionalData.class);
             if (PostTypeEnum.SURVEY == postAdditionalData.getType()) {
-                throw new GenericException("No es posible reaccionar a encuestas.", REACTING_IN_POST_ERROR_CODE);
+                throw new GenericException("Reaction not allowed", REACTING_IN_POST_ERROR_CODE);
             }
         } catch (JsonProcessingException e) {
-            throw new GenericException("Información de post corrupta.", REACTING_IN_POST_ERROR_CODE);
+            throw new GenericException("Corrupt post's information.", REACTING_IN_POST_ERROR_CODE);
         }
     }
 

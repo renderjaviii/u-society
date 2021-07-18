@@ -49,9 +49,9 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GetGroupResponse update(String username, UpdateGroupRequest request)
+    public void update(String username, UpdateGroupRequest request)
             throws GenericException {
-        return updateGroupDelegate.execute(getUser(username), request);
+        updateGroupDelegate.execute(getUser(username), request);
     }
 
     @Override

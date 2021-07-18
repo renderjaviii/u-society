@@ -71,7 +71,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
     public GetGroupResponse byUserAndSlug(UserApi user, String slug) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findBySlug(slug);
         if (!optionalGroup.isPresent()) {
-            throw new GenericException("Grupo no encontrado.", GETTING_GROUP_ERROR_CODE);
+            throw new GenericException("Group does not exist", GETTING_GROUP_ERROR_CODE);
         }
         return buildCompleteGroupResponse(user, optionalGroup.get());
     }
@@ -117,9 +117,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
             builder.membershipStatus(userGroupStatus);
         }
 
-        return builder
-                .group(Converter.group(group))
-                .build();
+        return builder.group(Converter.group(group)).build();
     }
 
     private List<UserApi> getPendingMembers(UserGroup userGroup, List<UserGroup> groupMembers) throws GenericException {
@@ -151,7 +149,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
 
     private void validateFields(String name, Long categoryId) throws GenericException {
         if (StringUtils.isEmpty(name) && Objects.isNull(categoryId)) {
-            throw new GenericException("Debe enviar el nombre del grupo y/o la categoría.", GETTING_GROUP_ERROR_CODE);
+            throw new GenericException("The name or category group must be sent", GETTING_GROUP_ERROR_CODE);
         }
     }
 

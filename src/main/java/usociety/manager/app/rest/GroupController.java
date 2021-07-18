@@ -89,9 +89,10 @@ public class GroupController extends AbstractController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetGroupResponse> update(@Valid @RequestBody UpdateGroupRequest request)
+    public ResponseEntity<Void> update(@Valid @RequestBody UpdateGroupRequest request)
             throws GenericException {
-        return ResponseEntity.ok(groupService.update(getUser(), request));
+        groupService.update(getUser(), request);
+        return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "Get user groups.")

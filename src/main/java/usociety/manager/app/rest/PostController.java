@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -55,7 +53,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestBody CreatePostRequest request)
-            throws GenericException, JsonProcessingException {
+            throws GenericException {
         return new ResponseEntity<>(postService.create(getUser(), request), CREATED);
     }
 
@@ -68,9 +66,9 @@ public class PostController extends AbstractController {
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
             @PathVariable("groupId") Long groupId,
-            @RequestParam(value = "page", required = false) int page
+            @RequestParam(value = "page", defaultValue = "0") int page
     ) throws GenericException {
-        return ResponseEntity.ok(postService.getAllByGroup(getUser(), groupId, page));
+        return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page));
     }
 
     @ApiOperation(value = "React into a post.")

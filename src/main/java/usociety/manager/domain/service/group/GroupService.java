@@ -16,7 +16,7 @@ public interface GroupService {
 
     GroupApi create(String username, CreateGroupRequest request) throws GenericException;
 
-    GetGroupResponse update(String username, UpdateGroupRequest request) throws GenericException;
+    void update(String username, UpdateGroupRequest request) throws GenericException;
 
     void join(String username, Long id) throws GenericException, MessagingException;
 

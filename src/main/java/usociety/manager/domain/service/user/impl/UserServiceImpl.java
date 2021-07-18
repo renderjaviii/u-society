@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
             userConnector.create(request);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
-            throw new GenericException("User does not exist", "ERROR_CREATING_USER", ex);
+            throw new GenericException("User could not be created", "ERROR_CREATING_USER", ex);
         }
 
         mailService.send(request.getEmail(), buildEmailContent(request), TRUE);
@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
         try {
             UserDTO user = userConnector.get(null, username, email);
             if (Objects.nonNull(user)) {
-                throw new GenericException("User already registered", "USER_ALREADY_EXISTS");
+                throw new GenericException("User is already registered", "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {
             if (!Constants.USER_NOT_FOUND.equals(ex.getErrorCode())) {

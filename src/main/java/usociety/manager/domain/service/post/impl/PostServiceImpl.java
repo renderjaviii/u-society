@@ -16,9 +16,9 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.comment.CommentService;
 import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
-import usociety.manager.domain.service.post.CreatePostDelegate;
 import usociety.manager.domain.service.post.GetAllGroupPostsDelegate;
 import usociety.manager.domain.service.post.PostService;
+import usociety.manager.domain.service.post.ProcessPostHelper;
 import usociety.manager.domain.service.react.ReactService;
 import usociety.manager.domain.service.survey.SurveyService;
 
@@ -28,7 +28,7 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     private static final String POST_NOT_FOUND_ERROR_CODE = "POST_DOES_NOT_FOUND";
 
     private final GetAllGroupPostsDelegate getAllGroupPostsDelegate;
-    private final CreatePostDelegate createPostDelegate;
+    private final ProcessPostHelper processPostHelper;
     private final CommentService commentService;
     private final PostRepository postRepository;
     private final SurveyService surveyService;
@@ -36,13 +36,13 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
 
     @Autowired
     public PostServiceImpl(GetAllGroupPostsDelegate getAllGroupPostsDelegate,
-                           CreatePostDelegate createPostDelegate,
+                           ProcessPostHelper processPostHelper,
                            CommentService commentService,
                            PostRepository postRepository,
                            SurveyService surveyService,
                            ReactService reactService) {
         this.getAllGroupPostsDelegate = getAllGroupPostsDelegate;
-        this.createPostDelegate = createPostDelegate;
+        this.processPostHelper = processPostHelper;
         this.commentService = commentService;
         this.postRepository = postRepository;
         this.surveyService = surveyService;
@@ -52,19 +52,26 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     @Override
     public PostApi create(String username, CreatePostRequest request)
             throws GenericException {
-        validateIfUserIsMember(username, request.getGroupId(), USER_IS_NOT_MEMBER);
-        return createPostDelegate.execute(getUser(username), request);
+        validateIsUserIsMember(username, request.getGroupId());
+
+        return processPostHelper.create(getUser(username), request);
     }
 
     @Override
-    public List<PostApi> getAllByGroup(String username, Long groupId, int page) throws GenericException {
+    public List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page) throws GenericException {
         return getAllGroupPostsDelegate.execute(getUser(username), groupId, page);
+    }
+
+    @Override
+    public void update(PostApi post) {
+        processPostHelper.update(post);
     }
 
     @Override
     public void react(String username, Long postId, ReactTypeEnum value) throws GenericException {
         Post post = getPost(postId);
-        validateIfUserIsMember(username, post.getGroup().getId(), USER_IS_NOT_MEMBER);
+        validateIsUserIsMember(username, post.getGroup().getId());
+
         reactService.create(username, post, value);
     }
 
@@ -76,14 +83,19 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     @Override
     public void vote(String username, Long postId, Integer vote) throws GenericException {
         Post post = getPost(postId);
-        validateIfUserIsMember(username, post.getGroup().getId(), USER_IS_NOT_MEMBER);
+        validateIsUserIsMember(username, post.getGroup().getId());
+
         surveyService.validateIfUserHasAlreadyInteracted(username, post);
         surveyService.create(username, post, vote);
     }
 
     private Post getPost(Long postId) throws GenericException {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new GenericException("Post was not found", POST_NOT_FOUND_ERROR_CODE));
+                .orElseThrow(() -> new GenericException("Post does not exist", POST_NOT_FOUND_ERROR_CODE));
+    }
+
+    private void validateIsUserIsMember(String username, Long groupId) throws GenericException {
+        validateIfUserIsMember(username, groupId, USER_IS_NOT_MEMBER);
     }
 
 }

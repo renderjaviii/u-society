@@ -86,6 +86,7 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     private List<Post> getGroupPosts(Long groupId, boolean isMember, int page) {
         List<Post> posts = postRepository
                 .findAllByGroupIdOrderByCreationDateDesc(groupId, PageableUtils.paginate(page));
+
         if (!isMember) {
             return posts.stream()
                     .filter(post -> TRUE.equals(post.isPublic()))
@@ -105,13 +106,15 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
         } else {
             processPostReacts(postApi, reactRepository.findAllByPostId(post.getId()), user);
             List<CommentApi> comments = new ArrayList<>();
+
             for (Comment comment : commentRepository.findByPostId(post.getId())) {
-                comments.add(buildCommentWithFullInfo(comment));
+                comments.add(buildCompleteCommentInfo(comment));
             }
             postApi.setComments(comments);
         }
     }
 
+    //TODO: Improve reacts storing and processing
     private void processPostReacts(PostApi postApi, List<React> reacts, UserApi user) {
         EnumMap<ReactTypeEnum, Integer> reactTypeMap = new EnumMap<>(ReactTypeEnum.class);
         for (React react : reacts) {
@@ -148,7 +151,7 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
         }
     }
 
-    private CommentApi buildCommentWithFullInfo(Comment comment) throws GenericException {
+    private CommentApi buildCompleteCommentInfo(Comment comment) throws GenericException {
         UserApi commentOwner = userService.getById(comment.getUserId());
         return CommentApi.newBuilder()
                 .creationDate(comment.getCreationDate())

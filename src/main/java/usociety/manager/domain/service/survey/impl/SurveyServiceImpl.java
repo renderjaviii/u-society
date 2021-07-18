@@ -14,9 +14,9 @@ import usociety.manager.domain.enums.PostTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Post;
 import usociety.manager.domain.model.Survey;
-import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.repository.SurveyRepository;
 import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
+import usociety.manager.domain.service.post.PostService;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
 import usociety.manager.domain.service.survey.SurveyService;
@@ -29,13 +29,13 @@ public class SurveyServiceImpl extends AbstractServiceImpl implements SurveyServ
     private static final int ONE = 1;
 
     private final SurveyRepository surveyRepository;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     @Autowired
     public SurveyServiceImpl(SurveyRepository surveyRepository,
-                             PostRepository postRepository) {
+                             PostService postService) {
         this.surveyRepository = surveyRepository;
-        this.postRepository = postRepository;
+        this.postService = postService;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SurveyServiceImpl extends AbstractServiceImpl implements SurveyServ
         UserApi user = getUser(username);
         Optional<Survey> optionalSurvey = surveyRepository.findByPostIdAndUserId(post.getId(), user.getId());
         if (optionalSurvey.isPresent()) {
-            throw new GenericException("El usuario ya participó en esta encuesta.", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("User has already participated in survey", VOTING_SURVEY_ERROR_CODE);
         }
     }
 
@@ -69,22 +69,21 @@ public class SurveyServiceImpl extends AbstractServiceImpl implements SurveyServ
     private void validateSurveyConstraints(Integer vote, Post post, PostAdditionalData postAdditionalData)
             throws GenericException {
         if (PostTypeEnum.SURVEY != postAdditionalData.getType()) {
-            throw new GenericException("El post no es de tipo encuesta.", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("Post is not survey type", VOTING_SURVEY_ERROR_CODE);
         }
         if (post.getExpirationDate().isBefore(LocalDateTime.now(clock))) {
-            throw new GenericException("La votación ya se encuentra cerrada", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("The voting is closed", VOTING_SURVEY_ERROR_CODE);
         }
         if (vote >= postAdditionalData.getOptions().size()) {
-            throw new GenericException("Voto no válido.", VOTING_SURVEY_ERROR_CODE);
+            throw new GenericException("Invalid value vote", VOTING_SURVEY_ERROR_CODE);
         }
     }
 
-    //TODO: Update with service
     private void updatePostMetadata(Integer vote, PostApi postApi, PostAdditionalData postAdditionalData) {
         SurveyOption surveyOption = postAdditionalData.getOptions().get(vote);
         Integer amount = surveyOption.getAmount();
         surveyOption.setAmount(amount + ONE);
-        postRepository.save(Converter.post(postApi));
+        postService.update(postApi);
     }
 
 }

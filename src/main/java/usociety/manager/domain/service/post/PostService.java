@@ -2,8 +2,6 @@ package usociety.manager.domain.service.post;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
 import usociety.manager.app.rest.request.CreatePostRequest;
@@ -12,10 +10,11 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface PostService {
 
-    PostApi create(String username, CreatePostRequest request)
-            throws GenericException, JsonProcessingException;
+    PostApi create(String username, CreatePostRequest request) throws GenericException;
 
-    List<PostApi> getAllByGroup(String username, Long groupId, int page) throws GenericException;
+    List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page) throws GenericException;
+
+    void update(PostApi post);
 
     void react(String username, Long postId, ReactTypeEnum value) throws GenericException;
 

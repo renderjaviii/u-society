@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +27,14 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.PostRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
-import usociety.manager.domain.service.post.CreatePostDelegate;
+import usociety.manager.domain.service.post.ProcessPostHelper;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 import usociety.manager.domain.service.post.dto.SurveyOption;
 
 @Component
-public class CreatePostDelegateImpl extends AbstractDelegateImpl implements CreatePostDelegate {
+public class ProcessPostHelperImpl extends AbstractDelegateImpl implements ProcessPostHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessPostHelperImpl.class);
 
     private static final String CREATING_POST_ERROR_CODE = "ERROR_CREATING_POST";
 
@@ -41,16 +45,18 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
     private final PostRepository postRepository;
 
     @Autowired
-    public CreatePostDelegateImpl(CloudStorageService cloudStorageService,
-                                  GroupRepository groupRepository,
-                                  PostRepository postRepository) {
+    public ProcessPostHelperImpl(CloudStorageService cloudStorageService,
+                                 GroupRepository groupRepository,
+                                 PostRepository postRepository) {
         this.cloudStorageService = cloudStorageService;
         this.groupRepository = groupRepository;
         this.postRepository = postRepository;
     }
 
     @Override
-    public PostApi execute(UserApi user, CreatePostRequest request) throws GenericException {
+    public PostApi create(UserApi user, CreatePostRequest request) throws GenericException {
+        Group group = getGroup(request.getGroupId());
+
         validateRequest(request);
         processContent(request);
 
@@ -60,14 +66,24 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
                 .description(request.getDescription())
                 .isPublic(getPostVisibility(request))
                 .content(parseContentToJSON(request))
-                .group(getGroup(request.getGroupId()))
+                .group(group)
                 .userId(user.getId())
                 .build()));
     }
 
+    @Override
+    public void update(PostApi post) {
+        postRepository.save(Converter.post(post));
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
+    }
+
     private void validateRequest(CreatePostRequest request) throws GenericException {
         if (PostTypeEnum.IMAGE == request.getContent().getType() && StringUtils.isEmpty(request.getImage())) {
-            throw new GenericException("Es obligatorio que envíes imagen.", CREATING_POST_ERROR_CODE);
+            throw new GenericException("The post's image is required", CREATING_POST_ERROR_CODE);
         }
     }
 
@@ -93,15 +109,10 @@ public class CreatePostDelegateImpl extends AbstractDelegateImpl implements Crea
     private String parseContentToJSON(CreatePostRequest request) {
         try {
             return objectMapper.writeValueAsString(request.getContent());
-        } catch (JsonProcessingException ignored) {
-            //Implementation is no required
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Error parsing JSON value", ex);
         }
         return EMPTY;
-    }
-
-    private Group getGroup(Long id) throws GenericException {
-        return groupRepository.findById(id)
-                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

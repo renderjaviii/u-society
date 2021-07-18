@@ -5,8 +5,10 @@ import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.CreatePostRequest;
 import usociety.manager.domain.exception.GenericException;
 
-public interface CreatePostDelegate {
+public interface ProcessPostHelper {
 
-    PostApi execute(UserApi user, CreatePostRequest request) throws GenericException;
+    PostApi create(UserApi user, CreatePostRequest request) throws GenericException;
+
+    void update(PostApi post);
 
 }

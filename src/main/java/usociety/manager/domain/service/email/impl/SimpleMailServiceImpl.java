@@ -49,7 +49,6 @@ public class SimpleMailServiceImpl implements MailService {
         } catch (MessagingException e) {
             throw new GenericException(e.getMessage(), SENDING_EMAIL_ERROR_CODE);
         }
-
     }
 
     private void sendHtmlEmail(String email, String content, String subject) throws MessagingException {

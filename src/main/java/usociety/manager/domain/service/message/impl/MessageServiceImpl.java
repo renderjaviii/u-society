@@ -69,11 +69,10 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
 
     private void validateRequest(MessageApi request) throws GenericException {
         if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
-            throw new GenericException("Es obligatorio que envíe información.", SENDING_MESSAGE_ERROR_CODE);
+            throw new GenericException("The content message is mandatory", SENDING_MESSAGE_ERROR_CODE);
         }
-
         if (MessageTypeEnum.IMAGE == request.getType() && StringUtils.isNotEmpty(request.getImage())) {
-            throw new GenericException("Es obligatorio que envíe la imagen.", SENDING_MESSAGE_ERROR_CODE);
+            throw new GenericException("The image is mandatory", SENDING_MESSAGE_ERROR_CODE);
         }
     }
 
