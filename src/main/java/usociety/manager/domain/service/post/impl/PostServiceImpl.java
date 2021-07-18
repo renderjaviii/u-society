@@ -54,7 +54,7 @@ public class PostServiceImpl extends AbstractDelegateImpl implements PostService
     }
 
     @Override
-    public List<PostApi> getAll(String username, Long groupId, int page) throws GenericException {
+    public List<PostApi> getAllByGroup(String username, Long groupId, int page) throws GenericException {
         return getAllGroupPostsDelegate.execute(username, groupId, page);
     }
 

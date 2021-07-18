@@ -3,8 +3,6 @@ package usociety.manager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -44,7 +42,7 @@ import usociety.manager.domain.service.user.UserService;
 @Validated
 @RestController
 @RequestMapping(path = "services/users")
-public class UserController extends CommonController {
+public class UserController extends AbstractController {
 
     private final UserService userService;
 
@@ -59,7 +57,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/",
+    @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -69,12 +67,12 @@ public class UserController extends CommonController {
     }
 
     @ApiOperation(value = "Verify user data and send otp.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User verified and otp sent."),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "User verified and OTP sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/verifyEmail")
+    @PostMapping(path = "/verify-email")
     public ResponseEntity<Void> verify(
             @Email @RequestParam(name = "email") final String email,
             @RequestParam(name = "resendCode", required = false) final boolean resendCode
@@ -83,13 +81,13 @@ public class UserController extends CommonController {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value = "Enable account across otp.")
+    @ApiOperation(value = "Enable user through OTP.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Account enabled."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/enableAccount")
+    @PostMapping(path = "/enable-account")
     public ResponseEntity<Void> enableAccount(
             @Email @RequestParam(name = "email") final String email,
             @NotEmpty @RequestParam(name = "otpCode") final String otpCode
@@ -116,8 +114,7 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PutMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
         userService.update(getUser(), request);
@@ -157,8 +154,8 @@ public class UserController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PatchMapping(path = "/{username}/changePassword", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserApi>> changePassword(
+    @PatchMapping(path = "/{username}/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> changePassword(
             @PathVariable(value = "username") final String username,
             @RequestParam(name = "otpCode") final String otpCode,
             @Valid @RequestBody ChangePasswordRequest request

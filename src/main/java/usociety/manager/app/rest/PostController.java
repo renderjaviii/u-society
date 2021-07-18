@@ -38,7 +38,7 @@ import usociety.manager.domain.service.post.PostService;
 @Validated
 @RestController
 @RequestMapping(path = "services/posts")
-public class PostController extends CommonController {
+public class PostController extends AbstractController {
 
     private final PostService postService;
 
@@ -53,27 +53,27 @@ public class PostController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestBody CreatePostRequest request)
             throws GenericException, JsonProcessingException {
         return new ResponseEntity<>(postService.create(getUser(), request), CREATED);
     }
 
-    @ApiOperation(value = "Get all group posts.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group's posts."),
+    @ApiOperation(value = "Get all posts by group.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Posts."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/{id}/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PostApi>> getAll(
-            @PathVariable("id") Long id,
+    @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PostApi>> getAllByGroup(
+            @PathVariable("groupId") Long groupId,
             @RequestParam(value = "page", required = false) int page
     ) throws GenericException {
-        return ResponseEntity.ok(postService.getAll(getUser(), id, page));
+        return ResponseEntity.ok(postService.getAllByGroup(getUser(), groupId, page));
     }
 
-    @ApiOperation(value = "React to a post.")
+    @ApiOperation(value = "React into a post.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Post react saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),

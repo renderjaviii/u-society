@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import usociety.manager.domain.exception.UserValidationException;
 
-public abstract class CommonController {
+public abstract class AbstractController {
 
     protected String getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

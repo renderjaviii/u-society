@@ -69,18 +69,22 @@ public class OtpServiceImpl extends AbstractDelegateImpl implements OtpService {
         if (optionalOTP.isPresent()) {
             Otp otp = optionalOTP.get();
 
-            if (!Boolean.TRUE.equals(otp.isActive())) {
-                throw new GenericException(getErrorMessage("Este OTP es obsoleto: %s.", otpCode), INVALID_OTP_MESSAGE);
-            }
-
-            if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
-                throw new GenericException(getErrorMessage("OTP expirado: %s.", otpCode), INVALID_OTP_MESSAGE);
-            }
+            validateOTP(otpCode, otp);
 
             otp.setActive(FALSE);
             otpRepository.save(otp);
         } else {
-            throw new GenericException(getErrorMessage("OTP inválido: %s.", otpCode), INVALID_OTP_MESSAGE);
+            throw new GenericException(getErrorMessage("OTP does not exist: %s.", otpCode), INVALID_OTP_MESSAGE);
+        }
+    }
+
+    private void validateOTP(String otpCode, Otp otp) throws GenericException {
+        if (!Boolean.TRUE.equals(otp.isActive())) {
+            throw new GenericException(getErrorMessage("Invalid OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
+        }
+
+        if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
+            throw new GenericException(getErrorMessage("Expired OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
         }
     }
 

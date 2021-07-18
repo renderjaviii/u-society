@@ -37,7 +37,7 @@ import usociety.manager.domain.service.group.GroupService;
 @Validated
 @RestController
 @RequestMapping(path = "services/groups")
-public class GroupController extends CommonController {
+public class GroupController extends AbstractController {
 
     private final GroupService groupService;
 
@@ -52,9 +52,7 @@ public class GroupController extends CommonController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateGroupRequest request)
             throws GenericException {
         return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
@@ -109,8 +107,8 @@ public class GroupController extends CommonController {
         return ResponseEntity.ok(groupService.getAllUserGroups(username));
     }
 
-    @ApiOperation(value = "Update membership data.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Membership data updated."),
+    @ApiOperation(value = "Update membership.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Membership updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
@@ -124,7 +122,7 @@ public class GroupController extends CommonController {
     }
 
     @ApiOperation(value = "Get by filters.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group information updated."),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
