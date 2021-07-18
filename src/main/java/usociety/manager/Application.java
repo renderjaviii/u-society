@@ -127,7 +127,7 @@ public class Application {
         return new ApiInfoBuilder()
                 .title(String.format("USociety REST Manager - %s.", title))
                 .description("REST Middleware Manager.")
-                .version("1.0")
+                .version("2.0")
                 .build();
     }
 
