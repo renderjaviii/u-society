@@ -28,6 +28,9 @@ public class Message extends BaseObject {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "type", nullable = false)
     private Integer type;
 
@@ -48,6 +51,7 @@ public class Message extends BaseObject {
     private Message(Builder builder) {
         id = builder.id;
         content = builder.content;
+        description = builder.description;
         type = builder.type;
         creationDate = builder.creationDate;
         group = builder.group;
@@ -63,7 +67,7 @@ public class Message extends BaseObject {
     }
 
     public String getContent() {
-        return content;
+        return description;
     }
 
     public Integer getType() {
@@ -80,6 +84,10 @@ public class Message extends BaseObject {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override
@@ -102,6 +110,7 @@ public class Message extends BaseObject {
 
         private Long id;
         private String content;
+        private String description;
         private Integer type;
         private LocalDateTime creationDate;
         private Group group;
@@ -118,6 +127,11 @@ public class Message extends BaseObject {
 
         public Builder content(String content) {
             this.content = content;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
             return this;
         }
 

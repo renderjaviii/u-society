@@ -1,15 +1,17 @@
 package usociety.manager.domain.service.message.impl;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static usociety.manager.app.api.MessageApi.TextMessageApi;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import usociety.manager.app.api.MessageApi;
+import usociety.manager.app.api.MessageApi.ImageMessageApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.domain.enums.MessageTypeEnum;
 import usociety.manager.domain.exception.GenericException;
@@ -37,20 +39,19 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     @Override
-    public void sendGroupMessage(String username, MessageApi request) throws GenericException {
+    public void sendGroupMessage(String username, MessageApi message) throws GenericException {
         UserApi user = getUser(username);
-        Group group = getGroup(request.getGroup().getId());
+        Group group = getGroup(message.getGroup().getId());
         validateIfUserIsMember(username, group.getId(), SENDING_MESSAGE_ERROR_CODE);
 
-        validateRequest(request);
-
-        processContent(request, request.getImage());
+        String content = processContent(message);
 
         messageRepository.save(Message.newBuilder()
+                .description(getMessageDescription(message))
                 .creationDate(LocalDateTime.now(clock))
-                .type(request.getType().getCode())
-                .content(request.getContent())
+                .type(message.getType().getCode())
                 .userId(user.getId())
+                .content(content)
                 .group(group)
                 .build());
     }
@@ -67,25 +68,35 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
         return groupMessages;
     }
 
-    private void validateRequest(MessageApi request) throws GenericException {
-        if (MessageTypeEnum.TEXT == request.getType() && Objects.isNull(request.getContent())) {
-            throw new GenericException("The content message is mandatory", SENDING_MESSAGE_ERROR_CODE);
+    private String processContent(MessageApi message) throws GenericException {
+        if (message instanceof ImageMessageApi) {
+            ImageMessageApi imageMessage = (ImageMessageApi) message;
+            return cloudStorageService.upload(imageMessage.getContent());
         }
-        if (MessageTypeEnum.IMAGE == request.getType() && StringUtils.isNotEmpty(request.getImage())) {
-            throw new GenericException("The image is mandatory", SENDING_MESSAGE_ERROR_CODE);
+        if (message instanceof TextMessageApi) {
+            TextMessageApi textMessage = (TextMessageApi) message;
+            return textMessage.getContent();
         }
+        throw new UnsupportedOperationException("Message type is not supported");
     }
 
-    private void processContent(MessageApi request, String image) throws GenericException {
-        if (MessageTypeEnum.IMAGE == request.getType()) {
-            String imageUrl = cloudStorageService.upload(image);
-            request.setContent(imageUrl);
+    private String getMessageDescription(MessageApi message) {
+        if (message instanceof ImageMessageApi) {
+            return ((ImageMessageApi) message).getDescription();
         }
+        return EMPTY;
     }
 
     private MessageApi buildGroupMessage(Message message) throws GenericException {
-        return MessageApi.newBuilder()
-                .type(MessageTypeEnum.fromCode(message.getType()))
+        if (MessageTypeEnum.IMAGE.getCode() == message.getType()) {
+            return ImageMessageApi.newBuilder()
+                    .user(userService.getById(message.getUserId()))
+                    .creationDate(message.getCreationDate())
+                    .content(message.getContent())
+                    .build();
+
+        }
+        return TextMessageApi.newBuilder()
                 .user(userService.getById(message.getUserId()))
                 .creationDate(message.getCreationDate())
                 .content(message.getContent())

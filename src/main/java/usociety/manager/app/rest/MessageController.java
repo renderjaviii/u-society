@@ -46,9 +46,9 @@ public class MessageController extends AbstractController {
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> sendGroupMessage(@Valid @RequestBody MessageApi request)
+    public ResponseEntity<Void> sendGroupMessage(@Valid @RequestBody MessageApi message)
             throws GenericException {
-        messageService.sendGroupMessage(getUser(), request);
+        messageService.sendGroupMessage(getUser(), message);
         return new ResponseEntity<>(CREATED);
     }
 

@@ -7,7 +7,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface MessageService {
 
-    void sendGroupMessage(String username, MessageApi request) throws GenericException;
+    void sendGroupMessage(String username, MessageApi message) throws GenericException;
 
     List<MessageApi> getGroupMessages(String username, Long groupId) throws GenericException;
 
