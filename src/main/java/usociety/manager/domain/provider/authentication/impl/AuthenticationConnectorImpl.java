@@ -23,7 +23,7 @@ public class AuthenticationConnectorImpl extends AbstractConnectorImpl implement
     private String clientId;
     @Value("${web.authentication.client-secret}")
     private String clientSecret;
-    @Value("${web.time-out}")
+    @Value("${web.read-time-out:5}")
     private int timeOut;
 
     @PostConstruct

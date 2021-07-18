@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import usociety.manager.app.api.UserApi;
@@ -34,11 +35,14 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
     private static final String JOIN_GROUP_EMAIL_FORMAT = "<html><body>" +
             "<h3>Hola %s.</h3>" +
             "<p>%s ha solicitado unirse a tu grupo: <u>%s</u></p>" +
-            "<p>¡Dirígite a <a href='https://usociety-68208.web.app/'>U - Society</a> y permítele ingresar!</p>" +
+            "<p>¡Dirígite a <a href='%s'>U - Society</a> y permítele ingresar!</p>" +
             "</body></html>";
 
     private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
     private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
+
+    @Value("${config.app.domain:https://usociety-68208.web.app/}")
+    private String applicationDomain;
 
     private final UserGroupRepository userGroupRepository;
     private final GroupRepository groupRepository;
@@ -113,7 +117,9 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
         return String.format(JOIN_GROUP_EMAIL_FORMAT,
                 StringUtils.capitalize(userAdmin.getName()),
                 StringUtils.capitalize(user.getName()),
-                StringUtils.capitalize(group.getName()));
+                StringUtils.capitalize(group.getName()),
+                applicationDomain
+        );
     }
 
     private Group getGroup(Long id) throws GenericException {
