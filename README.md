@@ -3,6 +3,9 @@ REST API Orchestrator created to the USociety project.
 
 This RESTful microservice has the function of the Resource server, so, if it’s the head of all the ecosystem. There are a certain group of public endpoints (no requires authentication) and other privates, then if you receive a 401 (Unauthorized HTTP code) from as response of the API, you first need to get the authorization token and add it to the `Authorization` header.
 
+#### Change list
+- 2021-07-18: General refactor.
+
 #### How to run locally
 
 1. Recreate a local database: `docker-compose -f src/main/resources/docker-db.yml up --build`
@@ -13,8 +16,8 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 6. Stop container: `docker-compose down -v`
 
 #### Notes
-- Base API path: `http://localhost:8080/manager`
-- Swagger documentation: `http://localhost:8080/manager/swagger-ui.html`.
+- Base API path: `https://localhost:8443/manager`
+- Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
 
 #### Technologies used
 - Spring boot.
@@ -33,7 +36,12 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 - Jackson databind.
 - Apache commons lang3.
 - JUnit 4 + Mockito.
+- Slugify.
 
 #### Additional considerations
 1. If you want to change the general server configurations (as port), you can change the environment variables from this file `src/main/resources/development.env`.
-2. When you run the docker db container, the database is going to be populated using the seeders files `src/main/resources/data.sql` and `src/main/resources/import.sql` (If you want to avoid it remove the entry points localized in the .yaml file). 
+2. When you run the docker db container, the database is going to be populated using the seeders files `src/main/resources/data.sql` and `src/main/resources/import.sql` (If you want to avoid it remove the entry points localized in the .yaml file).
+3. This API uses an self signed certificate.  
+
+###### Version: 2.0
+###### Date: 2021-07-18
