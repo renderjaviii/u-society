@@ -92,6 +92,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
             return ImageMessageApi.newBuilder()
                     .user(userService.getById(message.getUserId()))
                     .creationDate(message.getCreationDate())
+                    .description(message.getDescription())
                     .content(message.getContent())
                     .build();
 
