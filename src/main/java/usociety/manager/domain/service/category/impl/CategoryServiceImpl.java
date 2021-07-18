@@ -17,7 +17,7 @@ import usociety.manager.domain.service.category.CategoryService;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private static final String GETTING_CATEGORY_ERROR = "ERROR_GETTING_CATEGORY";
+    private static final String GETTING_CATEGORY_ERROR_CODE = "ERROR_GETTING_CATEGORY";
     private final CategoryRepository categoryRepository;
 
     @Autowired
@@ -40,7 +40,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Supplier<GenericException> buildCategoryNotFoundException(Long id) {
-        return () -> new GenericException(String.format("Categoría con id: %s no existe.", id), GETTING_CATEGORY_ERROR);
+        return () -> {
+            String errorMessage = String.format("Category with id: %s does not exist.", id);
+            return new GenericException(errorMessage, GETTING_CATEGORY_ERROR_CODE);
+        };
     }
 
 }

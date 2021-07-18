@@ -37,7 +37,7 @@ public class CommentServiceImpl extends AbstractDelegateImpl implements CommentS
         UserApi user = getUser(username);
         validateIfUserIsMember(username, post.getGroup().getId(), ACTIVE, COMMENTING_POST_ERROR_CODE);
 
-        validatePostType(post);
+        validatePostData(post);
 
         commentRepository.save(Comment.newBuilder()
                 .creationDate(LocalDateTime.now(clock))
@@ -48,14 +48,14 @@ public class CommentServiceImpl extends AbstractDelegateImpl implements CommentS
 
     }
 
-    private void validatePostType(Post post) throws GenericException {
+    private void validatePostData(Post post) throws GenericException {
         try {
             PostAdditionalData postAdditionalData = objectMapper.readValue(post.getContent(), PostAdditionalData.class);
             if (PostTypeEnum.SURVEY == postAdditionalData.getType()) {
-                throw new GenericException("No es posible comentar en encuestas.", COMMENTING_POST_ERROR_CODE);
+                throw new GenericException("It's not allowed to comment surveys", COMMENTING_POST_ERROR_CODE);
             }
-        } catch (JsonProcessingException e) {
-            throw new GenericException("Información de post corrupta.", COMMENTING_POST_ERROR_CODE);
+        } catch (JsonProcessingException ex) {
+            throw new GenericException("Post's information corrupted", COMMENTING_POST_ERROR_CODE, ex);
         }
     }
 
