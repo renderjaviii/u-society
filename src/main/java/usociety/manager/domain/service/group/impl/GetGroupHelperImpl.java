@@ -91,7 +91,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
                                        String errorCode)
             throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserIdAndStatusIn(groupId, user.getId(), Collections.singletonList(ACTIVE.getCode()));
+                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getCode());
         if (StringUtils.isNotEmpty(errorCode) && !optionalUserGroup.isPresent()) {
             throw new GenericException("User is not an active member", errorCode);
         }

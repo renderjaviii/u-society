@@ -90,7 +90,7 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
 
     private UserGroup getUserGroup(Long userId, Long groupId) throws GenericException {
         return userGroupRepository
-                .findByGroupIdAndUserIdAndStatusIn(groupId, userId, Collections.singletonList(ACTIVE.getCode()))
+                .findByGroupIdAndUserIdAndStatus(groupId, userId, ACTIVE.getCode())
                 .orElseThrow(() -> new GenericException("El usuario no es miembro activo del grupo.",
                         ERROR_UPDATING_MEMBERSHIP_ERROR_CODE));
     }

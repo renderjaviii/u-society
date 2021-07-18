@@ -11,16 +11,14 @@ import usociety.manager.domain.model.UserGroup;
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
-    List<UserGroup> findAllByUserIdAndStatusIn(Long userId, List<Integer> validStatuses);
-
     Optional<UserGroup> findByGroupIdAndUserId(Long groupId, Long userId);
-
-    Optional<UserGroup> findByGroupIdAndUserIdAndStatus(Long groupId, Long userId, int status);
-
-    Optional<UserGroup> findByGroupIdAndUserIdAndStatusIn(Long groupId, Long userId, List<Integer> statuses);
 
     List<UserGroup> findAllByGroupIdAndUserIdNot(Long groupId, Long userId);
 
     Optional<UserGroup> findByGroupIdAndIsAdmin(Long groupId, boolean isAdmin);
+
+    List<UserGroup> findAllByUserIdAndStatusIn(Long userId, List<Integer> validStatuses);
+
+    Optional<UserGroup> findByGroupIdAndUserIdAndStatus(Long groupId, Long userId, int status);
 
 }
