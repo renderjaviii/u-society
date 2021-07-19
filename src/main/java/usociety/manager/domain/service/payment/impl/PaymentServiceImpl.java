@@ -30,33 +30,41 @@ public class PaymentServiceImpl extends AbstractServiceImpl implements PaymentSe
     @Transactional(rollbackOn = Exception.class)
     public void create(String username, PaymentApi payment) {
         if (payment instanceof CardPaymentApi) {
-            CardPaymentApi cardPaymentApi = (CardPaymentApi) payment;
-            paymentRepository.save(CardPayment.newBuilder()
-                    .amount(cardPaymentApi.getAmount())
-                    .documentType(cardPaymentApi.getDocumentType().getValue())
-                    .documentNumber(cardPaymentApi.getDocumentNumber())
-                    .cardType(cardPaymentApi.getCardType().getValue())
-                    .nameOnTheCard(cardPaymentApi.getNameOnTheCard())
-                    .cardNumber(cardPaymentApi.getCardNumber())
-                    .createdAt(cardPaymentApi.getCreatedAt())
-                    .createdAt(LocalDateTime.now(clock))
-                    .quotes(cardPaymentApi.getQuotes())
-                    .cvv(cardPaymentApi.getCvv())
-                    .build());
+            saveCardPayment(payment);
         } else if (payment instanceof PSEPaymentApi) {
-            PSEPaymentApi psePaymentApi = (PSEPaymentApi) payment;
-            paymentRepository.save(PSEPayment.newBuilder()
-                    .documentType(psePaymentApi.getDocumentType().getValue())
-                    .documentNumber(psePaymentApi.getDocumentNumber())
-                    .pseBankCode(psePaymentApi.getBankCode())
-                    .createdAt(psePaymentApi.getCreatedAt())
-                    .createdAt(LocalDateTime.now(clock))
-                    .pseEmail(psePaymentApi.getEmail())
-                    .amount(psePaymentApi.getAmount())
-                    .build());
+            savePSEPayment(payment);
         } else {
             throw new UnsupportedOperationException("Unsupported payment type");
         }
+    }
+
+    private void saveCardPayment(PaymentApi payment) {
+        CardPaymentApi cardPaymentApi = (CardPaymentApi) payment;
+        paymentRepository.save(CardPayment.newBuilder()
+                .amount(cardPaymentApi.getAmount())
+                .documentType(cardPaymentApi.getDocumentType().getValue())
+                .documentNumber(cardPaymentApi.getDocumentNumber())
+                .cardType(cardPaymentApi.getCardType().getValue())
+                .nameOnTheCard(cardPaymentApi.getNameOnTheCard())
+                .cardNumber(cardPaymentApi.getCardNumber())
+                .createdAt(cardPaymentApi.getCreatedAt())
+                .createdAt(LocalDateTime.now(clock))
+                .quotes(cardPaymentApi.getQuotes())
+                .cvv(cardPaymentApi.getCvv())
+                .build());
+    }
+
+    private void savePSEPayment(PaymentApi payment) {
+        PSEPaymentApi psePaymentApi = (PSEPaymentApi) payment;
+        paymentRepository.save(PSEPayment.newBuilder()
+                .documentType(psePaymentApi.getDocumentType().getValue())
+                .documentNumber(psePaymentApi.getDocumentNumber())
+                .pseBankCode(psePaymentApi.getBankCode())
+                .createdAt(psePaymentApi.getCreatedAt())
+                .createdAt(LocalDateTime.now(clock))
+                .pseEmail(psePaymentApi.getEmail())
+                .amount(psePaymentApi.getAmount())
+                .build());
     }
 
 }
