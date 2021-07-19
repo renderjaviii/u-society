@@ -13,7 +13,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -266,11 +265,12 @@ public abstract class PaymentApi extends BaseObject {
         @JsonProperty
         private String pseEmail;
 
-        @NotEmpty
-        @Size(min = 1, max = 2)
+        @NotNull
+        @Min(1)
+        @Max(4)
         @ApiModelProperty(notes = "PSE Bank code")
         @JsonProperty
-        private String pseBankCode;
+        private Integer pseBankCode;
 
         public PSEPaymentApi() {
             super();
@@ -293,7 +293,7 @@ public abstract class PaymentApi extends BaseObject {
             return pseEmail;
         }
 
-        public String getBankCode() {
+        public Integer getBankCode() {
             return pseBankCode;
         }
 
@@ -314,7 +314,7 @@ public abstract class PaymentApi extends BaseObject {
             private DocumentTypeEnum documentType;
             private LocalDateTime createdAt;
             private String pseEmail;
-            private String pseBankCode;
+            private Integer pseBankCode;
 
             private Builder() {
                 super();
@@ -345,7 +345,7 @@ public abstract class PaymentApi extends BaseObject {
                 return this;
             }
 
-            public Builder pseBankCode(String pseBankCode) {
+            public Builder pseBankCode(Integer pseBankCode) {
                 this.pseBankCode = pseBankCode;
                 return this;
             }
