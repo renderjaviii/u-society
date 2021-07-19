@@ -123,6 +123,20 @@ public class Application {
                 .pathMapping("/");
     }
 
+    @Bean
+    public Docket swaggerPayments() {
+        final String title = "Payments";
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(title)
+                .select()
+                .paths(regex("/services/payments/*.*"))
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .build()
+                .apiInfo(buildApiInfo(title))
+                .pathMapping("/");
+    }
+
     private ApiInfo buildApiInfo(String title) {
         return new ApiInfoBuilder()
                 .title(String.format("USociety REST Manager - %s.", title))
