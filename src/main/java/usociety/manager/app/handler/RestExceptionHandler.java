@@ -109,8 +109,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         if (error instanceof FieldError) {
             String message = String.format(BASIC_FORMAT, ((FieldError) error).getField(), error.getDefaultMessage());
             joiner.add(message);
+        } else {
+            joiner.add(error.getDefaultMessage());
         }
-        joiner.add(error.getDefaultMessage());
     }
 
 }

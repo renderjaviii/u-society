@@ -3,8 +3,11 @@ package usociety.manager.app.api;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.validation.GroupSequence;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -20,14 +23,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
+import usociety.manager.app.util.ExtraValidation;
+import usociety.manager.app.util.validator.PaymentCreationConstraint;
+import usociety.manager.domain.enums.CardTypeEnum;
+import usociety.manager.domain.enums.DocumentTypeEnum;
 
 @ApiModel("Payment")
+@PaymentCreationConstraint(groups = ExtraValidation.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes( {
         @JsonSubTypes.Type(value = PaymentApi.CardPaymentApi.class, name = "card"),
         @JsonSubTypes.Type(value = PaymentApi.PSEPaymentApi.class, name = "pse")
 })
+@GroupSequence( { PaymentApi.class, ExtraValidation.class })
 public abstract class PaymentApi extends BaseObject {
 
     @NotNull
@@ -44,10 +53,9 @@ public abstract class PaymentApi extends BaseObject {
     private String documentNumber;
 
     @NotNull
-    @Pattern(regexp = "CC|NIT")
     @ApiModelProperty(notes = "Document type")
     @JsonProperty
-    private String documentType;
+    private DocumentTypeEnum documentType;
 
     @ApiModelProperty(notes = "Created at")
     @JsonProperty
@@ -73,11 +81,11 @@ public abstract class PaymentApi extends BaseObject {
         this.documentNumber = documentNumber;
     }
 
-    public String getDocumentType() {
+    public DocumentTypeEnum getDocumentType() {
         return documentType;
     }
 
-    public void setDocumentType(String documentType) {
+    public void setDocumentType(DocumentTypeEnum documentType) {
         this.documentType = documentType;
     }
 
@@ -103,19 +111,18 @@ public abstract class PaymentApi extends BaseObject {
     public static class CardPaymentApi extends PaymentApi {
 
         @NotNull
-        @Pattern(regexp = "CREDIT|DEBIT|CHECKING")
-        @ApiModelProperty(notes = "Type")
+        @ApiModelProperty(notes = "Card type")
         @JsonProperty
-        private String type;
+        private CardTypeEnum cardType;
 
         @NotEmpty
         @Pattern(regexp = "[\\d+]{16}")
-        @ApiModelProperty(notes = "Number")
+        @ApiModelProperty(notes = "Card number")
         @JsonProperty
-        private String number;
+        private String cardNumber;
 
-        @Pattern(regexp = "[\\d+]{3}")
-        @ApiModelProperty(notes = "CVV")
+        @Pattern(regexp = "[\\d+]{4}")
+        @ApiModelProperty(notes = "Card CVV")
         @JsonProperty
         private String cvv;
 
@@ -125,6 +132,8 @@ public abstract class PaymentApi extends BaseObject {
         @JsonProperty
         private String nameOnTheCard;
 
+        @Min(1)
+        @Max(36)
         @ApiModelProperty(notes = "Quotes")
         @JsonProperty
         private Integer quotes;
@@ -138,8 +147,8 @@ public abstract class PaymentApi extends BaseObject {
             setDocumentNumber(builder.documentNumber);
             setDocumentType(builder.documentType);
             setCreatedAt(builder.createdAt);
-            type = builder.type;
-            number = builder.number;
+            cardType = builder.cardType;
+            cardNumber = builder.cardNumber;
             cvv = builder.cvv;
             nameOnTheCard = builder.nameOnTheCard;
             quotes = builder.quotes;
@@ -149,12 +158,12 @@ public abstract class PaymentApi extends BaseObject {
             return new Builder();
         }
 
-        public String getType() {
-            return type;
+        public CardTypeEnum getCardType() {
+            return cardType;
         }
 
-        public String getNumber() {
-            return number;
+        public String getCardNumber() {
+            return cardNumber;
         }
 
         public String getCvv() {
@@ -183,10 +192,10 @@ public abstract class PaymentApi extends BaseObject {
 
             private BigDecimal amount;
             private String documentNumber;
-            private String documentType;
+            private DocumentTypeEnum documentType;
             private LocalDateTime createdAt;
-            private String type;
-            private String number;
+            private CardTypeEnum cardType;
+            private String cardNumber;
             private String cvv;
             private String nameOnTheCard;
             private Integer quotes;
@@ -205,7 +214,7 @@ public abstract class PaymentApi extends BaseObject {
                 return this;
             }
 
-            public Builder documentType(String documentType) {
+            public Builder documentType(DocumentTypeEnum documentType) {
                 this.documentType = documentType;
                 return this;
             }
@@ -215,13 +224,13 @@ public abstract class PaymentApi extends BaseObject {
                 return this;
             }
 
-            public Builder type(String type) {
-                this.type = type;
+            public Builder cardType(CardTypeEnum cardType) {
+                this.cardType = cardType;
                 return this;
             }
 
-            public Builder number(String number) {
-                this.number = number;
+            public Builder cardNumber(String cardNumber) {
+                this.cardNumber = cardNumber;
                 return this;
             }
 
@@ -253,15 +262,15 @@ public abstract class PaymentApi extends BaseObject {
 
         @NotEmpty
         @Email
-        @ApiModelProperty(notes = "Email")
+        @ApiModelProperty(notes = "PSE Email")
         @JsonProperty
-        private String email;
+        private String pseEmail;
 
         @NotEmpty
         @Size(min = 1, max = 2)
-        @ApiModelProperty(notes = "Bank code")
+        @ApiModelProperty(notes = "PSE Bank code")
         @JsonProperty
-        private String bankCode;
+        private String pseBankCode;
 
         public PSEPaymentApi() {
             super();
@@ -272,8 +281,8 @@ public abstract class PaymentApi extends BaseObject {
             setDocumentNumber(builder.documentNumber);
             setDocumentType(builder.documentType);
             setCreatedAt(builder.createdAt);
-            email = builder.email;
-            bankCode = builder.bankCode;
+            pseEmail = builder.pseEmail;
+            pseBankCode = builder.pseBankCode;
         }
 
         public static Builder newBuilder() {
@@ -281,11 +290,11 @@ public abstract class PaymentApi extends BaseObject {
         }
 
         public String getEmail() {
-            return email;
+            return pseEmail;
         }
 
         public String getBankCode() {
-            return bankCode;
+            return pseBankCode;
         }
 
         @Override
@@ -302,10 +311,10 @@ public abstract class PaymentApi extends BaseObject {
 
             private BigDecimal amount;
             private String documentNumber;
-            private String documentType;
+            private DocumentTypeEnum documentType;
             private LocalDateTime createdAt;
-            private String email;
-            private String bankCode;
+            private String pseEmail;
+            private String pseBankCode;
 
             private Builder() {
                 super();
@@ -321,7 +330,7 @@ public abstract class PaymentApi extends BaseObject {
                 return this;
             }
 
-            public Builder documentType(String documentType) {
+            public Builder documentType(DocumentTypeEnum documentType) {
                 this.documentType = documentType;
                 return this;
             }
@@ -331,13 +340,13 @@ public abstract class PaymentApi extends BaseObject {
                 return this;
             }
 
-            public Builder email(String email) {
-                this.email = email;
+            public Builder pseEmail(String pseEmail) {
+                this.pseEmail = pseEmail;
                 return this;
             }
 
-            public Builder bankCode(String bankCode) {
-                this.bankCode = bankCode;
+            public Builder pseBankCode(String pseBankCode) {
+                this.pseBankCode = pseBankCode;
                 return this;
             }
 
