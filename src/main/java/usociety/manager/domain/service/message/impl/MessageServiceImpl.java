@@ -1,7 +1,6 @@
 package usociety.manager.domain.service.message.impl;
 
-import static usociety.manager.app.api.MessageApi.TextMessageApi;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import usociety.manager.app.api.MessageApi;
-import usociety.manager.app.api.MessageApi.ImageMessageApi;
 import usociety.manager.app.api.UserApi;
+import usociety.manager.domain.enums.MessageTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
-import usociety.manager.domain.model.ImageMessage;
 import usociety.manager.domain.model.Message;
-import usociety.manager.domain.model.TextMessage;
 import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
@@ -43,7 +40,15 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
         Group group = getGroup(message.getGroup().getId());
         validateIfUserIsMember(username, group.getId(), SENDING_MESSAGE_ERROR_CODE);
 
-        save(message, user, group);
+        String content = processContent(message);
+
+        messageRepository.save(Message.newBuilder()
+                .creationDate(LocalDateTime.now(clock))
+                .type(message.getType().getCode())
+                .userId(user.getId())
+                .content(content)
+                .group(group)
+                .build());
     }
 
     @Override
@@ -59,46 +64,18 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     private String processContent(MessageApi message) throws GenericException {
-        if (message instanceof ImageMessageApi) {
-            ImageMessageApi imageMessage = (ImageMessageApi) message;
-            return cloudStorageService.upload(imageMessage.getContent());
+        if (MessageTypeEnum.IMAGE.equals(message.getType())) {
+            return cloudStorageService.upload(message.getContent());
         }
-        TextMessageApi textMessage = (TextMessageApi) message;
-        return textMessage.getContent();
-    }
-
-    private void save(MessageApi message, UserApi user, Group group) throws GenericException {
-        Message entity = convertFromApiToEntity(message);
-
-        entity.setContent(processContent(message));
-        entity.setUserId(user.getId());
-        entity.setGroup(group);
-        messageRepository.save(entity);
-    }
-
-    private Message convertFromApiToEntity(MessageApi message) {
-        if (message instanceof ImageMessageApi) {
-            return objectMapper.convertValue(message, ImageMessage.class);
-        }
-        return objectMapper.convertValue(message, TextMessage.class);
-
+        return message.getContent();
     }
 
     private MessageApi buildGroupMessage(Message message) throws GenericException {
-        if (message instanceof ImageMessage) {
-            ImageMessage imageMessage = ((ImageMessage) message);
-            return ImageMessageApi.newBuilder()
-                    .user(userService.getById(imageMessage.getUserId()))
-                    .creationDate(imageMessage.getCreationDate())
-                    .description(imageMessage.getDescription())
-                    .content(imageMessage.getContent())
-                    .build();
-
-        }
-        return TextMessageApi.newBuilder()
+        return MessageApi.newBuilder()
                 .user(userService.getById(message.getUserId()))
                 .creationDate(message.getCreationDate())
                 .content(message.getContent())
+                .type(MessageTypeEnum.fromCode(message.getType()))
                 .build();
     }
 
