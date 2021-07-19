@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void sendGroupMessage(String username, MessageApi message) throws GenericException {
         UserApi user = getUser(username);
         Group group = getGroup(message.getGroup().getId());

@@ -7,6 +7,8 @@ import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,7 @@ public class ProcessPostHelperImpl extends AbstractDelegateImpl implements Proce
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public PostApi create(UserApi user, CreatePostRequest request) throws GenericException {
         Group group = getGroup(request.getGroupId());
 
@@ -72,6 +75,7 @@ public class ProcessPostHelperImpl extends AbstractDelegateImpl implements Proce
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void update(PostApi post) {
         postRepository.save(Converter.post(post));
     }

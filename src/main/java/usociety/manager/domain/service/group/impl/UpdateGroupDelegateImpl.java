@@ -28,7 +28,6 @@ import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.group.UpdateGroupDelegate;
-import usociety.manager.domain.service.user.UserService;
 
 @Component
 public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
@@ -39,7 +38,6 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
     private final CloudStorageService cloudStorageService;
     private final CategoryService categoryService;
     private final GroupRepository groupRepository;
-    private final UserService userService;
     private final Slugify slugify;
 
     @Autowired
@@ -47,12 +45,11 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
                                    CloudStorageService cloudStorageService,
                                    CategoryService categoryService,
                                    GroupRepository groupRepository,
-                                   UserService userService, Slugify slugify) {
+                                   Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.categoryService = categoryService;
         this.groupRepository = groupRepository;
-        this.userService = userService;
         this.slugify = slugify;
     }
 

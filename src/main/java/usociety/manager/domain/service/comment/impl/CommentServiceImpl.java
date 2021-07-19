@@ -2,6 +2,8 @@ package usociety.manager.domain.service.comment.impl;
 
 import java.time.LocalDateTime;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class CommentServiceImpl extends AbstractServiceImpl implements CommentSe
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void create(String username, Post post, CommentPostRequest request) throws GenericException {
         UserApi user = getUser(username);
         validateIfUserIsMember(username, post.getGroup().getId(), COMMENTING_POST_ERROR_CODE);

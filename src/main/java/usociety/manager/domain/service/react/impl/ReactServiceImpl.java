@@ -2,6 +2,8 @@ package usociety.manager.domain.service.react.impl;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class ReactServiceImpl extends AbstractServiceImpl implements ReactServic
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void create(String username, Post post, ReactTypeEnum value) throws GenericException {
         UserApi user = getUser(username);
         validatePostType(post);

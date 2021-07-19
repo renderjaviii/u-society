@@ -7,6 +7,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ public class OtpServiceImpl implements OtpService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public OtpApi create(String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))
