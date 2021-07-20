@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import usociety.manager.app.api.CategoryApi;
@@ -17,6 +19,8 @@ import usociety.manager.domain.service.category.CategoryService;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
+    private static final String CATEGORY_RESOURCE_CACHE_NAME = "categories";
+
     private static final String GETTING_CATEGORY_ERROR_CODE = "ERROR_GETTING_CATEGORY";
     private final CategoryRepository categoryRepository;
 
@@ -26,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = CATEGORY_RESOURCE_CACHE_NAME)
     public List<CategoryApi> getAll() {
         return categoryRepository.findAll()
                 .stream()
@@ -34,6 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CachePut(value = CATEGORY_RESOURCE_CACHE_NAME)
     public Category get(Long id) throws GenericException {
         return categoryRepository.findById(id)
                 .orElseThrow(buildCategoryNotFoundException(id));
