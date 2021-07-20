@@ -25,6 +25,13 @@
         <commons-lang3.version>3.9</commons-lang3.version>
         <reactor-spring.version>1.0.1.RELEASE</reactor-spring.version>
         <model-mapper.version>2.3.5</model-mapper.version>
+        <aws-java-sdk.version>1.11.133</aws-java-sdk.version>
+        <slugify.version>2.4</slugify.version>
+        <tomcat-embed-core.version>9.0.33</tomcat-embed-core.version>
+        <commons-io.version>2.8.0</commons-io.version>
+        <spring-boot-starter-cache.version>2.4.3</spring-boot-starter-cache.version>
+        <redis.version>2.4.3</redis.version>
+        <jacoco.version>0.8.7</jacoco.version>
     </properties>
 
     <dependencies>
@@ -109,27 +116,43 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.133</version>
+            <version>${aws-java-sdk.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.slugify</groupId>
             <artifactId>slugify</artifactId>
-            <version>2.4</version>
+            <version>${slugify.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>9.0.33</version>
+            <version>${tomcat-embed-core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.8.0</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+            <version>${spring-boot-starter-cache.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>${redis.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -150,7 +173,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>

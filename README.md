@@ -38,6 +38,7 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 - Apache commons lang3.
 - JUnit 4 + Mockito.
 - JaCoCo (Code coverage report generator).
+- Redis for cache operations (though lettuce client).
 - Slugify.
 
 #### Additional considerations
