@@ -16,7 +16,7 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "users_groups", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
+@Table(name = "user_groups", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
 public class UserGroup extends BaseObject {
 
     @Id
