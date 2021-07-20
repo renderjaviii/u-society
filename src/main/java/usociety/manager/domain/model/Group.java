@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -17,18 +18,18 @@ import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.util.StringListConverter;
 
 @Entity
-@Table(name = "`group`")
+@Table(name = "`groups`")
 public class Group extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", length = 100, nullable = false, unique = true)
     private String name;
 
-    @Column(name = "slug", nullable = false, unique = true)
+    @Column(name = "slug", length = 100, nullable = false, unique = true)
     private String slug;
 
     @Column(name = "description")
@@ -46,7 +47,7 @@ public class Group extends BaseObject {
     private List<String> rules;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
     public Group() {
@@ -133,8 +134,14 @@ public class Group extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Group)) {
+            return false;
+        }
+        return Objects.equals(((Group) obj).id, id);
     }
 
     @Override
@@ -154,6 +161,7 @@ public class Group extends BaseObject {
         private String slug;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {

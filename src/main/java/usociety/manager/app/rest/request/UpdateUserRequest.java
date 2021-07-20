@@ -2,6 +2,9 @@ package usociety.manager.app.rest.request;
 
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,12 +16,14 @@ import usociety.manager.app.util.BaseObject;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateUserRequest extends BaseObject {
 
+    @NotEmpty
     @JsonProperty
     private String name;
 
     @JsonProperty
     private String photo;
 
+    @Size(min = 1)
     @JsonProperty
     private List<CategoryApi> categoryList;
 

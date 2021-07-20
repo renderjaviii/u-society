@@ -5,8 +5,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NUMB
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.lang.Boolean.FALSE;
 
-import java.io.IOException;
-
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,20 +18,24 @@ public class CustomObjectMapperImpl implements CustomObjectMapper {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomObjectMapperImpl() {
-        objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, FALSE);
         objectMapper.configure(FAIL_ON_NULL_FOR_PRIMITIVES, FALSE);
+        objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, FALSE);
         objectMapper.configure(FAIL_ON_NUMBERS_FOR_ENUMS, FALSE);
-        //objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
-    public <T> T readValue(String content, Class<T> valueType) throws IOException {
+    public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException {
         return objectMapper.readValue(content, valueType);
     }
 
     @Override
     public String writeValueAsString(Object value) throws JsonProcessingException {
         return objectMapper.writeValueAsString(value);
+    }
+
+    @Override
+    public <T> T convertValue(Object value, Class<T> valueType) {
+        return objectMapper.convertValue(value, valueType);
     }
 
 }

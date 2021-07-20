@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,22 +17,22 @@ import javax.persistence.Table;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "post")
+@Table(name = "posts")
 public class Post extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
+    @Column(name = "creation_date", nullable = false)
     private LocalDateTime creationDate;
 
-    @Column(name = "expiration_date", columnDefinition = "DATETIME")
+    @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
     @Column(name = "is_public")
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -40,8 +41,11 @@ public class Post extends BaseObject {
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Group group;
+
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private Long userId;
 
     public Post() {
         super();
@@ -55,6 +59,7 @@ public class Post extends BaseObject {
         content = builder.content;
         description = builder.description;
         group = builder.group;
+        userId = builder.userId;
     }
 
     public static Builder newBuilder() {
@@ -65,16 +70,32 @@ public class Post extends BaseObject {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDateTime getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
 
-    public boolean isPublic() {
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public Boolean isPublic() {
         return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 
     public String getContent() {
@@ -85,17 +106,39 @@ public class Post extends BaseObject {
         this.content = content;
     }
 
-    public Group getGroup() {
-        return group;
-    }
-
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Post)) {
+            return false;
+        }
+        return Objects.equals(((Post) obj).id, id);
     }
 
     @Override
@@ -108,10 +151,11 @@ public class Post extends BaseObject {
         private Long id;
         private LocalDateTime creationDate;
         private LocalDateTime expirationDate;
-        private boolean isPublic;
+        private Boolean isPublic;
         private String content;
-        private Group group;
         private String description;
+        private Group group;
+        private Long userId;
 
         private Builder() {
             super();
@@ -132,7 +176,7 @@ public class Post extends BaseObject {
             return this;
         }
 
-        public Builder isPublic(boolean isPublic) {
+        public Builder isPublic(Boolean isPublic) {
             this.isPublic = isPublic;
             return this;
         }
@@ -149,6 +193,11 @@ public class Post extends BaseObject {
 
         public Builder group(Group group) {
             this.group = group;
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
             return this;
         }
 

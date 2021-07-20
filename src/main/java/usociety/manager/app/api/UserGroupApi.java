@@ -12,9 +12,6 @@ import usociety.manager.domain.enums.UserGroupStatusEnum;
 public class UserGroupApi extends BaseObject {
 
     @JsonProperty
-    private UserApi user;
-
-    @JsonProperty
     private String role;
 
     @JsonProperty
@@ -27,7 +24,6 @@ public class UserGroupApi extends BaseObject {
     private UserGroupApi(Builder builder) {
         status = builder.status;
         role = builder.role;
-        user = builder.user;
     }
 
     public static Builder newBuilder() {
@@ -40,10 +36,6 @@ public class UserGroupApi extends BaseObject {
 
     public String getRole() {
         return role;
-    }
-
-    public UserApi getUser() {
-        return user;
     }
 
     @Override
@@ -60,7 +52,6 @@ public class UserGroupApi extends BaseObject {
 
         private UserGroupStatusEnum status;
         private String role;
-        private UserApi user;
 
         private Builder() {
             super();
@@ -73,11 +64,6 @@ public class UserGroupApi extends BaseObject {
 
         public Builder role(String role) {
             this.role = role;
-            return this;
-        }
-
-        public Builder user(UserApi user) {
-            this.user = user;
             return this;
         }
 

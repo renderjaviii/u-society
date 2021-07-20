@@ -10,12 +10,12 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = MessageCreationValidator.class)
+@Constraint(validatedBy = AlphanumericValidator.class)
 @Target( { ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MessageCreationConstraint {
+public @interface AlphanumericConstraint {
 
-    String message() default "Si el mensaje es de tipo texto, el message.content es requerido.";
+    String message() default "must be alphanumeric";
 
     Class<?>[] groups() default {};
 

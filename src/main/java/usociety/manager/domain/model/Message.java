@@ -3,6 +3,7 @@ package usociety.manager.domain.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,41 +17,41 @@ import javax.persistence.Table;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "message")
+@Table(name = "messages")
 public class Message extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "type", length = 10, nullable = false)
+    private String type;
 
     @Column(name = "content", nullable = false)
     private String content;
-
-    @Column(name = "type", nullable = false)
-    private int type;
 
     @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime creationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Group group;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    public Message() {
+    protected Message() {
         super();
     }
 
     private Message(Builder builder) {
-        id = builder.id;
-        content = builder.content;
+        setId(builder.id);
         type = builder.type;
-        creationDate = builder.creationDate;
-        group = builder.group;
-        userId = builder.userId;
+        setContent(builder.content);
+        setCreationDate(builder.creationDate);
+        setGroup(builder.group);
+        setUserId(builder.userId);
     }
 
     public static Builder newBuilder() {
@@ -61,29 +62,55 @@ public class Message extends BaseObject {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     public String getContent() {
         return content;
     }
 
-    public int getType() {
-        return type;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public Group getGroup() {
         return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public Long getUserId() {
         return userId;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Message)) {
+            return false;
+        }
+        return Objects.equals(((Message) obj).id, id);
     }
 
     @Override
@@ -94,8 +121,8 @@ public class Message extends BaseObject {
     public static final class Builder {
 
         private Long id;
+        private String type;
         private String content;
-        private int type;
         private LocalDateTime creationDate;
         private Group group;
         private Long userId;
@@ -109,13 +136,13 @@ public class Message extends BaseObject {
             return this;
         }
 
-        public Builder content(String content) {
-            this.content = content;
+        public Builder type(String type) {
+            this.type = type;
             return this;
         }
 
-        public Builder type(int type) {
-            this.type = type;
+        public Builder content(String content) {
+            this.content = content;
             return this;
         }
 

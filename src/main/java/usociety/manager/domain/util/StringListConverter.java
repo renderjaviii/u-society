@@ -10,6 +10,10 @@ import javax.persistence.Converter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+/**
+ * StringListConverter
+ * It allows to save lists in databases' columns, using no external libraries.
+ */
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 

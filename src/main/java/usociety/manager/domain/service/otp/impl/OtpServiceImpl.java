@@ -3,8 +3,11 @@ package usociety.manager.domain.service.otp.impl;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -18,35 +21,40 @@ import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Otp;
 import usociety.manager.domain.repository.OtpRepository;
-import usociety.manager.domain.service.common.impl.CommonServiceImpl;
 import usociety.manager.domain.service.otp.OtpService;
 
 @Service
-public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
+public class OtpServiceImpl implements OtpService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OtpServiceImpl.class);
 
     private static final String INVALID_OTP_MESSAGE = "INVALID_OTP";
-    private static final int OTP_LENGTH = 5;
+    private static final int ZERO = 0;
+
+    @Value("${config.otp-length:5}")
+    private int otpLength;
 
     @Value("${config.otp-expiry-time}")
     private int otpExpiryTime;
 
     private final OtpRepository otpRepository;
+    private final Clock clock;
 
     @Autowired
-    public OtpServiceImpl(OtpRepository otpRepository) {
+    public OtpServiceImpl(OtpRepository otpRepository, Clock clock) {
         this.otpRepository = otpRepository;
+        this.clock = clock;
     }
 
     @Override
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public OtpApi create(String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
-                .active(TRUE)
-                .createdAt(LocalDateTime.now(clock))
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))
+                .createdAt(LocalDateTime.now(clock))
                 .otpCode(generateOtpCode())
                 .emailOwner(email)
+                .active(TRUE)
                 .build());
 
         LOGGER.debug("Created OTP {} for email = {}.", otp.getOtpCode(), email);
@@ -56,8 +64,8 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
     private String generateOtpCode() {
         String otpCode;
         do {
-            otpCode = RandomStringUtils.random(OTP_LENGTH, FALSE, TRUE);
-        } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != 0);
+            otpCode = RandomStringUtils.random(otpLength, FALSE, TRUE);
+        } while (otpRepository.countByOtpCodeAndActive(otpCode, TRUE) != ZERO);
         return otpCode;
     }
 
@@ -67,18 +75,22 @@ public class OtpServiceImpl extends CommonServiceImpl implements OtpService {
         if (optionalOTP.isPresent()) {
             Otp otp = optionalOTP.get();
 
-            if (!otp.isActive()) {
-                throw new GenericException(getErrorMessage("Este OTP es obsoleto: %s.", otpCode), INVALID_OTP_MESSAGE);
-            }
-
-            if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
-                throw new GenericException(getErrorMessage("OTP expirado: %s.", otpCode), INVALID_OTP_MESSAGE);
-            }
+            validateOTP(otpCode, otp);
 
             otp.setActive(FALSE);
             otpRepository.save(otp);
         } else {
-            throw new GenericException(getErrorMessage("OTP inválido: %s.", otpCode), INVALID_OTP_MESSAGE);
+            throw new GenericException(getErrorMessage("OTP does not exist: %s.", otpCode), INVALID_OTP_MESSAGE);
+        }
+    }
+
+    private void validateOTP(String otpCode, Otp otp) throws GenericException {
+        if (!Boolean.TRUE.equals(otp.isActive())) {
+            throw new GenericException(getErrorMessage("Invalid OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
+        }
+
+        if (otp.getExpiresAt().isBefore(LocalDateTime.now(clock))) {
+            throw new GenericException(getErrorMessage("Expired OTP: %s.", otpCode), INVALID_OTP_MESSAGE);
         }
     }
 

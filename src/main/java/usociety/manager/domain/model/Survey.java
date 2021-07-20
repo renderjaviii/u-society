@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,19 +17,19 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "survey", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
+@Table(name = "surveys", uniqueConstraints = @UniqueConstraint(columnNames = { "post_id", "user_id" }))
 public class Survey extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "vote", nullable = false)
-    private int vote;
+    private Integer vote;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Post post;
 
     @Column(name = "user_id", nullable = false)
@@ -52,7 +54,7 @@ public class Survey extends BaseObject {
         return id;
     }
 
-    public int getVote() {
+    public Integer getVote() {
         return vote;
     }
 
@@ -69,8 +71,14 @@ public class Survey extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Survey)) {
+            return false;
+        }
+        return Objects.equals(((Survey) obj).id, id);
     }
 
     @Override
@@ -81,11 +89,12 @@ public class Survey extends BaseObject {
     public static final class Builder {
 
         private Long id;
-        private int vote;
+        private Integer vote;
         private Post post;
         private Long userId;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {
@@ -93,7 +102,7 @@ public class Survey extends BaseObject {
             return this;
         }
 
-        public Builder vote(int vote) {
+        public Builder vote(Integer vote) {
             this.vote = vote;
             return this;
         }

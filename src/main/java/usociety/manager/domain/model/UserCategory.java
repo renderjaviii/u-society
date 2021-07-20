@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,19 +16,19 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "user_category", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category_id" }))
+@Table(name = "user_categories", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category_id" }))
 public class UserCategory extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
     public UserCategory() {
@@ -56,8 +58,14 @@ public class UserCategory extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof UserCategory)) {
+            return false;
+        }
+        return Objects.equals(((UserCategory) obj).id, id);
     }
 
     @Override

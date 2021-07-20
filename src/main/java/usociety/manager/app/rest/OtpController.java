@@ -3,10 +3,12 @@ package usociety.manager.app.rest;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,27 +34,28 @@ public class OtpController {
         this.otpService = otpService;
     }
 
-    @ApiOperation(value = "Create user OTP.")
+    @ApiOperation(value = "Create OTP.")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "OTP created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OtpApi> create(@RequestParam(name = "email") final String email) {
         return new ResponseEntity<>(otpService.create(email), CREATED);
     }
 
-    @ApiOperation(value = "Validate user OTP.")
+    @ApiOperation(value = "Validate OTP.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OTP validated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/validate")
-    public ResponseEntity<Void> validate(@RequestParam(name = "username") final String username,
-                                         @RequestParam(name = "otpCode") final String otpCode)
-            throws GenericException {
+    @PatchMapping(path = "/validate")
+    public ResponseEntity<Void> validate(
+            @RequestParam(name = "username") final String username,
+            @RequestParam(name = "otpCode") final String otpCode
+    ) throws GenericException {
         otpService.validate(username, otpCode);
         return ResponseEntity.ok().build();
     }

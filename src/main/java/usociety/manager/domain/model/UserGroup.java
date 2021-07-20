@@ -2,6 +2,8 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,28 +16,28 @@ import javax.persistence.UniqueConstraint;
 import usociety.manager.app.util.BaseObject;
 
 @Entity
-@Table(name = "user_group", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
+@Table(name = "user_groups", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "group_id" }))
 public class UserGroup extends BaseObject {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "status", nullable = false)
-    private int status;
+    @Column(name = "status", length = 10, nullable = false)
+    private String status;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private String role;
 
     @Column(name = "is_admin")
-    private boolean isAdmin;
+    private Boolean isAdmin;
 
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
     public UserGroup() {
@@ -71,11 +73,11 @@ public class UserGroup extends BaseObject {
         return userId;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -88,8 +90,14 @@ public class UserGroup extends BaseObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof UserGroup)) {
+            return false;
+        }
+        return Objects.equals(((UserGroup) obj).id, id);
     }
 
     @Override
@@ -100,9 +108,9 @@ public class UserGroup extends BaseObject {
     public static final class Builder {
 
         private Long id;
-        private int status;
+        private String status;
         private String role;
-        private boolean isAdmin;
+        private Boolean isAdmin;
         private Group group;
         private Long userId;
 
@@ -115,7 +123,7 @@ public class UserGroup extends BaseObject {
             return this;
         }
 
-        public Builder status(int status) {
+        public Builder status(String status) {
             this.status = status;
             return this;
         }

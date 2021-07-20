@@ -2,12 +2,14 @@ package usociety.manager.app.api;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.MessageTypeEnum;
 
@@ -15,37 +17,41 @@ import usociety.manager.domain.enums.MessageTypeEnum;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageApi extends BaseObject {
 
+    @ApiModelProperty("Id")
     @JsonProperty
     private Long id;
 
-    @JsonProperty
-    private String content;
-
-    @JsonProperty
-    private String image;
-
     @NotNull
+    @ApiModelProperty("Type")
     @JsonProperty
     private MessageTypeEnum type;
 
+    @NotEmpty
+    @ApiModelProperty("Content")
+    @JsonProperty
+    private String content;
+
+    @ApiModelProperty("Creation date")
     @JsonProperty
     private LocalDateTime creationDate;
 
+    @ApiModelProperty("User")
     @JsonProperty
     private UserApi user;
 
     @NotNull
+    @ApiModelProperty("Group")
     @JsonProperty
     private GroupApi group;
 
-    public MessageApi() {
+    protected MessageApi() {
         super();
     }
 
     private MessageApi(Builder builder) {
         id = builder.id;
-        content = builder.content;
         type = builder.type;
+        content = builder.content;
         creationDate = builder.creationDate;
         user = builder.user;
         group = builder.group;
@@ -59,20 +65,12 @@ public class MessageApi extends BaseObject {
         return id;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public MessageTypeEnum getType() {
         return type;
     }
 
-    public void setType(MessageTypeEnum type) {
-        this.type = type;
+    public String getContent() {
+        return content;
     }
 
     public LocalDateTime getCreationDate() {
@@ -85,10 +83,6 @@ public class MessageApi extends BaseObject {
 
     public GroupApi getGroup() {
         return group;
-    }
-
-    public String getImage() {
-        return image;
     }
 
     @Override
@@ -104,22 +98,18 @@ public class MessageApi extends BaseObject {
     public static final class Builder {
 
         private Long id;
-        private String content;
         private MessageTypeEnum type;
+        private String content;
         private LocalDateTime creationDate;
-        private GroupApi group;
         private UserApi user;
+        private GroupApi group;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {
             this.id = id;
-            return this;
-        }
-
-        public Builder content(String content) {
-            this.content = content;
             return this;
         }
 
@@ -128,18 +118,23 @@ public class MessageApi extends BaseObject {
             return this;
         }
 
+        public Builder content(String content) {
+            this.content = content;
+            return this;
+        }
+
         public Builder creationDate(LocalDateTime creationDate) {
             this.creationDate = creationDate;
             return this;
         }
 
-        public Builder group(GroupApi group) {
-            this.group = group;
+        public Builder user(UserApi user) {
+            this.user = user;
             return this;
         }
 
-        public Builder user(UserApi user) {
-            this.user = user;
+        public Builder group(GroupApi group) {
+            this.group = group;
             return this;
         }
 

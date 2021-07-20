@@ -42,6 +42,8 @@ import usociety.manager.domain.service.web.AbstractConnector;
 @Component
 public class AbstractConnectorImpl implements AbstractConnector {
 
+    private static final String INVALID_URL = "The base URL is invalid.";
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private WebClient webClient;
@@ -50,33 +52,33 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public void setUp(String url, int timeOut) {
-        logger.info("Creating WebClient for host: {}", url);
+        logger.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
-            throw new UnsupportedOperationException("The base url is invalid.");
+            throw new UnsupportedOperationException(INVALID_URL);
         }
         init(url, timeOut, EMPTY);
     }
 
     @Override
     public void setUp(String url, int timeOut, String authUrl) {
-        logger.info("Creating WebClient for host: {}", url);
+        logger.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
-            throw new UnsupportedOperationException("The base url is invalid.");
+            throw new UnsupportedOperationException(INVALID_URL);
         }
         if (StringUtil.isNullOrEmpty(authUrl)) {
-            throw new UnsupportedOperationException("The auth url is invalid.");
+            throw new UnsupportedOperationException(INVALID_URL);
         }
         init(url, timeOut, authUrl);
     }
 
-    private void init(String url, int timeOut, String authUrl) {
+    private void init(String url, int readTimeOut, String authUrl) {
         baseUrl = url;
         authPath = authUrl;
-        buildWebClient(timeOut);
+        buildWebClient(readTimeOut);
     }
 
-    private void buildWebClient(int timeOut) {
-        HttpClient httpClient = buildHttpClient(timeOut);
+    private void buildWebClient(int readTimeOut) {
+        HttpClient httpClient = buildHttpClient(readTimeOut);
 
         webClient = WebClient.builder()
                 .baseUrl(baseUrl)
@@ -88,7 +90,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     }
 
-    private HttpClient buildHttpClient(int timeOut) {
+    private HttpClient buildHttpClient(int readTimeOut) {
         try {
             SslContext sslContext = SslContextBuilder.forClient()
                     .trustManager(InsecureTrustManagerFactory.INSTANCE)
@@ -97,7 +99,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
             return HttpClient.create()
                     .tcpConfiguration(client ->
                             client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                                    .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(timeOut))))
+                                    .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeOut))))
                     .secure(t -> t.sslContext(sslContext));
         } catch (SSLException e) {
             e.printStackTrace();
@@ -119,7 +121,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
     public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
         logger.info("Trying to get token: {}{}", baseUrl, authPath);
 
-        TokenDTO token = WebClient.builder()
+        return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(buildHttpClient(5000)))
                 .baseUrl(baseUrl)
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
@@ -134,14 +136,11 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .onStatus(HttpStatus::isError, buildTokenError())
                 .bodyToMono(TokenDTO.class)
                 .block();
-
-        logger.info("Access token obtained successfully.");
-        return token;
     }
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret) {
-        TokenDTO token = webClient.post().uri(uriBuilder()
+        return webClient.post().uri(uriBuilder()
                 .path(authPath)
                 .queryParam("grant_type", "client_credentials")
                 .build().toString())
@@ -150,9 +149,6 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .onStatus(HttpStatus::isError, buildTokenError())
                 .bodyToMono(TokenDTO.class)
                 .block();
-
-        logger.info("Access token obtained successfully: {}", token);
-        return token;
     }
 
     @Override
@@ -247,8 +243,5 @@ public class AbstractConnectorImpl implements AbstractConnector {
                 .flatMap(error -> Mono.error(new WebException(error.getErrorDescription(), LOGIN_ERROR)));
     }
 
-    /*webClient = webClient.mutate()
-                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token.getAccessToken()))
-                .build();*/
 }
 

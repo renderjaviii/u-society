@@ -1,16 +1,20 @@
-package usociety.manager.domain.service.aws.s3.impl;
+package usociety.manager.domain.service.aws.storage;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +28,39 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import usociety.manager.domain.exception.GenericException;
-import usociety.manager.domain.service.aws.s3.CloudStorageService;
+import usociety.manager.domain.service.common.CloudStorageService;
 
 @Service
-public class S3ServiceImpl implements CloudStorageService {
+public class S3CloudStorageServiceImpl implements CloudStorageService {
 
-    private static final String UPLOADING_FILE_ERROR_CODE = "FILE_UPLOADING_ERROR";
+    private static final Logger LOGGER = LoggerFactory.getLogger(S3CloudStorageServiceImpl.class);
+
+    private static final String UPLOADING_FILE_ERROR_CODE = "UPLOADING_FILE_FAILED";
     private static final String FILE_URL_FORMAT = "%s/%s";
 
     @Value("${config.aws.access-key}")
     private String accessKey;
+
     @Value("${config.aws.secret-key}")
     private String secretKey;
+
     @Value("${config.aws.session-token}")
     private String sessionToken;
+
     @Value("${config.aws.endpoint-url}")
     private String endpointUrl;
+
     @Value("${config.aws.bucket-name}")
     private String bucketName;
 
+    private final Clock clock;
+
     private AmazonS3 s3client;
+
+    @Autowired
+    public S3CloudStorageServiceImpl(Clock clock) {
+        this.clock = clock;
+    }
 
     @PostConstruct
     private void init() {
@@ -65,13 +82,14 @@ public class S3ServiceImpl implements CloudStorageService {
             try {
                 PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
                 s3client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (Exception e) {
+            } catch (Exception ex) {
                 s3client.deleteObject(bucketName, fileName);
-                throw new GenericException("Error deleting file.", UPLOADING_FILE_ERROR_CODE);
+                throw new GenericException("Error deleting file from S3", UPLOADING_FILE_ERROR_CODE, ex);
             } finally {
                 try {
                     Files.delete(file.toPath());
-                } catch (IOException ignore) {
+                } catch (IOException ex) {
+                    LOGGER.error("Error deleting local file", ex);
                 }
             }
             return fileUrl;
@@ -94,15 +112,15 @@ public class S3ServiceImpl implements CloudStorageService {
             byte[] decodedBytes = Base64.getDecoder().decode(base64Image.substring(contentStartIndex));
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
-        } catch (Exception e) {
-            throw new GenericException("Error reading base64 file.", UPLOADING_FILE_ERROR_CODE);
+        } catch (Exception ex) {
+            throw new GenericException("Error reading base64 file.", UPLOADING_FILE_ERROR_CODE, ex);
         }
 
         return file;
     }
 
     private String generateFileName() {
-        return String.format("%s-image", new Date().getTime());
+        return String.format("%s-image", LocalDateTime.now(clock));
     }
 
 }

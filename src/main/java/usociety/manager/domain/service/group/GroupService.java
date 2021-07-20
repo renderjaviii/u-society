@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserGroupApi;
 import usociety.manager.app.rest.request.CreateGroupRequest;
@@ -16,23 +14,24 @@ import usociety.manager.domain.model.Group;
 
 public interface GroupService {
 
-    GroupApi create(String username, CreateGroupRequest request) throws GenericException, MessagingException;
+    GroupApi create(String username, CreateGroupRequest request) throws GenericException;
 
-    GetGroupResponse get(Long id, String username) throws GenericException;
+    void update(String username, UpdateGroupRequest request) throws GenericException;
+
+    void join(String username, Long id) throws GenericException, MessagingException;
+
+    void updateMembership(String username, Long id, UserGroupApi request) throws GenericException;
 
     Group get(Long id) throws GenericException;
 
-    List<GroupApi> getAllUserGroups(String username) throws GenericException;
+    GetGroupResponse get(String username, Long id) throws GenericException;
 
-    void updateMembership(Long id, UserGroupApi request) throws GenericException;
-
-    GetGroupResponse update(UpdateGroupRequest request, String username)
-            throws GenericException, JsonProcessingException;
+    GetGroupResponse getBySlug(String username, String slug) throws GenericException;
 
     List<GroupApi> getByFilters(String name, Long categoryId) throws GenericException;
 
-    void join(Long id, String username) throws GenericException, MessagingException;
+    List<GroupApi> getAllUserGroups(String username) throws GenericException;
 
-    GetGroupResponse getBySlug(String slug, String user) throws GenericException;
+    void validateIfUserIsMember(String username, Long groupId, String errorCode) throws GenericException;
 
 }

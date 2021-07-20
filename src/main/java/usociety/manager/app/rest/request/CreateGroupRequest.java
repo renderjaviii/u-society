@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,12 +13,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
+import usociety.manager.app.util.validator.AlphanumericConstraint;
 
 @ApiModel(value = "Create group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateGroupRequest extends BaseObject {
 
     @NotEmpty
+    @Size(max = 100)
+    @AlphanumericConstraint
     @JsonProperty
     private String name;
 
@@ -97,6 +101,7 @@ public class CreateGroupRequest extends BaseObject {
         private CategoryApi category;
 
         private Builder() {
+            super();
         }
 
         public Builder name(String name) {

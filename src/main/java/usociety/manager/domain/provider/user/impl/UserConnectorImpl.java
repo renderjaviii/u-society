@@ -27,7 +27,7 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
     private String baseUrl;
     @Value("${web.authentication.users-path}")
     private String path;
-    @Value("${web.time-out:5}")
+    @Value("${web.read-time-out:5}")
     private int timeOut;
 
     @PostConstruct

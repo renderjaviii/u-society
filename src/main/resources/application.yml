@@ -4,14 +4,14 @@ server:
   port: ${SERVER_PORT}
   ssl:
     key-store: classpath:keystore/keystore.p12
-    key-store-password: password
+    key-store-password: ${KEYSTORE_PASSWORD:password}
     keyStoreType: PKCS12
-    keyAlias: renderjaviii
+    keyAlias: ${KEYSTORE_ALIAS}
     enabled: true
 
 trust:
   store: classpath:keystore/keystore.p12
-  store.password: password
+  store.password: ${KEYSTORE_PASSWORD:password}
 
 spring:
   profiles:
@@ -19,6 +19,19 @@ spring:
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  cache:
+    type: ${SERVER_CACHE_TYPE:'none'}
+    redis:
+      time-to-live: ${SERVER_CACHE_TTL_MS:1800000}
+  redis:
+    lettuce:
+      pool:
+        max-active: 7
+        max-idle: 7
+        min-idle: 2
+        max-wait: 5000ms
+      shutdown-timeout: 20000ms
+    timeout: 10000ms
 
 security:
   oauth2:
@@ -50,14 +63,22 @@ spring:
     password: ${PROJECT_DATABASE_PASSWORD}
     platform: mysql
     initialization-mode: never
+    hikari:
+      maximum-pool-size: ${PROJECT_MAX_DB_POOL_SIZE}
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: ${PROJECT_DATABASE_SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
+  redis:
+    host: ${SERVER_REDIS_HOST}
+    port: ${SERVER_REDIS_PORT}
+    password:
+    ssl: ${SERVER_REDIS_SSL}
+
 config:
   timezone: ${SERVER_TIME_ZONE}
 

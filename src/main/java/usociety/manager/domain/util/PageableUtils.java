@@ -4,6 +4,10 @@ import org.springframework.data.domain.PageRequest;
 
 public class PageableUtils {
 
+    private PageableUtils() {
+        super();
+    }
+
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private static final Integer DEFAULT_PAGE = 0;
 

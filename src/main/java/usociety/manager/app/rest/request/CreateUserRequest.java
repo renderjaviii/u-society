@@ -2,6 +2,7 @@ package usociety.manager.app.rest.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,31 +17,32 @@ public class CreateUserRequest extends BaseObject {
 
     @NotBlank
     @ApiModelProperty(notes = "Name", required = true)
-    @JsonProperty(value = "name")
+    @JsonProperty
     private String name;
 
-    @ApiModelProperty(notes = "Username", required = true)
     @NotBlank
-    @JsonProperty(value = "username")
+    @Pattern(regexp = "^[a-zA-Z\\d_]+")
+    @ApiModelProperty(notes = "Username", required = true)
+    @JsonProperty
     private String username;
 
-    @ApiModelProperty(notes = "Email", required = true)
-    @Email
     @NotBlank
-    @JsonProperty(value = "email")
+    @Email
+    @ApiModelProperty(notes = "Email", required = true)
+    @JsonProperty
     private String email;
 
     @ApiModelProperty(notes = "Photo")
-    @JsonProperty(value = "photo")
+    @JsonProperty
     private String photo;
 
-    @ApiModelProperty(notes = "Password", required = true)
     @NotBlank
-    @JsonProperty(value = "password")
+    @ApiModelProperty(notes = "Password", required = true)
+    @JsonProperty
     private String password;
 
-    @ApiModelProperty(notes = "Otp code", required = true)
-    @JsonProperty(value = "otpCode")
+    @ApiModelProperty(notes = "OTP code", required = true)
+    @JsonProperty
     private String otpCode;
 
     public CreateUserRequest() {
