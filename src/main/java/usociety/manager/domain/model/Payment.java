@@ -36,13 +36,13 @@ public abstract class Payment extends BaseObject {
     @Column(name = "amount", precision = 19, scale = 2, nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "documentNumber", nullable = false, length = 11)
+    @Column(name = "document_number", nullable = false, length = 11)
     private String documentNumber;
 
-    @Column(name = "documentType", nullable = false, length = 10)
+    @Column(name = "document_type", nullable = false, length = 10)
     private String documentType;
 
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "business_date", columnDefinition = "DATE")

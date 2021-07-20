@@ -17,8 +17,8 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     Optional<UserGroup> findByGroupIdAndIsAdmin(Long groupId, boolean isAdmin);
 
-    List<UserGroup> findAllByUserIdAndStatusIn(Long userId, List<Integer> validStatuses);
+    List<UserGroup> findAllByUserIdAndStatusIn(Long userId, List<String> validStatuses);
 
-    Optional<UserGroup> findByGroupIdAndUserIdAndStatus(Long groupId, Long userId, int status);
+    Optional<UserGroup> findByGroupIdAndUserIdAndStatus(Long groupId, Long userId, String status);
 
 }

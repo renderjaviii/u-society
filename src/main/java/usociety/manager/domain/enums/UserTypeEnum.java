@@ -2,23 +2,17 @@ package usociety.manager.domain.enums;
 
 public enum UserTypeEnum {
 
-    ADMIN("admin", 1),
-    STANDARD("standard", 0);
+    ADMIN("ADMIN"),
+    STANDARD("STANDARD");
 
     private String value;
-    private int code;
 
-    UserTypeEnum(String value, int code) {
+    UserTypeEnum(String value) {
         this.value = value;
-        this.code = code;
     }
 
     public String getValue() {
         return value;
-    }
-
-    public int getCode() {
-        return code;
     }
 
 }

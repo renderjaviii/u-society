@@ -25,8 +25,8 @@ public class Message extends BaseObject {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "type", length = 1, nullable = false)
-    private Integer type;
+    @Column(name = "type", length = 10, nullable = false)
+    private String type;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -35,7 +35,7 @@ public class Message extends BaseObject {
     private LocalDateTime creationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Group group;
 
     @Column(name = "user_id", nullable = false)
@@ -66,7 +66,7 @@ public class Message extends BaseObject {
         this.id = id;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
@@ -121,7 +121,7 @@ public class Message extends BaseObject {
     public static final class Builder {
 
         private Long id;
-        private Integer type;
+        private String type;
         private String content;
         private LocalDateTime creationDate;
         private Group group;
@@ -136,7 +136,7 @@ public class Message extends BaseObject {
             return this;
         }
 
-        public Builder type(Integer type) {
+        public Builder type(String type) {
             this.type = type;
             return this;
         }

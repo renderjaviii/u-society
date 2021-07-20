@@ -26,14 +26,14 @@ public class React extends BaseObject {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Post post;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "value", nullable = false)
-    private int value;
+    @Column(name = "value", length = 10, nullable = false)
+    private String value;
 
     public React() {
         super();
@@ -62,11 +62,11 @@ public class React extends BaseObject {
         return userId;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -86,7 +86,7 @@ public class React extends BaseObject {
         private Long id;
         private Post post;
         private Long userId;
-        private int value;
+        private String value;
 
         private Builder() {
             super();
@@ -107,7 +107,7 @@ public class React extends BaseObject {
             return this;
         }
 
-        public Builder value(int value) {
+        public Builder value(String value) {
             this.value = value;
             return this;
         }

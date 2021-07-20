@@ -47,7 +47,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
 
         messageRepository.save(Message.newBuilder()
                 .creationDate(LocalDateTime.now(clock))
-                .type(message.getType().getCode())
+                .type(message.getType().getValue())
                 .userId(user.getId())
                 .content(content)
                 .group(group)
@@ -75,10 +75,10 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
 
     private MessageApi buildGroupMessage(Message message) throws GenericException {
         return MessageApi.newBuilder()
+                .type(MessageTypeEnum.valueOf(message.getType()))
                 .user(userService.getById(message.getUserId()))
                 .creationDate(message.getCreationDate())
                 .content(message.getContent())
-                .type(MessageTypeEnum.fromCode(message.getType()))
                 .build();
     }
 

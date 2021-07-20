@@ -28,7 +28,7 @@ public class UserCategory extends BaseObject {
     private Long userId;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
     public UserCategory() {

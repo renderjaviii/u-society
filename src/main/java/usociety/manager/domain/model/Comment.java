@@ -26,7 +26,7 @@ public class Comment extends BaseObject {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Post post;
 
     @Column(name = "user_id", nullable = false, updatable = false)

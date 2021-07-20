@@ -13,10 +13,10 @@ import javax.persistence.Entity;
 @DiscriminatorValue("pse")
 public class PSEPayment extends Payment {
 
-    @Column(name = "pseEmail")
+    @Column(name = "pse_mail")
     private String pseEmail;
 
-    @Column(name = "pseBankCode", columnDefinition = "TINYINT")
+    @Column(name = "pse_bank_code", columnDefinition = "TINYINT")
     private Integer pseBankCode;
 
     public PSEPayment() {

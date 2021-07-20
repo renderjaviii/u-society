@@ -79,7 +79,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
     @Override
     public List<GroupApi> allUserGroups(UserApi user) {
         return userGroupRepository
-                .findAllByUserIdAndStatusIn(user.getId(), Arrays.asList(ACTIVE.getCode(), PENDING.getCode()))
+                .findAllByUserIdAndStatusIn(user.getId(), Arrays.asList(ACTIVE.getValue(), PENDING.getValue()))
                 .stream()
                 .map(userGroup -> buildBasicGroupResponse(userGroup.getGroup()))
                 .collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
                                        String errorCode)
             throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getCode());
+                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getValue());
         if (StringUtils.isNotEmpty(errorCode) && !optionalUserGroup.isPresent()) {
             throw new GenericException("User is not an active member", errorCode);
         }
@@ -105,7 +105,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
         if (optionalUserGroup.isPresent()) {
             UserGroup userGroup = optionalUserGroup.get();
 
-            UserGroupStatusEnum userGroupStatus = UserGroupStatusEnum.fromCode(userGroup.getStatus());
+            UserGroupStatusEnum userGroupStatus = UserGroupStatusEnum.valueOf(userGroup.getStatus());
             if (ACTIVE == userGroupStatus) {
                 List<UserGroup> groupMembers = userGroupRepository
                         .findAllByGroupIdAndUserIdNot(group.getId(), user.getId());
@@ -134,7 +134,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
             throws GenericException {
         List<UserGroup> membersGroup = userList
                 .stream()
-                .filter(userGroup -> userGroupStatus.getCode() == userGroup.getStatus())
+                .filter(userGroup -> userGroupStatus.getValue() == userGroup.getStatus())
                 .collect(Collectors.toList());
 
         List<UserApi> usersDataList = new ArrayList<>();

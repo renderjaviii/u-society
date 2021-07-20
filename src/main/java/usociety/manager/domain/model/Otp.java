@@ -22,13 +22,13 @@ public class Otp extends BaseObject {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "otp_code", nullable = false, updatable = false)
+    @Column(name = "otp_code", nullable = false)
     private String otpCode;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "expires_at", nullable = false, updatable = false)
+    @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
     @Column(name = "active", nullable = false)

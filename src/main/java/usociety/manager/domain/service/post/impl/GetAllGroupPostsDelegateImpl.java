@@ -65,7 +65,7 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     @Override
     public List<PostApi> execute(UserApi user, Long groupId, int page) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
-                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getCode());
+                .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getValue());
 
         boolean isMember = optionalUserGroup.isPresent();
         List<Post> posts = getGroupPosts(groupId, isMember, page);
@@ -118,7 +118,7 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     private void processPostReacts(PostApi postApi, List<React> reacts, UserApi user) {
         EnumMap<ReactTypeEnum, Integer> reactTypeMap = new EnumMap<>(ReactTypeEnum.class);
         for (React react : reacts) {
-            ReactTypeEnum reactType = ReactTypeEnum.fromCode(react.getValue());
+            final ReactTypeEnum reactType = ReactTypeEnum.valueOf(react.getValue());
 
             if (Objects.isNull(postApi.getSelectedReaction()) && react.getUserId().equals(user.getId())) {
                 postApi.setSelectedReaction(reactType);

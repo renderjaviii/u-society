@@ -17,32 +17,32 @@ public class CreateUserRequest extends BaseObject {
 
     @NotBlank
     @ApiModelProperty(notes = "Name", required = true)
-    @JsonProperty(value = "name")
+    @JsonProperty
     private String name;
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z\\d_]+")
     @ApiModelProperty(notes = "Username", required = true)
-    @JsonProperty(value = "username")
+    @JsonProperty
     private String username;
 
     @NotBlank
     @Email
     @ApiModelProperty(notes = "Email", required = true)
-    @JsonProperty(value = "email")
+    @JsonProperty
     private String email;
 
     @ApiModelProperty(notes = "Photo")
-    @JsonProperty(value = "photo")
+    @JsonProperty
     private String photo;
 
     @NotBlank
     @ApiModelProperty(notes = "Password", required = true)
-    @JsonProperty(value = "password")
+    @JsonProperty
     private String password;
 
-    @ApiModelProperty(notes = "Otp code", required = true)
-    @JsonProperty(value = "otpCode")
+    @ApiModelProperty(notes = "OTP code", required = true)
+    @JsonProperty
     private String otpCode;
 
     public CreateUserRequest() {

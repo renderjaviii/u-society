@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,6 +20,7 @@ import usociety.manager.app.util.validator.AlphanumericConstraint;
 public class CreateGroupRequest extends BaseObject {
 
     @NotEmpty
+    @Size(max = 100)
     @AlphanumericConstraint
     @JsonProperty
     private String name;

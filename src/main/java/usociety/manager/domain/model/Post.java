@@ -25,14 +25,14 @@ public class Post extends BaseObject {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "creation_date", nullable = false, columnDefinition = "DATETIME")
+    @Column(name = "creation_date", nullable = false)
     private LocalDateTime creationDate;
 
-    @Column(name = "expiration_date", columnDefinition = "DATETIME")
+    @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
     @Column(name = "is_public")
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -41,10 +41,10 @@ public class Post extends BaseObject {
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id", updatable = false)
+    @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Group group;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
     public Post() {
@@ -90,7 +90,7 @@ public class Post extends BaseObject {
         this.expirationDate = expirationDate;
     }
 
-    public boolean isPublic() {
+    public Boolean isPublic() {
         return isPublic;
     }
 
@@ -151,7 +151,7 @@ public class Post extends BaseObject {
         private Long id;
         private LocalDateTime creationDate;
         private LocalDateTime expirationDate;
-        private boolean isPublic;
+        private Boolean isPublic;
         private String content;
         private String description;
         private Group group;
@@ -176,7 +176,7 @@ public class Post extends BaseObject {
             return this;
         }
 
-        public Builder isPublic(boolean isPublic) {
+        public Builder isPublic(Boolean isPublic) {
             this.isPublic = isPublic;
             return this;
         }

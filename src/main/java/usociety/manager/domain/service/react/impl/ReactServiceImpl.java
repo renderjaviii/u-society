@@ -41,11 +41,11 @@ public class ReactServiceImpl extends AbstractServiceImpl implements ReactServic
         Optional<React> optionalReact = reactRepository.findAllByPostIdAndUserId(post.getId(), user.getId());
         if (optionalReact.isPresent()) {
             React savedReact = optionalReact.get();
-            savedReact.setValue(value.getCode());
+            savedReact.setValue(value.getValue());
             reactRepository.save(savedReact);
         } else {
             reactRepository.save(React.newBuilder()
-                    .value(value.getCode())
+                    .value(value.getValue())
                     .userId(user.getId())
                     .post(post)
                     .build());

@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -65,7 +66,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
-            @PathVariable("groupId") Long groupId,
+            @NotEmpty @PathVariable("groupId") Long groupId,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) throws GenericException {
         return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page));
@@ -79,7 +80,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/react", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(
-            @PathVariable("id") Long id,
+            @NotEmpty @PathVariable("id") Long id,
             @NotNull @RequestParam("value") ReactTypeEnum value
     ) throws GenericException {
         postService.react(getUser(), id, value);
@@ -94,7 +95,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> comment(
-            @PathVariable("id") Long id,
+            @NotEmpty @PathVariable("id") Long id,
             @RequestBody CommentPostRequest request
     ) throws GenericException {
         postService.comment(getUser(), id, request);
@@ -109,8 +110,8 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
-            @PathVariable("id") Long id,
-            @PositiveOrZero @RequestParam("vote") Integer vote
+            @NotEmpty @PathVariable("id") Long id,
+            @NotNull @PositiveOrZero @RequestParam("vote") Integer vote
     )
             throws GenericException {
         postService.vote(getUser(), id, vote);

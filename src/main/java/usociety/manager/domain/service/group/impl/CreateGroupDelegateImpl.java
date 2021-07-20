@@ -111,8 +111,8 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
     private void associateUserGroup(UserApi userApi, Group savedGroup) {
         userGroupRepository.save(UserGroup.newBuilder()
+                .status(ACTIVE.getValue())
                 .userId(userApi.getId())
-                .status(ACTIVE.getCode())
                 .role(ADMIN.getValue())
                 .group(savedGroup)
                 .isAdmin(TRUE)

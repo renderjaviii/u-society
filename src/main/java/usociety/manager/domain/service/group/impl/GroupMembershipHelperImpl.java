@@ -77,7 +77,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
                 userGroupRepository.delete(userGroup);
             } else {
                 userGroup.setRole(request.getRole());
-                userGroup.setStatus(status.getCode());
+                userGroup.setStatus(status.getValue());
                 userGroupRepository.save(userGroup);
             }
         }
@@ -95,7 +95,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
         }
 
         userGroupRepository.save(UserGroup.newBuilder()
-                .status(PENDING.getCode())
+                .status(PENDING.getValue())
                 .userId(user.getId())
                 .isAdmin(FALSE)
                 .group(group)

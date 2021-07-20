@@ -13,16 +13,16 @@ import javax.persistence.Entity;
 @DiscriminatorValue("card")
 public class CardPayment extends Payment {
 
-    @Column(name = "cardType", length = 10)
+    @Column(name = "card_type", length = 10)
     private String cardType;
 
-    @Column(name = "cardNumber", columnDefinition = "CHAR(16)")
+    @Column(name = "card_number", columnDefinition = "CHAR(16)")
     private String cardNumber;
 
     @Column(name = "cvv", columnDefinition = "CHAR(4)")
     private String cvv;
 
-    @Column(name = "nameOnTheCard")
+    @Column(name = "name_on_the_card")
     private String nameOnTheCard;
 
     @Column(name = "quotes", columnDefinition = "TINYINT")

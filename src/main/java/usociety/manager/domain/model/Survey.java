@@ -26,10 +26,10 @@ public class Survey extends BaseObject {
     private Long id;
 
     @Column(name = "vote", nullable = false)
-    private int vote;
+    private Integer vote;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false, updatable = false)
     private Post post;
 
     @Column(name = "user_id", nullable = false)
@@ -54,7 +54,7 @@ public class Survey extends BaseObject {
         return id;
     }
 
-    public int getVote() {
+    public Integer getVote() {
         return vote;
     }
 
@@ -89,11 +89,12 @@ public class Survey extends BaseObject {
     public static final class Builder {
 
         private Long id;
-        private int vote;
+        private Integer vote;
         private Post post;
         private Long userId;
 
         private Builder() {
+            super();
         }
 
         public Builder id(Long id) {
@@ -101,7 +102,7 @@ public class Survey extends BaseObject {
             return this;
         }
 
-        public Builder vote(int vote) {
+        public Builder vote(Integer vote) {
             this.vote = vote;
             return this;
         }
