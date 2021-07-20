@@ -39,6 +39,7 @@ public abstract class Payment extends BaseObject {
     @Column(name = "document_number", nullable = false, length = 11)
     private String documentNumber;
 
+    //@Enumerated(EnumType.STRING)
     @Column(name = "document_type", nullable = false, length = 10)
     private String documentType;
 
