@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.ExtraValidation;
+import usociety.manager.app.util.validator.AlphanumericConstraint;
 import usociety.manager.app.util.validator.PaymentCreationConstraint;
 import usociety.manager.domain.enums.CardTypeEnum;
 import usociety.manager.domain.enums.DocumentTypeEnum;
@@ -126,7 +127,7 @@ public abstract class PaymentApi extends BaseObject {
         private String cvv;
 
         @NotEmpty
-        @Pattern(regexp = "[\\w\\d]+")
+        @AlphanumericConstraint
         @ApiModelProperty(notes = "Name on the card")
         @JsonProperty
         private String nameOnTheCard;

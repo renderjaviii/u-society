@@ -12,12 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
+import usociety.manager.app.util.validator.AlphanumericConstraint;
 
 @ApiModel(value = "Create group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateGroupRequest extends BaseObject {
 
     @NotEmpty
+    @AlphanumericConstraint
     @JsonProperty
     private String name;
 
@@ -97,6 +99,7 @@ public class CreateGroupRequest extends BaseObject {
         private CategoryApi category;
 
         private Builder() {
+            super();
         }
 
         public Builder name(String name) {

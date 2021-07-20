@@ -21,7 +21,7 @@ public class CreateUserRequest extends BaseObject {
     private String name;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z\\d-_]+")
+    @Pattern(regexp = "^[a-zA-Z\\d_]+")
     @ApiModelProperty(notes = "Username", required = true)
     @JsonProperty(value = "username")
     private String username;
