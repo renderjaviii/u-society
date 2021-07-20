@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import usociety.manager.app.api.PaymentApi;
 import usociety.manager.app.api.PaymentApi.CardPaymentApi;
 import usociety.manager.app.api.PaymentApi.PSEPaymentApi;
+import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.CardPayment;
 import usociety.manager.domain.model.PSEPayment;
 import usociety.manager.domain.repository.PaymentRepository;
@@ -27,7 +28,7 @@ public class PaymentServiceImpl extends AbstractServiceImpl implements PaymentSe
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void create(String username, PaymentApi payment) {
         if (payment instanceof CardPaymentApi) {
             saveCardPayment(payment);

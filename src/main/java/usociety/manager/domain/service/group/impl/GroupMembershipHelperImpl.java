@@ -61,7 +61,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void update(UserApi user, Long id, UserGroupApi request) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
         if (!optionalUserGroup.isPresent()) {
@@ -85,7 +85,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void join(UserApi user, Long id) throws GenericException {
         Group group = getGroup(id);
 

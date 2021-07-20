@@ -33,7 +33,7 @@ public class ReactServiceImpl extends AbstractServiceImpl implements ReactServic
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void create(String username, Post post, ReactTypeEnum value) throws GenericException {
         UserApi user = getUser(username);
         validatePostType(post);

@@ -37,7 +37,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void sendGroupMessage(String username, MessageApi message) throws GenericException {
         UserApi user = getUser(username);
         Group group = getGroup(message.getGroup().getId());

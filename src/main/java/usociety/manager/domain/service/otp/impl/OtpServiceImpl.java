@@ -47,7 +47,7 @@ public class OtpServiceImpl implements OtpService {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public OtpApi create(String email) {
         Otp otp = otpRepository.save(Otp.newBuilder()
                 .expiresAt(LocalDateTime.now(clock).plusDays(otpExpiryTime))

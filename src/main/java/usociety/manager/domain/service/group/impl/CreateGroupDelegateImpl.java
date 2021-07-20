@@ -61,7 +61,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public GroupApi execute(UserApi user, CreateGroupRequest request)
             throws GenericException {
         validateExistingGroup(request);

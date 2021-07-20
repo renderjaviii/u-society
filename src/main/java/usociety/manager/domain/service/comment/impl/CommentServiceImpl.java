@@ -33,7 +33,7 @@ public class CommentServiceImpl extends AbstractServiceImpl implements CommentSe
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void create(String username, Post post, CommentPostRequest request) throws GenericException {
         UserApi user = getUser(username);
         validateIfUserIsMember(username, post.getGroup().getId(), COMMENTING_POST_ERROR_CODE);

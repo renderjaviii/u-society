@@ -54,7 +54,7 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void execute(UserApi user, UpdateGroupRequest request) throws GenericException {
         Group group = getGroup(request.getId());
 
