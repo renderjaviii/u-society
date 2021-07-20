@@ -84,11 +84,10 @@ public class UserServiceImplTest {
         when(userConnector.get(any(), any(), any())).thenReturn(user);
         when(userConnector.get(any())).thenReturn(user);
 
-        // when(cloudStorageService.upload(any())).thenReturn("urlImage");
+        when(cloudStorageService.upload(any())).thenReturn("urlImage");
         when((userConnector.create(any()))).thenReturn(user);
     }
 
-    @Ignore
     @Test
     public void shouldCreateUserCorrectly() throws GenericException {
         when(userConnector.get(any(), any(), any())).thenReturn(null);

@@ -14,6 +14,7 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 4. Run docker container: `docker-compose up --build -d`
 5. Show container logs: `docker-compose logs -f`
 6. Stop container: `docker-compose down -v`
+7. Run and check tests coverage: `jacoco:report`
 
 #### Notes
 - Base API path: `https://localhost:8443/manager`
@@ -36,6 +37,7 @@ This RESTful microservice has the function of the Resource server, so, if it’s
 - Jackson databind.
 - Apache commons lang3.
 - JUnit 4 + Mockito.
+- JaCoCo (Code coverage report generator).
 - Slugify.
 
 #### Additional considerations
