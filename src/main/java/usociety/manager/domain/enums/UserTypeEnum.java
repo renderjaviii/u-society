@@ -3,7 +3,7 @@ package usociety.manager.domain.enums;
 public enum UserTypeEnum {
 
     ADMIN("ADMIN"),
-    STANDARD("STANDARD");
+    STANDARD("BASIC");
 
     private String value;
 
