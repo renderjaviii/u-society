@@ -70,10 +70,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verify(String email, boolean resendCode) throws GenericException {
-        if (!resendCode) {
-            validateUser(null, email);
-        }
+    public void verify(String email) throws GenericException {
+        validateUser(null, email);
         OtpApi userOtp = otpService.create(email);
         mailService.sendOtp(email, userOtp.getOtpCode());
     }

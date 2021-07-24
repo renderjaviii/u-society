@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -52,10 +51,13 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestBody CreatePostRequest request)
+    @PostMapping(path = "/{groupId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PostApi> sendGroupMessage(
+            @NotNull @PathVariable(value = "groupId") Long groupId,
+            @Valid @RequestBody CreatePostRequest request
+    )
             throws GenericException {
-        return new ResponseEntity<>(postService.create(getUser(), request), CREATED);
+        return new ResponseEntity<>(postService.create(getUser(), groupId, request), CREATED);
     }
 
     @ApiOperation(value = "Get all posts by group.")
@@ -66,10 +68,11 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
-            @NotEmpty @PathVariable("groupId") Long groupId,
-            @RequestParam(value = "page", defaultValue = "0") int page
+            @NotNull @PathVariable("groupId") Long groupId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
     ) throws GenericException {
-        return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page));
+        return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page, pageSize));
     }
 
     @ApiOperation(value = "React into a post.")
@@ -80,7 +83,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/react", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(
-            @NotEmpty @PathVariable("id") Long id,
+            @NotNull @PathVariable("id") Long id,
             @NotNull @RequestParam("value") ReactTypeEnum value
     ) throws GenericException {
         postService.react(getUser(), id, value);
@@ -95,7 +98,7 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> comment(
-            @NotEmpty @PathVariable("id") Long id,
+            @NotNull @PathVariable("id") Long id,
             @RequestBody CommentPostRequest request
     ) throws GenericException {
         postService.comment(getUser(), id, request);
@@ -110,11 +113,11 @@ public class PostController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
-            @NotEmpty @PathVariable("id") Long id,
-            @NotNull @PositiveOrZero @RequestParam("vote") Integer vote
+            @NotNull @PathVariable("id") Long id,
+            @NotNull @PositiveOrZero @RequestParam("vote") Integer option
     )
             throws GenericException {
-        postService.vote(getUser(), id, vote);
+        postService.vote(getUser(), id, option);
         return ResponseEntity.ok().build();
     }
 

@@ -37,6 +37,7 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
 
     private static final String UPLOADING_FILE_ERROR_CODE = "UPLOADING_FILE_FAILED";
     private static final String FILE_URL_FORMAT = "%s/%s";
+    public static final String ENCODING_PREFIX = "base64,";
 
     @Value("${config.aws.access-key:accessKey}")
     private String accessKey;
@@ -107,9 +108,9 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
     private File convertBase64ToFile(String base64Image, String fileName) throws GenericException {
         File file;
         try {
-            String encodingPrefix = "base64,";
-            int contentStartIndex = base64Image.indexOf(encodingPrefix) + encodingPrefix.length();
+            int contentStartIndex = base64Image.indexOf(ENCODING_PREFIX) + ENCODING_PREFIX.length();
             byte[] decodedBytes = Base64.getDecoder().decode(base64Image.substring(contentStartIndex));
+
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception ex) {

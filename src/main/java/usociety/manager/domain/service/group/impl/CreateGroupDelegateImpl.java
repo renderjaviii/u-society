@@ -4,7 +4,6 @@ import static com.amazonaws.util.StringUtils.COMMA_SEPARATOR;
 import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
-import static usociety.manager.domain.enums.UserTypeEnum.ADMIN;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +13,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.github.slugify.Slugify;
 
@@ -37,6 +37,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
     private static final String GROUP_NAME_ERROR_FORMAT = "Group with name: %s already exists";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";
+    private static final String ADMINISTRATOR_ROLE = "Administrator";
 
     private final SendAsyncEmailDelegate sendAsyncEmailDelegate;
     private final UserGroupRepository userGroupRepository;
@@ -72,7 +73,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
         Group savedGroup;
         try {
             savedGroup = saveGroup(request, category, photoUrl);
-            associateUserGroup(user, savedGroup);
+            associateUserToGroup(user, savedGroup);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("Unexpected error creating group", CREATING_GROUP_ERROR_CODE);
@@ -92,9 +93,9 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
     private Group saveGroup(CreateGroupRequest request, Category category, String photoUrl) {
         return groupRepository.save(Group.newBuilder()
-                .objectives(removeCommas(request.getObjectives()))
+                .objectives(removeCommasAndCapitalize(request.getObjectives()))
                 .slug(slugify.slugify(request.getName()))
-                .rules(removeCommas(request.getRules()))
+                .rules(removeCommasAndCapitalize(request.getRules()))
                 .description(request.getDescription())
                 .name(request.getName())
                 .category(category)
@@ -102,18 +103,20 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
                 .build());
     }
 
-    //This is made due to database field format
-    private List<String> removeCommas(List<String> values) {
+    //This is made due to database's column format
+    private List<String> removeCommasAndCapitalize(List<String> values) {
         return values.stream()
                 .map(value -> value.replace(COMMA_SEPARATOR, EMPTY))
+                .map(StringUtils::capitalize)
+                .filter(value -> !StringUtils.isEmpty(value))
                 .collect(Collectors.toList());
     }
 
-    private void associateUserGroup(UserApi userApi, Group savedGroup) {
+    private void associateUserToGroup(UserApi userApi, Group savedGroup) {
         userGroupRepository.save(UserGroup.newBuilder()
                 .status(ACTIVE.getValue())
+                .role(ADMINISTRATOR_ROLE)
                 .userId(userApi.getId())
-                .role(ADMIN.getValue())
                 .group(savedGroup)
                 .isAdmin(TRUE)
                 .build());

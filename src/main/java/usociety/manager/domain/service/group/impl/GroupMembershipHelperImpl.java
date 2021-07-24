@@ -2,13 +2,12 @@ package usociety.manager.domain.service.group.impl;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static usociety.manager.domain.enums.UserGroupStatusEnum.DELETED;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.PENDING;
-import static usociety.manager.domain.enums.UserGroupStatusEnum.REJECTED;
 import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.transaction.Transactional;
 
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
-import usociety.manager.domain.enums.UserGroupStatusEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 import usociety.manager.domain.model.UserGroup;
@@ -63,25 +61,13 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
     @Override
     @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public void update(UserApi user, Long id, UserGroupApi request) throws GenericException {
-        Optional<UserGroup> optionalUserGroup = userGroupRepository.findByGroupIdAndUserId(id, user.getId());
-        if (!optionalUserGroup.isPresent()) {
-            throw new GenericException("It's not allowed to perform this operation.", UPDATING_MEMBERSHIP_ERROR_CODE);
-        }
+        UserApi member = request.getMember();
+        UserGroup userGroup = validateUsersMembership(user, member, id);
+        userGroup.setRole(member.getRole());
 
-        UserGroup userGroup = optionalUserGroup.get();
-        //Only no admins can change his roles and/or status into the group
-        if (!userGroup.isAdmin()) {
-
-            UserGroupStatusEnum status = request.getStatus();
-            if (Arrays.asList(REJECTED, DELETED).contains(status)) {
-                userGroupRepository.delete(userGroup);
-            } else {
-                userGroup.setRole(request.getRole());
-                userGroup.setStatus(status.getValue());
-                userGroupRepository.save(userGroup);
-            }
-        }
-
+        String status = request.getStatus().getValue();
+        userGroup.setStatus(StringUtils.isNotEmpty(status) ? status : user.getRole());
+        userGroupRepository.save(userGroup);
     }
 
     @Override
@@ -104,6 +90,30 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
         sendJoiningRequestEmailToAdmin(id, group, user);
     }
 
+    private UserGroup validateUsersMembership(UserApi user, UserApi member, Long id)
+            throws GenericException {
+        Optional<UserGroup> adminGroup = userGroupRepository.findByGroupIdAndUserIdAndIsAdmin(id, user.getId(), TRUE);
+        if (!adminGroup.isPresent()) {
+            throw new GenericException("You are not allowed to perform this operation", UPDATING_MEMBERSHIP_ERROR_CODE);
+        }
+
+        if (Objects.isNull(member.getId())) {
+            throw new GenericException("Member id must be sent", UPDATING_MEMBERSHIP_ERROR_CODE);
+        }
+
+        return userGroupRepository.findByGroupIdAndUserId(id, member.getId())
+                .orElseThrow(buildExceptionSupplier("User is not member", UPDATING_MEMBERSHIP_ERROR_CODE));
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(buildExceptionSupplier("Group does not exist", GROUP_NOT_FOUND));
+    }
+
+    private Supplier<GenericException> buildExceptionSupplier(String message, String code) {
+        return () -> new GenericException(message, code);
+    }
+
     private void sendJoiningRequestEmailToAdmin(Long id, Group group, UserApi user) throws GenericException {
         Optional<UserGroup> optionalUserGroupAdmin = userGroupRepository.findByGroupIdAndIsAdmin(id, TRUE);
         if (optionalUserGroupAdmin.isPresent()) {
@@ -120,11 +130,6 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
                 StringUtils.capitalize(group.getName()),
                 applicationDomain
         );
-    }
-
-    private Group getGroup(Long id) throws GenericException {
-        return groupRepository.findById(id)
-                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

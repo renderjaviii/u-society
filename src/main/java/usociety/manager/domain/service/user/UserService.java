@@ -16,7 +16,7 @@ public interface UserService {
 
     LoginResponse create(CreateUserRequest request) throws GenericException, MessagingException;
 
-    void verify(String email, boolean resendCode) throws GenericException;
+    void verify(String email) throws GenericException;
 
     UserApi get(String username) throws GenericException;
 

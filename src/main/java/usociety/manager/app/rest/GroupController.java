@@ -115,8 +115,10 @@ public class GroupController extends AbstractController {
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(path = "/{id}/update-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateMembership(@PathVariable("id") Long id,
-                                                 @RequestBody UserGroupApi request)
+    public ResponseEntity<Void> updateMembership(
+            @PathVariable("id") Long id,
+            @RequestBody UserGroupApi request
+    )
             throws GenericException {
         groupService.updateMembership(getUser(), id, request);
         return ResponseEntity.ok().build();
@@ -129,8 +131,10 @@ public class GroupController extends AbstractController {
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/by-filters", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GroupApi>> getByFilters(@RequestParam("name") String name,
-                                                       @RequestParam("categoryId") Long categoryId)
+    public ResponseEntity<List<GroupApi>> getByFilters(
+            @RequestParam("name") String name,
+            @RequestParam("categoryId") Long categoryId
+    )
             throws GenericException {
         return ResponseEntity.ok(groupService.getByFilters(name, categoryId));
     }

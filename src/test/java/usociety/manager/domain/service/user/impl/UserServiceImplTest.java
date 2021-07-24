@@ -185,7 +185,7 @@ public class UserServiceImplTest {
         when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
                 .otpCode("otp")
                 .build());
-        subject.verify(EMAIL, false);
+        subject.verify(EMAIL);
         verify(userConnector).get(null, null, EMAIL);
         verify(otpService).create(EMAIL);
         verify(mailService).sendOtp(EMAIL, "otp");

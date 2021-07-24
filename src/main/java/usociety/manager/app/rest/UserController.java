@@ -72,12 +72,11 @@ public class UserController extends AbstractController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/verify-email")
+    @PostMapping(path = "/{email}/verify")
     public ResponseEntity<Void> verify(
-            @Email @RequestParam(name = "email") final String email,
-            @RequestParam(name = "resendCode", required = false) final boolean resendCode
+            @Email @NotEmpty @PathVariable(name = "email") final String email
     ) throws GenericException {
-        userService.verify(email, resendCode);
+        userService.verify(email);
         return ResponseEntity.ok().build();
     }
 
@@ -87,9 +86,9 @@ public class UserController extends AbstractController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/enable-account")
+    @PostMapping(path = "/{email}/enable-account")
     public ResponseEntity<Void> enableAccount(
-            @Email @RequestParam(name = "email") final String email,
+            @Email @NotEmpty @PathVariable(name = "email") final String email,
             @NotEmpty @RequestParam(name = "otpCode") final String otpCode
     ) throws GenericException {
         userService.enableAccount(email, otpCode);

@@ -27,7 +27,7 @@ public class UserGroup extends BaseObject {
     @Column(name = "status", length = 10, nullable = false)
     private String status;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", length = 10)
     private String role;
 
     @Column(name = "is_admin")

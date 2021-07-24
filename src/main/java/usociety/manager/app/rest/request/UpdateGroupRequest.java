@@ -2,7 +2,10 @@ package usociety.manager.app.rest.request;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,23 +22,26 @@ public class UpdateGroupRequest extends BaseObject {
     @JsonProperty
     private Long id;
 
-    @NotNull
+    @NotEmpty
     @JsonProperty
     private String name;
 
-    @NotNull
+    @NotEmpty
     @JsonProperty
     private String description;
 
     @JsonProperty
     private String photo;
 
+    @Size(min = 1)
     @JsonProperty
     private List<String> objectives;
 
+    @Size(min = 1)
     @JsonProperty
     private List<String> rules;
 
+    @Valid
     @NotNull
     @JsonProperty
     private CategoryApi category;

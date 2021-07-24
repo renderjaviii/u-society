@@ -7,7 +7,7 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface ProcessPostHelper {
 
-    PostApi create(UserApi user, CreatePostRequest request) throws GenericException;
+    PostApi create(UserApi user, Long groupId, CreatePostRequest request) throws GenericException;
 
     void update(PostApi post);
 

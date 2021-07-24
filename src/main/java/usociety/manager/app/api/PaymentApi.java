@@ -126,7 +126,7 @@ public abstract class PaymentApi extends BaseObject {
         @JsonProperty
         private String cvv;
 
-        @NotEmpty
+        @NotEmpty(groups = ExtraValidation.class)
         @AlphanumericConstraint
         @ApiModelProperty(notes = "Name on the card")
         @JsonProperty

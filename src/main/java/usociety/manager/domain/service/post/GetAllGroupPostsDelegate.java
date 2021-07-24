@@ -8,6 +8,6 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface GetAllGroupPostsDelegate {
 
-    List<PostApi> execute(UserApi user, Long groupId, int page) throws GenericException;
+    List<PostApi> execute(UserApi user, Long groupId, int page, int pageSize) throws GenericException;
 
 }

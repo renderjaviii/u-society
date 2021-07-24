@@ -23,12 +23,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private String signingKey;
 
     private static final RequestMatcher ENDPOINTS_WITHOUT_AUTH = new OrRequestMatcher(
-            new AntPathRequestMatcher("/services/users/{username}", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/services/users/", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/services/users/enable-account"),
-            new AntPathRequestMatcher("/services/users/verify-email"),
-            new AntPathRequestMatcher("/services/categories/**"),
-            new AntPathRequestMatcher("/services/users/login"));
+            new AntPathRequestMatcher("/services/users/**", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/services/users", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/services/users/enable-account", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/services/users/**/verify", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/services/categories", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/services/users/login", HttpMethod.POST.name()));
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

@@ -50,16 +50,17 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     }
 
     @Override
-    public PostApi create(String username, CreatePostRequest request)
+    public PostApi create(String username, Long groupId, CreatePostRequest request)
             throws GenericException {
-        validateIsUserIsMember(username, request.getGroupId());
+        validateIsUserIsMember(username, groupId);
 
-        return processPostHelper.create(getUser(username), request);
+        return processPostHelper.create(getUser(username), groupId, request);
     }
 
     @Override
-    public List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page) throws GenericException {
-        return getAllGroupPostsDelegate.execute(getUser(username), groupId, page);
+    public List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page, int pageSize)
+            throws GenericException {
+        return getAllGroupPostsDelegate.execute(getUser(username), groupId, page, pageSize);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
         Post post = getPost(postId);
         validateIsUserIsMember(username, post.getGroup().getId());
 
-        reactService.create(username, post, value);
+        reactService.createOrUpdate(username, post, value);
     }
 
     @Override
@@ -81,12 +82,12 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     }
 
     @Override
-    public void vote(String username, Long postId, Integer vote) throws GenericException {
+    public void vote(String username, Long postId, Integer option) throws GenericException {
         Post post = getPost(postId);
         validateIsUserIsMember(username, post.getGroup().getId());
 
         surveyService.validateIfUserHasAlreadyInteracted(username, post);
-        surveyService.create(username, post, vote);
+        surveyService.create(username, post, option);
     }
 
     private Post getPost(Long postId) throws GenericException {

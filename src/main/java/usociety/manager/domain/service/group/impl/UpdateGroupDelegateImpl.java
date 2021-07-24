@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.github.slugify.Slugify;
 
@@ -60,21 +61,20 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
 
         UserGroup userGroup = getUserGroup(user.getId(), request.getId());
         if (!userGroup.isAdmin()) {
-            throw new GenericException("Only admins can update groups", FORBIDDEN_ACCESS);
+            throw new GenericException("Only admins can perform this operation", FORBIDDEN_ACCESS);
         }
 
         Category category = categoryService.get(request.getCategory().getId());
         groupRepository.save(Group.newBuilder()
-                .objectives(removeCommas(request.getObjectives()))
+                .objectives(removeCommasAndCapitalize(request.getObjectives()))
                 .slug(slugify.slugify(request.getName()))
-                .rules(removeCommas(request.getRules()))
+                .rules(removeCommasAndCapitalize(request.getRules()))
                 .description(request.getDescription())
-                .photo(getNewPhoto(request, group))
+                .photo(getPhoto(request, group))
                 .name(request.getName())
                 .category(category)
                 .id(group.getId())
                 .build());
-
     }
 
     private UserGroup getUserGroup(Long userId, Long groupId) throws GenericException {
@@ -84,16 +84,19 @@ public class UpdateGroupDelegateImpl implements UpdateGroupDelegate {
                         () -> new GenericException("User is not an active member", UPDATING_MEMBERSHIP_ERROR_CODE));
     }
 
-    private String getNewPhoto(UpdateGroupRequest request, Group group) throws GenericException {
+    private String getPhoto(UpdateGroupRequest request, Group group) throws GenericException {
         boolean photoHasChanged = Objects.nonNull(request.getPhoto())
                 && !request.getPhoto().equals(group.getPhoto());
 
         return photoHasChanged ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto();
     }
 
-    private List<String> removeCommas(List<String> values) {
+    //This is made due to database's column format
+    private List<String> removeCommasAndCapitalize(List<String> values) {
         return values.stream()
                 .map(value -> value.replace(COMMA_SEPARATOR, EMPTY))
+                .map(StringUtils::capitalize)
+                .filter(value -> !StringUtils.isEmpty(value))
                 .collect(Collectors.toList());
     }
 
