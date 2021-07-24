@@ -38,7 +38,7 @@ public class PaymentController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Payment created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Valid @RequestBody PaymentApi payment) {

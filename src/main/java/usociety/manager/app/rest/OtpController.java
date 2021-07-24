@@ -38,7 +38,7 @@ public class OtpController {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "OTP created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OtpApi> create(@RequestParam(name = "email") final String email) {
@@ -49,7 +49,7 @@ public class OtpController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OTP validated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PatchMapping(path = "/validate")
     public ResponseEntity<Void> validate(

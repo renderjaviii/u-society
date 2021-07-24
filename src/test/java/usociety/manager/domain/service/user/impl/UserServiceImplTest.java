@@ -354,7 +354,7 @@ public class UserServiceImplTest {
                 .build());
 
         subject.update(USERNAME, new UpdateUserRequest("Another Name",
-                Collections.singletonList(new CategoryApi(3L, "New Category"))));
+                Collections.singleton(3L)));
 
         InOrder inOrder = Mockito.inOrder(cloudStorageService,
                 userConnector,
@@ -381,7 +381,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldNotSaveNorUpdateUserPhotoIfTheseAreNotValid() throws GenericException {
         user.setPhoto("photoUrl");
-        subject.update(USERNAME, new UpdateUserRequest(null, Collections.emptyList()));
+        subject.update(USERNAME, new UpdateUserRequest(null, Collections.emptySet()));
         verifyNoInteractions(cloudStorageService);
         verifyNoInteractions(categoryRepository);
         verify(userConnector).update(user);

@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = CATEGORY_RESOURCE_CACHE_NAME)
+    @CachePut(value = CATEGORY_RESOURCE_CACHE_NAME)
     public List<CategoryApi> getAll() {
         return categoryRepository.findAll()
                 .stream()
@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @CachePut(value = CATEGORY_RESOURCE_CACHE_NAME)
+    @Cacheable(value = CATEGORY_RESOURCE_CACHE_NAME)
     public Category get(Long id) throws GenericException {
         return categoryRepository.findById(id)
                 .orElseThrow(buildCategoryNotFoundException(id));

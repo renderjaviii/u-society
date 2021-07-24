@@ -32,6 +32,6 @@ public interface UserService {
 
     void changePassword(String username, String otpCode, ChangePasswordRequest request) throws GenericException;
 
-    void update(String username, UpdateUserRequest request) throws GenericException;
+    UserApi update(String username, UpdateUserRequest request) throws GenericException;
 
 }

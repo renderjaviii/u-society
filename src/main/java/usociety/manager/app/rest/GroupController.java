@@ -50,7 +50,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateGroupRequest request)
@@ -62,7 +62,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
@@ -74,7 +74,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") String slug)
@@ -86,7 +86,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> update(@Valid @RequestBody UpdateGroupRequest request)
@@ -99,7 +99,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of groups in where user is member."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{username}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getAllUserGroups(@PathVariable(name = "username") String username)
@@ -112,7 +112,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Membership updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(path = "/{id}/update-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateMembership(@PathVariable("id") Long id,
@@ -126,7 +126,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/by-filters", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getByFilters(@RequestParam("name") String name,
@@ -139,7 +139,7 @@ public class GroupController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Request to join group sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)

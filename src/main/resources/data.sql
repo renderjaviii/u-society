@@ -10,7 +10,7 @@ INSERT INTO managerConfigs(name, value) VALUES('config.aws.secret-key', 'NONE');
 INSERT INTO managerConfigs(name, value) VALUES('config.aws.session-token', 'NONE');
 
 -- Authentication API
-INSERT INTO managerConfigs(name, value) VALUES('web.authentication.url', 'https://localhost:8075/');
+INSERT INTO managerConfigs(name, value) VALUES('web.authentication.url', 'https://localhost:8075/authentication');
 INSERT INTO managerConfigs(name, value) VALUES('web.authentication.path', '/oauth/token');
 INSERT INTO managerConfigs(name, value) VALUES('web.authentication.users-path', '/v1/users');
 INSERT INTO managerConfigs(name, value) VALUES('web.authentication.client-id', 'clientIdTest');

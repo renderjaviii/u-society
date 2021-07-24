@@ -50,7 +50,7 @@ public class PostController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Post created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostApi> sendGroupMessage(@Valid @RequestBody CreatePostRequest request)
@@ -62,7 +62,7 @@ public class PostController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Posts."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
@@ -76,7 +76,7 @@ public class PostController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Post react saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/react", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(
@@ -91,7 +91,7 @@ public class PostController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Post comment saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> comment(
@@ -106,7 +106,7 @@ public class PostController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Survey vote saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(

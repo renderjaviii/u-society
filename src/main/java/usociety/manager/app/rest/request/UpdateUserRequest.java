@@ -1,15 +1,13 @@
 package usociety.manager.app.rest.request;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Update user request.")
@@ -23,15 +21,15 @@ public class UpdateUserRequest extends BaseObject {
     @JsonProperty
     private String photo;
 
-    @Size(min = 1)
+    //@Size(min = 1)
     @JsonProperty
-    private List<CategoryApi> categoryList;
+    private Set<Long> categoryList;
 
     public UpdateUserRequest() {
         super();
     }
 
-    public UpdateUserRequest(String name, List<CategoryApi> categoryList) {
+    public UpdateUserRequest(String name, Set<Long> categoryList) {
         this.name = name;
         this.categoryList = categoryList;
     }
@@ -44,7 +42,7 @@ public class UpdateUserRequest extends BaseObject {
         return photo;
     }
 
-    public List<CategoryApi> getCategoryList() {
+    public Set<Long> getCategoryList() {
         return categoryList;
     }
 

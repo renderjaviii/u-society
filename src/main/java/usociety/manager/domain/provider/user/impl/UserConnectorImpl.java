@@ -41,8 +41,12 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
     }
 
     @Override
-    public void update(UserDTO body) {
-        patch(uriBuilder().path(path).build(), body, Void.class);
+    public UserDTO update(UserDTO body) {
+        return patch(uriBuilder()
+                        .path(path)
+                        .build(),
+                body,
+                UserDTO.class);
     }
 
     @Override
