@@ -16,6 +16,10 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <sonar.projectKey>u-society:manager</sonar.projectKey>
+        <sonar.organization>renderjaviii</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
         <mysql-connector.version>8.0.19</mysql-connector.version>
         <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
         <spring-security-jwt.version>1.1.0.RELEASE</spring-security-jwt.version>
@@ -200,7 +204,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.75</minimum>
+                                            <minimum>0</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
