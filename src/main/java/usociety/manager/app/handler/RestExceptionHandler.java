@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ import usociety.manager.domain.exception.UserValidationException;
 import usociety.manager.domain.exception.WebException;
 
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @SuppressWarnings("unnused")
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -40,7 +43,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
-        String errorMessage = String.format(BASIC_FORMAT, "Malformed json request:", ex.getCause().getMessage());
+        String errorMessage = String.format(BASIC_FORMAT, "Malformed json request:", ex.getLocalizedMessage());
         return new ResponseEntity<>(new ApiError(errorMessage, BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 

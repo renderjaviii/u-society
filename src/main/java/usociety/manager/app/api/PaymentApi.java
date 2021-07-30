@@ -268,7 +268,6 @@ public abstract class PaymentApi extends BaseObject {
 
         @NotNull
         @Min(1)
-        @Max(4)
         @ApiModelProperty(notes = "PSE Bank code")
         @JsonProperty
         private Integer pseBankCode;

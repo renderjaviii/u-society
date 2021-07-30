@@ -1,5 +1,8 @@
 package usociety.manager.app.rest;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -7,6 +10,9 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import usociety.manager.domain.exception.UserValidationException;
 
 public abstract class AbstractController {
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     protected String getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -20,6 +26,10 @@ public abstract class AbstractController {
             throw new UserValidationException("Invalid credentials.", "INVALID_CREDENTIALS");
         }
         return username;
+    }
+
+    protected String getHeader(String name) {
+        return httpServletRequest.getHeader(name);
     }
 
 }

@@ -16,7 +16,7 @@ import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintVa
 public class AlphanumericValidator implements ConstraintValidator<AlphanumericConstraint, String> {
 
     private static final String FIELD_NAME_ATTRIBUTE = "basePath";
-    public static final String ALPHANUMERIC_REGEX = "[\\w\\d]+";
+    public static final String ALPHANUMERIC_REGEX = "[\\w\\d\\s]+";
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
