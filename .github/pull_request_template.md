@@ -1,7 +1,5 @@
 ### Project management task
 
-
-
 ### Notes
 
 - 
@@ -10,5 +8,5 @@
 
 - [ ] Third Systems Affected: 
 
-### Output
+### Outputs
 
