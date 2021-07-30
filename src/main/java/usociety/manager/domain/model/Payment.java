@@ -112,4 +112,9 @@ public abstract class Payment extends BaseObject {
         return Objects.equals(((Payment) obj).id, id);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

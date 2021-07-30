@@ -42,9 +42,9 @@ import usociety.manager.domain.service.web.AbstractConnector;
 @Component
 public class AbstractConnectorImpl implements AbstractConnector {
 
-    private static final String INVALID_URL = "The base URL is invalid.";
+    private static final String INVALID_URL = "The base URL is not valid.";
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConnectorImpl.class);
 
     private WebClient webClient;
     private String baseUrl;
@@ -52,7 +52,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public void setUp(String url, int timeOut) {
-        logger.info("Creating REST client for host: {}", url);
+        LOGGER.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException(INVALID_URL);
         }
@@ -61,7 +61,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public void setUp(String url, int timeOut, String authUrl) {
-        logger.info("Creating REST client for host: {}", url);
+        LOGGER.info("Creating REST client for host: {}", url);
         if (StringUtil.isNullOrEmpty(url)) {
             throw new UnsupportedOperationException(INVALID_URL);
         }
@@ -102,9 +102,9 @@ public class AbstractConnectorImpl implements AbstractConnector {
                                     .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeOut))))
                     .secure(t -> t.sslContext(sslContext));
         } catch (SSLException e) {
-            e.printStackTrace();
+            LOGGER.error("SSL exception.", e);
+            throw new WebException("Error building HTTP Client", "ERROR_BUILDING_HTTP_CLIENT");
         }
-        return HttpClient.create();
     }
 
     private ExchangeFilterFunction responseFilter() {
@@ -119,7 +119,7 @@ public class AbstractConnectorImpl implements AbstractConnector {
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
-        logger.info("Trying to get token: {}{}", baseUrl, authPath);
+        LOGGER.info("Trying to get token: {}{}", baseUrl, authPath);
 
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(buildHttpClient(5000)))

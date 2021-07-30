@@ -81,6 +81,11 @@ public class React extends BaseObject {
         return Objects.equals(((React) obj).id, id);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static final class Builder {
 
         private Long id;
