@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabasePropsReader implements BeanPostProcessor {
 
+    private static final String QUERY_FORMAT = "SELECT name, value FROM %s";
+
     @Value("${config.table}")
     private String configTableName;
 
@@ -37,6 +39,7 @@ public class DatabasePropsReader implements BeanPostProcessor {
         return bean;
     }
 
+    @SuppressWarnings( { "java:S108" })
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         if (bean instanceof DataSource) {
@@ -47,12 +50,15 @@ public class DatabasePropsReader implements BeanPostProcessor {
             Map<String, Object> propertySource = new HashMap<>();
             if (StringUtils.isNotEmpty(configTableName)) {
                 try {
-                    preparedStatement = connection.prepareStatement("SELECT name, value FROM " + configTableName);
+                    String query = String.format(QUERY_FORMAT, configTableName);
+                    preparedStatement = connection.prepareStatement(query);
                     resultSet = preparedStatement.executeQuery();
+
                     while (resultSet.next()) {
                         String propName = resultSet.getString("name");
                         propertySource.put(propName, resultSet.getString("value"));
                     }
+
                     environment.getPropertySources().addFirst(new MapPropertySource("application", propertySource));
                 } catch (SQLException ignored) {
                 } finally {
@@ -63,8 +69,8 @@ public class DatabasePropsReader implements BeanPostProcessor {
                     }
                 }
             }
-
         }
+
         return bean;
     }
 
