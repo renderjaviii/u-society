@@ -134,7 +134,7 @@ public class GetGroupHelperImpl implements GetGroupHelper {
             throws GenericException {
         List<UserGroup> membersGroup = userList
                 .stream()
-                .filter(userGroup -> userGroupStatus.getValue() == userGroup.getStatus())
+                .filter(userGroup -> userGroupStatus.getValue().equals(userGroup.getStatus()))
                 .collect(Collectors.toList());
 
         List<UserApi> usersDataList = new ArrayList<>();
