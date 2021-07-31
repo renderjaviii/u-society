@@ -141,6 +141,7 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+.mvn/MavenWrapperDownloader.java
 .flattened-pom.xml
 
 # End of https://www.gitignore.io/api/java,linux,maven,jetbrains
