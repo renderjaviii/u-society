@@ -1,57 +1,98 @@
-# USociety - REST Manager
-REST API Orchestrator created for the USociety project.
 
-This RESTful micro service has the function of the Resource server, so, if it’s the head of all the ecosystem (the orchestrator).\
-There are a certain group of public endpoints (no requires authentication) and other privates; then if you receive a 401 (Unauthorized HTTP code) as status response, you first need to get the authorization token and add it to the `Authorization` request header.
+# Welcome to U Society - REST Manager!
 
-#### Change list
-- _2021-07-20: "Improvements"._ 
-- _2021-07-18: General refactor._
-- _2020-08-15: Project initialization._
+RESTful API Orchestrator created for the **U Society** project.
 
-#### How to run locally
+## Description
+This microservice has the function of the resource server, so, if it’s the head of the whole ecosystem.
 
-1. Recreate database locally - MySQL: `docker-compose -f src/main/resources/docker-db.yml up --build`
-2. Recreate in-memory store (cache) locally - Redis: `docker-compose -f src/main/resources/docker-cache.yml up --build` 
-3. Compile Spring project and generate jar file: `mvn clean install`
-4. Build docker image: `docker build -t u-society/manager .`.
-5. Run docker container: `docker-compose up --build -d`
-6. Show container logs: `docker-compose logs -f`
-7. Stop container: `docker-compose down -v`
-8. Run and check tests coverage: `jacoco:report`
-9. Clean Redis cache: `docker exec company-redis redis-cli flushall`
+## Getting started
 
-#### Notes
-- Base API path: `https://localhost:8443/manager`
-- Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
+### Dependencies
+- _Spring boot_ (Open source microservice-based Java web framework)  
+- _Docker_ (Used for package the application into containers)  
+- _Docker compose_ (Tool for defining and running multi-container applications)  
+- _MVN_ (Maven manager dependency, used to build and manage the entire project)  
+- _MySQL_ (Relational database management system)  
+- _OAUTH2_ (Open standard for access delegation)  
+- _JWT_ (Java Web Tokens, open standard for creating signed and encrypted data)  
+- _Spring Security_ (It provides the authentication and authorization mechanisms)  
+- _Webflux_ (Reactive REST client used to interconnect all the micro services ecosystem)  
+- _Swagger UI_ (Used to document and use the web service)  
+- _Model mapper_ (Used to convert between Java objects and matching JSON structures)  
+- _Spring mail_ (It provides the mail support)  
+- _Gmail SMTP_ (Email provider used to send emails)  
+- _Apache tomcat_ (Web server container)  
+- _Jackson databind_ (High-performance JSON processor)  
+- _Apache commons lang_ (Reusable static utility methods)  
+- _JUnit + Mockito_ (Unit testing stuff)  
+- _JaCoCo_ (Code coverage report generator)  
+- _Redis_ (In-memory key-value data structure store)  
+- _Lettuce client_ (Fully non-blocking Redis client)  
+- _Slugify_ (Uniques identifying part address generator)
 
-#### Technologies used
-- **Spring boot** (Open source microservice-based Java web framework)
-- **Docker** (Used for package the application into containers)
-- **Docker compose** (Tool for defining and running multi-container applications)
-- **MVN** (Maven manager dependency, used to build and manage the entire project)
-- **MySQL** (Relational database management system)
-- **OAUTH2** (Open standard for access delegation)
-- **JWT** (Java Web Tokens, open standard for creating signed and encrypted data)
-- **Spring Security** (It provides the authentication and authorization mechanisms)
-- **Webflux** (Reactive REST client used to interconnect all the micro services ecosystem)
-- **Swagger UI** (Used to document and use the web service)
-- **Model mapper** (Used to convert between Java objects and matching JSON structures)
-- **Spring mail** (It provides the mail support)
-- **Gmail SMTP** (Email provider used to send emails)
-- **Apache tomcat** (Web server container)
-- **Jackson databind** (High-performance JSON processor)
-- **Apache commons lang3** (Reusable static utility methods)
-- **JUnit 4 + Mockito** (Unit testing stuff)
-- **JaCoCo** (Code coverage report generator)
-- **Redis** (In-memory key-value data structure store)
-- **Lettuce client** (Fully non-blocking Redis client)
-- **Slugify** (Uniques identifying part address generator)
+### Installation
 
-#### Additional considerations
-1. If you want to change the general server configurations (like port), you can change the environment variables from this file `src/main/resources/development.env`.
-2. When you run the docker db container, the database is going to be populated using the seeders files: `src/main/resources/data.sql` and `src/main/resources/import.sql` (If you want to avoid it remove the entry points localized in the .yaml file).
-3. This API uses a self-signed SSL certificate, you could need to ignore the security warning in your API client (e.g. Postman) in order to be able to consume it.
+1. Clone repository:
+	```sh
+	git clone git@github.com:renderjaviii/u-society-api.git
+	```
+2. Recreate database:
+	```sh
+	docker-compose -f src/main/resources/docker-db.yml up --build
+	```
+3. Recreate in-memory store (cache):   
+	```sh  
+	docker-compose -f src/main/resources/docker-cache.yml up --build
+	```  
+4. Compile Spring project and generate deployable file:  
+	```sh  
+	mvn clean install
+	```  
+5. Build docker image:  
+	```sh  
+	docker build -t u-society/manager .
+	```  
+6. Run docker container:  
+	```sh  
+	docker-compose up --build -d
+	```  
+7. Additional utilities:
 
-###### Version: 2.0
-###### Date: 2021-07-20
+- Show container logs:  
+	```sh  
+	docker-compose logs -f
+	```  
+- Stop container:  
+	```sh  
+	docker-compose down -v
+	```  
+- Run tests and check code coverage:  
+	```sh  
+	mvn clean test
+	```  
+- Clean Redis cache:  
+	```sh  
+	docker exec company-redis redis-cli flushall
+	```
+	
+> **ProTips**: 
+> - _If you need to change some server configuration locally (like port), update the environment variables located in file  `src/main/resources/development.env`_.
+> - _When you run the database's docker container, it will be populated using the seeders files:  `src/main/resources/data.sql`  and  `src/main/resources/import.sql`  (to avoid it, remove the entry points)_.
+
+### Usage
+Read the Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
+ 
+If you want to interact with the API, please download [Postman](https://www.postman.com/) (or whatever API client that you prefer), this tool will help us to consume the endpoints when the user's [bearer token](https://datatracker.ietf.org/doc/html/rfc6750) is required.
+
+> Please, have in mind that a _**self-signed SSL certificate**_ was configured to fit out _HTTPS security communication_, so, you may need to add it into the keystore (or ignore the security warning).
+
+## Application bootstrapping
+
+There are different Spring profiles (application versions) in order to have the suitable application's behaviors.
+
+|Stage           |Profile                        |Features                                             |
+|----------------|-------------------------------|-----------------------------------------------------|
+|Development     |`dev`                          |Development tasks: local machine's resources (complete logging)|
+|Testing         |`qa`                           |E2E check: cloud resources (limited logging)|
+|Live            |`prod`                         |Production deployment: cloud instances (optimal perfomarnce)|
