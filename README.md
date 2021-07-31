@@ -10,15 +10,15 @@ This microservice has the function of the resource server, so, if it’s the hea
 
 ### Dependencies
 - _Spring boot_ (Open source microservice-based Java web framework)  
-- _Docker_ (Used for package the application into containers)  
+- _Docker_ (Used for package the application in containers)  
 - _Docker compose_ (Tool for defining and running multi-container applications)  
 - _MVN_ (Maven manager dependency, used to build and manage the entire project)  
 - _MySQL_ (Relational database management system)  
 - _OAUTH2_ (Open standard for access delegation)  
 - _JWT_ (Java Web Tokens, open standard for creating signed and encrypted data)  
 - _Spring Security_ (It provides the authentication and authorization mechanisms)  
-- _Webflux_ (Reactive REST client used to interconnect all the micro services ecosystem)  
-- _Swagger UI_ (Used to document and use the web service)  
+- _Webflux_ (Reactive REST client used to interconnect all the microservices' ecosystem)  
+- _Swagger UI_ (Used to document the API)  
 - _Model mapper_ (Used to convert between Java objects and matching JSON structures)  
 - _Spring mail_ (It provides the mail support)  
 - _Gmail SMTP_ (Email provider used to send emails)  
@@ -30,6 +30,12 @@ This microservice has the function of the resource server, so, if it’s the hea
 - _Redis_ (In-memory key-value data structure store)  
 - _Lettuce client_ (Fully non-blocking Redis client)  
 - _Slugify_ (Uniques identifying part address generator)
+
+### Prerequisites
+- [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html).
+- [Docker](https://docs.docker.com/get-docker/).
+- [Docker-compose](https://docs.docker.com/compose/install/).
+
 
 ### Installation
 
@@ -81,7 +87,7 @@ This microservice has the function of the resource server, so, if it’s the hea
 > - _When you run the database's docker container, it will be populated using the seeders files:  `src/main/resources/data.sql`  and  `src/main/resources/import.sql`  (to avoid it, remove the entry points)_.
 
 ### Usage
-Read the Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
+Refer to the Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
  
 If you want to interact with the API, please download [Postman](https://www.postman.com/) (or whatever API client that you prefer), this tool will help us to consume the endpoints when the user's [bearer token](https://datatracker.ietf.org/doc/html/rfc6750) is required.
 
