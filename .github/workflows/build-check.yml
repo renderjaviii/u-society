@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Build check
 
 on:
   push:
@@ -12,10 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
       - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
+
+      - name: Set up JDK 1.8 # Version used to build and deploy
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
