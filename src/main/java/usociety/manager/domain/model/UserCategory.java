@@ -35,14 +35,15 @@ public class UserCategory extends BaseObject {
         super();
     }
 
-    private UserCategory(Builder builder) {
-        id = builder.id;
-        userId = builder.userId;
-        category = builder.category;
+    public UserCategory(Long userId, Category category) {
+        this.userId = userId;
+        this.category = category;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
+    public UserCategory(Long id, Long userId, Category category) {
+        this.id = id;
+        this.userId = userId;
+        this.category = category;
     }
 
     public Long getId() {
@@ -71,36 +72,6 @@ public class UserCategory extends BaseObject {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public static final class Builder {
-
-        private Long id;
-        private Long userId;
-        private Category category;
-
-        private Builder() {
-        }
-
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder userId(Long userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder category(Category category) {
-            this.category = category;
-            return this;
-        }
-
-        public UserCategory build() {
-            return new UserCategory(this);
-        }
-
     }
 
 }

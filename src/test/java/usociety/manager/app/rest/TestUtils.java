@@ -3,11 +3,14 @@ package usociety.manager.app.rest;
 import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -22,16 +25,18 @@ public abstract class TestUtils {
     protected final OAuth2Authentication auth2Authentication;
 
     public TestUtils() {
-        auth2Authentication = new OAuth2Authentication(new OAuth2Request(
-                Collections.emptyMap(),
-                USERNAME,
-                Collections.singletonList(new SimpleGrantedAuthority("ADMIN")),
-                TRUE,
-                Collections.singleton("WEB"),
-                Collections.emptySet(),
-                EMPTY,
-                Collections.emptySet(),
-                Collections.emptyMap()), null);
+        auth2Authentication = new OAuth2Authentication(
+                new OAuth2Request(
+                        Collections.emptyMap(),
+                        USERNAME,
+                        Collections.singletonList(new SimpleGrantedAuthority("ADMIN")),
+                        TRUE,
+                        Collections.singleton("WEB"),
+                        Collections.emptySet(),
+                        EMPTY,
+                        Collections.emptySet(),
+                        Collections.emptyMap()),
+                new UsernamePasswordAuthenticationToken(USERNAME, EMPTY));
     }
 
     protected String toJson(Object value) {
@@ -40,6 +45,14 @@ public abstract class TestUtils {
         } catch (JsonProcessingException ignored) {
         }
         return EMPTY;
+    }
+
+    protected <T> T readMvcResultValue(MvcResult mvcResult, Class<T> clazz) {
+        try {
+            return mapper.readValue(mvcResult.getResponse().getContentAsString(), clazz);
+        } catch (JsonProcessingException | UnsupportedEncodingException ex) {
+            throw new RuntimeException("Error reading value", ex);
+        }
     }
 
 }

@@ -7,8 +7,8 @@ import javax.mail.MessagingException;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.app.rest.request.UpdateUserRequest;
-import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
 
@@ -24,7 +24,7 @@ public interface UserService {
 
     void enableAccount(String email, String otpCode) throws GenericException;
 
-    LoginResponse login(UserLoginRequest request) throws GenericException;
+    LoginResponse login(LoginRequest request) throws GenericException;
 
     void delete(String username);
 

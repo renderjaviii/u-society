@@ -28,13 +28,9 @@ public class Category extends BaseObject {
         super();
     }
 
-    private Category(Builder builder) {
-        id = builder.id;
-        name = builder.name;
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
+    public Category(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Long getId() {
@@ -59,31 +55,6 @@ public class Category extends BaseObject {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public static final class Builder {
-
-        private Long id;
-        private String name;
-
-        private Builder() {
-            super();
-        }
-
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Category build() {
-            return new Category(this);
-        }
-
     }
 
 }

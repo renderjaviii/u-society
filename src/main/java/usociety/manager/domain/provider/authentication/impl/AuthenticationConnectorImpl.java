@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import usociety.manager.app.api.TokenApi;
-import usociety.manager.app.rest.request.UserLoginRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.provider.authentication.AuthenticationConnector;
 import usociety.manager.domain.provider.authentication.dto.TokenDTO;
@@ -32,7 +32,7 @@ public class AuthenticationConnectorImpl extends AbstractConnectorImpl implement
     }
 
     @Override
-    public TokenApi login(UserLoginRequest body) {
+    public TokenApi login(LoginRequest body) {
         TokenDTO token = getToken(clientId, clientSecret, body.getUsername(), body.getPassword());
         return Converter.token(token);
     }

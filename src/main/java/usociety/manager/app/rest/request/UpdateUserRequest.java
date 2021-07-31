@@ -29,8 +29,9 @@ public class UpdateUserRequest extends BaseObject {
         super();
     }
 
-    public UpdateUserRequest(String name, Set<Long> categoryList) {
+    public UpdateUserRequest(String name, String photo, Set<Long> categoryList) {
         this.name = name;
+        this.photo = photo;
         this.categoryList = categoryList;
     }
 

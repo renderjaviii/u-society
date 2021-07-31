@@ -31,8 +31,8 @@ import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.app.rest.request.UpdateUserRequest;
-import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.exception.UserValidationException;
@@ -127,7 +127,7 @@ public class UserController extends AbstractController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/login",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final UserLoginRequest request)
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request)
             throws GenericException {
         return new ResponseEntity<>(userService.login(request), OK);
     }

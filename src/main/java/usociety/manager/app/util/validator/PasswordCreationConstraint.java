@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordCreationConstraint {
 
-    String message() default "Contraseña no válida.";
+    String message() default "Invalid password";
 
     Class<?>[] groups() default {};
 

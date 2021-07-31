@@ -1,5 +1,7 @@
 package usociety.manager.app.rest;
 
+import static usociety.manager.domain.util.Constants.INVALID_CREDENTIALS;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public abstract class AbstractController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (((OAuth2Authentication) authentication).isClientOnly() ||
                 !authentication.getPrincipal().toString().equals(username)) {
-            throw new UserValidationException("Invalid credentials.", "INVALID_CREDENTIALS");
+            throw new UserValidationException("Invalid credentials.", INVALID_CREDENTIALS);
         }
         return username;
     }

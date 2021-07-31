@@ -23,7 +23,7 @@ import usociety.manager.domain.util.mapper.CustomObjectMapper;
 import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OtpControllerTest {
+public class OtpControllerTest extends TestUtils {
 
     private static final CustomObjectMapper mapper = new CustomObjectMapperImpl();
     private static final String BASE_PATH = "/services/otps";
@@ -62,8 +62,7 @@ public class OtpControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
 
-        String responseContent = mvcResult.getResponse().getContentAsString();
-        OtpApi executed = mapper.readValue(responseContent, OtpApi.class);
+        OtpApi executed = readMvcResultValue(mvcResult, OtpApi.class);
 
         Assert.assertEquals(executed, otp);
         Mockito.verify(otpService, Mockito.only()).create(email);

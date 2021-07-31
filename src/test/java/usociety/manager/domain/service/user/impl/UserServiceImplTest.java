@@ -1,18 +1,14 @@
 package usociety.manager.domain.service.user.impl;
 
-import static java.lang.Boolean.TRUE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static usociety.manager.app.api.UserApiFixture.email;
+import static usociety.manager.app.api.UserApiFixture.username;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -21,16 +17,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.api.OtpApi;
-import usociety.manager.app.api.TokenApi;
+import usociety.manager.app.api.TokenApiFixture;
 import usociety.manager.app.api.UserApi;
+import usociety.manager.app.api.UserApiFixture;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.app.rest.request.UpdateUserRequest;
-import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.exception.WebException;
@@ -39,352 +34,224 @@ import usociety.manager.domain.model.UserCategory;
 import usociety.manager.domain.provider.authentication.AuthenticationConnector;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
-import usociety.manager.domain.repository.CategoryRepository;
 import usociety.manager.domain.repository.UserCategoryRepository;
-import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
+import usociety.manager.domain.service.user.CreateUserDelegate;
+import usociety.manager.domain.service.user.UpdateUserDelegate;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
 
-    public static final String USERNAME = "username";
-    public static final String EMAIL = "email";
+    private static final String OTP_CODE = "2468";
+
     @Mock
     private AuthenticationConnector authenticationConnector;
     @Mock
     private UserCategoryRepository userCategoryRepository;
     @Mock
-    private CategoryRepository categoryRepository;
+    private CreateUserDelegate createUserDelegate;
+    @Mock
+    private UpdateUserDelegate updateUserDelegate;
     @Mock
     private UserConnector userConnector;
     @Mock
     private MailService mailService;
     @Mock
     private OtpService otpService;
-    @Mock
-    private CloudStorageService cloudStorageService;
-
     @InjectMocks
     private UserServiceImpl subject;
 
-    UserDTO user;
+    UserDTO userDTO;
+    UserApi userApi;
 
     @Before
-    public void setUp() throws GenericException {
-        ReflectionTestUtils.setField(subject, "validateOtp", TRUE);
-
-        user = UserDTO.newBuilder()
-                .username(USERNAME)
-                .name("First Name")
-                .email(EMAIL)
-                .id(1L)
+    public void setUp() {
+        userDTO = UserDTO.newBuilder()
+                .username(username)
+                .email(email)
+                .name(UserApiFixture.name)
+                .id(UserApiFixture.id)
                 .build();
-        when(userConnector.get(any(), any(), any())).thenReturn(user);
-        when(userConnector.get(any())).thenReturn(user);
 
-        when(cloudStorageService.upload(any())).thenReturn("urlImage");
-        when((userConnector.create(any()))).thenReturn(user);
+        userApi = UserApi.newBuilder()
+                .username(username)
+                .email(email)
+                .name(UserApiFixture.name)
+                .id(UserApiFixture.id)
+                .build();
+
+        Mockito.when(userConnector.get(any(), any(), any())).thenReturn(userDTO);
+        Mockito.when(userConnector.get(any())).thenReturn(userDTO);
     }
 
     @Test
     public void shouldCreateUserCorrectly() throws GenericException {
-        when(userConnector.get(any(), any(), any())).thenReturn(null);
-        CreateUserRequest createUserRequest = CreateUserRequest.newBuilder()
-                .username(USERNAME)
-                .password("pass")
-                .email(EMAIL)
-                .otpCode("otp")
-                .name("name")
+        Mockito.reset(userConnector);
+        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.defaultValue);
+        Mockito.when(createUserDelegate.execute(any())).thenReturn(UserApiFixture.defaultValue);
+
+        CreateUserRequest request = CreateUserRequest.newBuilder()
+                .password(UserApiFixture.password)
+                .username(username)
+                .name("John Doe")
+                .otpCode("2468")
+                .email(email)
                 .build();
 
-        LoginResponse executed = subject.create(createUserRequest);
+        LoginResponse executed = subject.create(request);
 
-        InOrder inOrder = Mockito.inOrder(otpService, userConnector, cloudStorageService, userConnector, mailService);
-        inOrder.verify(userConnector).get(null, USERNAME, EMAIL);
-        inOrder.verify(otpService).validate(EMAIL, "otp");
-        inOrder.verify(userConnector).create(createUserRequest);
-        inOrder.verify(mailService).send(EMAIL,
-                "<html><body>" +
-                        "<h3>¡Hola <u>Name</u>!</h3>" +
-                        "<p>Bienvenido a <a href='https://usociety-68208.web.app/'>U Society</a>, logueate y descrubre todo lo que tenemos para ti.</p>" +
-                        "</html></body>",
-                TRUE);
+        Assert.assertEquals(new LoginResponse(UserApiFixture.defaultValue, TokenApiFixture.defaultValue), executed);
 
+        InOrder inOrder = Mockito.inOrder(userConnector, authenticationConnector, createUserDelegate);
+        inOrder.verify(userConnector).get(null, username, email);
+        inOrder.verify(createUserDelegate).execute(request);
+        inOrder.verify(authenticationConnector)
+                .login(new LoginRequest(username, UserApiFixture.password));
     }
 
-    @Ignore
-    @Test(expected = GenericException.class)
-    public void shouldNotCreateUserIfOtpCodeIsInvalid() throws GenericException {
-        try {
-            subject.create(CreateUserRequest.newBuilder()
-                    .username(USERNAME)
-                    .otpCode("otp")
-                    .build());
-        } catch (GenericException e) {
-            assertEquals("Usuario ya registrado, por favor verifica la información.", e.getMessage());
-            verifyNoInteractions(cloudStorageService);
-            verifyNoInteractions(mailService);
-            throw e;
-        }
-        fail();
-    }
-
-    @Ignore
-    @Test(expected = GenericException.class)
-    public void shouldNotCreateUserIfThisAlreadyExists() throws GenericException {
-        try {
-            subject.create(new CreateUserRequest());
-        } catch (GenericException e) {
-            assertEquals("USER_ALREADY_EXISTS", e.getErrorCode());
-            verifyNoInteractions(cloudStorageService);
-            verifyNoInteractions(mailService);
-            throw e;
-        }
-        fail();
-    }
-
-    @Ignore
-    @Test(expected = GenericException.class)
-    public void shouldNotCreateUserIfGettingFailsByConnectionProblems() throws GenericException {
-        when(userConnector.get(any(), any(), any())).thenThrow(new WebException("Connection time out."));
-        try {
-            subject.create(new CreateUserRequest());
-        } catch (WebException e) {
-            assertEquals("Connection time out.", e.getMessage());
-            verifyNoInteractions(cloudStorageService);
-            verifyNoInteractions(mailService);
-            throw e;
-        }
-        fail();
-    }
-
-    @Ignore
-    @Test(expected = GenericException.class)
-    public void shouldNotCreateUserIfImageCannotBeUpload() throws GenericException {
-        when(userConnector.get(any(), any(), any())).thenReturn(null);
-        when(cloudStorageService.upload(any())).thenThrow(new GenericException("Image could not be uploaded."));
-        try {
-            subject.create(CreateUserRequest.newBuilder()
-                    .username(USERNAME)
-                    .otpCode("otp")
-                    .build());
-        } catch (GenericException e) {
-            assertEquals("Image could not be uploaded.", e.getMessage());
-            verifyNoInteractions(mailService);
-            throw e;
-        }
-        fail();
-    }
-
-    @Ignore
     @Test
-    public void shouldCreateSendOtpForLogUpCorrectly() throws GenericException {
-        when(userConnector.get(any(), any(), any())).thenReturn(null);
-        when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
-                .otpCode("otp")
+    public void shouldVerifyEmailAndSendOTPCorrectly() throws GenericException {
+        Mockito.reset(userConnector);
+        Mockito.when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
+                .otpCode(OTP_CODE)
                 .build());
-        subject.verify(EMAIL);
-        verify(userConnector).get(null, null, EMAIL);
-        verify(otpService).create(EMAIL);
-        verify(mailService).sendOtp(EMAIL, "otp");
+
+        subject.verify(email);
+
+        InOrder inOrder = Mockito.inOrder(userConnector, otpService, mailService);
+        inOrder.verify(userConnector).get(null, null, email);
+        inOrder.verify(otpService).create(email);
+        inOrder.verify(mailService).sendOtp(email, OTP_CODE);
     }
 
-    @Ignore
-    @Test(expected = GenericException.class)
-    public void shouldDeleteImageIfUserCreationFails() throws GenericException {
-        when(userConnector.get(any(), any(), any())).thenReturn(null);
-        CreateUserRequest createUserRequest = CreateUserRequest.newBuilder()
-                .username(USERNAME)
-                .password("pass")
-                .email(EMAIL)
-                .otpCode("otp")
-                .name("name")
-                .build();
-
-        when(cloudStorageService.upload(any())).thenReturn("newImageUrl");
-
-        when(userConnector.create(any())).thenThrow(new WebException("Error."));
-        try {
-            subject.create(createUserRequest);
-        } catch (GenericException e) {
-            assertEquals("USER_NOT_CREATED_ERROR", e.getErrorCode());
-            verify(cloudStorageService).delete("newImageUrl");
-            throw e;
-        }
-        fail();
-    }
-
-    @Ignore
     @Test
     public void shouldGetUserByUsernameCorrectly() {
-        UserApi executed = subject.get(USERNAME);
-        assertEquals(UserApi.newBuilder()
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L)
-                        .categoryList(Collections.emptyList())
-                        .build(),
-                executed);
-        verify(userConnector).get(USERNAME);
+        userApi.setCategoryList(Collections.emptyList());
+
+        UserApi executed = subject.get(username);
+
+        Assert.assertEquals(userApi, executed);
+        Mockito.verify(userConnector, Mockito.only()).get(username);
     }
 
-    @Ignore
     @Test
     public void shouldGetUserByIdCorrectly() {
         UserApi executed = subject.getById(1L);
-        assertEquals(UserApi.newBuilder()
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L)
-                        .build(),
-                executed);
-        verify(userConnector).get(1L, null, null);
+
+        Assert.assertEquals(userApi, executed);
+        Mockito.verify(userConnector, Mockito.only()).get(1L, null, null);
     }
 
-    @Ignore
     @Test
     public void shouldEnableUserCorrectly() throws GenericException {
-        subject.enableAccount(USERNAME, "otp");
-        verify(otpService).validate(USERNAME, "otp");
-        verify(userConnector).enableAccount(USERNAME);
+        subject.enableAccount(username, OTP_CODE);
+
+        Mockito.verify(otpService).validate(username, OTP_CODE);
+        Mockito.verify(userConnector).enableAccount(username);
     }
 
-    @Ignore
     @Test
-    public void shouldDoLoginCorrectly() {
-        UserLoginRequest userLoginRequest = UserLoginRequest.newBuilder()
-                .username(USERNAME)
-                .password("pass")
-                .build();
-        when(authenticationConnector.login(userLoginRequest)).thenReturn(TokenApi.newBuilder()
-                .accessToken("accessToken")
-                .expiresIn("expiresIn")
-                .jti("jti")
-                .scope("scope")
-                .tokenType("tokenType")
-                .build());
-        when(userCategoryRepository.findAllByUserId(any()))
-                .thenReturn(Collections.singletonList(UserCategory.newBuilder()
-                        .category(Category.newBuilder()
-                                .id(2L)
-                                .name("categoryName")
-                                .build())
-                        .build()));
+    public void shouldMakeUserLoginCorrectly() {
+        userApi.setCategoryList(UserApiFixture.categoryList);
 
-        LoginResponse executed = subject.login(userLoginRequest);
-        assertEquals(new LoginResponse(UserApi.newBuilder()
-                        .categoryList(Collections.singletonList(new CategoryApi(2L, "categoryName")))
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L)
-                        .build(),
-                        TokenApi.newBuilder()
-                                .accessToken("accessToken")
-                                .expiresIn("expiresIn")
-                                .jti("jti")
-                                .scope("scope")
-                                .tokenType("tokenType")
-                                .build()),
-                executed);
+        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.defaultValue);
+
+        Category category = new Category(UserApiFixture.category.getId(), UserApiFixture.category.getName());
+        Mockito.when(userCategoryRepository.findAllByUserId(any()))
+                .thenReturn(Collections.singletonList(new UserCategory(20L, UserApiFixture.id, category)));
+
+        LoginRequest loginRequest = new LoginRequest(username, UserApiFixture.password);
+        LoginResponse executed = subject.login(loginRequest);
+
+        Assert.assertEquals(new LoginResponse(userApi, TokenApiFixture.defaultValue), executed);
 
         InOrder inOrder = Mockito.inOrder(userConnector, authenticationConnector, userCategoryRepository);
-        inOrder.verify(userConnector).get(USERNAME);
-        inOrder.verify(authenticationConnector).login(userLoginRequest);
-        inOrder.verify(userCategoryRepository).findAllByUserId(1L);
+        inOrder.verify(userConnector).get(username);
+        inOrder.verify(authenticationConnector).login(loginRequest);
+        inOrder.verify(userCategoryRepository).findAllByUserId(UserApiFixture.id);
     }
 
-    @Ignore
     @Test
     public void shouldDeleteUserCorrectly() {
-        subject.delete(USERNAME);
-        verify(userConnector).delete(USERNAME);
+        subject.delete(username);
+        Mockito.verify(userConnector).delete(username);
     }
 
-    @Ignore
     @Test
     public void shouldGetAllUsersCorrectly() {
-        when(userConnector.getAll()).thenReturn(Collections.nCopies(10, user));
+        Mockito.when(userConnector.getAll()).thenReturn(Collections.nCopies(11, userDTO));
+
         List<UserApi> executed = subject.getAll();
-        assertEquals(Collections.nCopies(10, UserApi.newBuilder()
-                        .username(USERNAME)
-                        .name("First Name")
-                        .email(EMAIL)
-                        .id(1L)
-                        .build()),
-                executed);
-        verify(userConnector).getAll();
+
+        Assert.assertEquals(Collections.nCopies(11, userApi), executed);
+        Mockito.verify(userConnector).getAll();
     }
 
-    @Ignore
     @Test
-    public void shouldChangePasswordCorrectly() throws GenericException {
-        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.newBuilder()
-                .newPassword("new")
-                .oldPassword("old")
-                .build();
-        subject.changePassword(USERNAME, "otp", changePasswordRequest);
+    public void shouldChangeUserPasswordCorrectly() throws GenericException {
+        ChangePasswordRequest request = new ChangePasswordRequest("Pass123", "Qwerty987");
+
+        subject.changePassword(username, OTP_CODE, request);
 
         InOrder inOrder = Mockito.inOrder(otpService, userConnector);
-        inOrder.verify(otpService).validate(USERNAME, "otp");
-        inOrder.verify(userConnector).changePassword(USERNAME, changePasswordRequest);
+        inOrder.verify(otpService).validate(username, OTP_CODE);
+        inOrder.verify(userConnector).changePassword(username, request);
     }
 
-    @Ignore
     @Test
     public void shouldUpdateUserCorrectly() throws GenericException {
-        user.setPhoto("photoUrl");
-        when(cloudStorageService.upload(any())).thenReturn("newUrl");
-        UserCategory userCategory = UserCategory.newBuilder()
-                .category(Category.newBuilder()
-                        .id(2L)
-                        .name("categoryName")
-                        .build())
-                .userId(1L)
-                .id(5L)
-                .build();
-        when(userCategoryRepository.findAllByUserId(any())).thenReturn(Collections.singletonList(userCategory));
-        when(categoryRepository.getOne(any())).thenReturn(Category.newBuilder()
-                .name("Category")
-                .id(10L)
-                .build());
+        Mockito.when(updateUserDelegate.execute(any(), any())).thenReturn(UserApiFixture.defaultValue);
 
-        subject.update(USERNAME, new UpdateUserRequest("Another Name",
-                Collections.singleton(3L)));
+        UpdateUserRequest request = new UpdateUserRequest("Another Name", null, Collections.singleton(3L));
+        UserApi executed = subject.update(username, request);
 
-        InOrder inOrder = Mockito.inOrder(cloudStorageService,
-                userConnector,
-                userCategoryRepository,
-                categoryRepository);
-        inOrder.verify(userConnector).get(USERNAME);
-        inOrder.verify(cloudStorageService).delete("photoUrl");
-        inOrder.verify(userCategoryRepository).findAllByUserId(1L);
-        inOrder.verify(userCategoryRepository).deleteInBatch(Collections.singletonList(userCategory));
-        inOrder.verify(categoryRepository).getOne(3L);
-        inOrder.verify(userCategoryRepository).save(UserCategory.newBuilder()
-                .category(Category.newBuilder()
-                        .name("Category")
-                        .id(10L)
-                        .build())
-                .userId(1L)
-                .build());
-        user.setPhoto("newUrl");
-        user.setName("Another Name");
-        inOrder.verify(userConnector).update(user);
+        Assert.assertEquals(UserApiFixture.defaultValue, executed);
+        Mockito.verify(updateUserDelegate, Mockito.only()).execute(username, request);
     }
 
-    @Ignore
-    @Test
-    public void shouldNotSaveNorUpdateUserPhotoIfTheseAreNotValid() throws GenericException {
-        user.setPhoto("photoUrl");
-        subject.update(USERNAME, new UpdateUserRequest(null, Collections.emptySet()));
-        verifyNoInteractions(cloudStorageService);
-        verifyNoInteractions(categoryRepository);
-        verify(userConnector).update(user);
+    @Test(expected = GenericException.class)
+    public void shouldFailCreatingUserIfAlreadyExists() throws GenericException {
+        try {
+            subject.create(new CreateUserRequest());
+        } catch (GenericException e) {
+            Assert.assertEquals("USER_ALREADY_EXISTS", e.getErrorCode());
+            Mockito.verifyNoInteractions(createUserDelegate, authenticationConnector);
+            throw e;
+        }
+        Assert.fail();
+    }
+
+    @Test(expected = GenericException.class)
+    public void shouldFailCreatingUserIfCommunicationFails() throws GenericException {
+        String errorMessage = "Error message";
+        Mockito.when(userConnector.get(any(), any(), any()))
+                .thenThrow(new WebException(errorMessage, "COMMUNICATION_FAILURE"));
+
+        try {
+            subject.create(new CreateUserRequest());
+        } catch (GenericException e) {
+            Assert.assertEquals("UNEXPECTED_ERROR", e.getErrorCode());
+            Assert.assertEquals(errorMessage, e.getMessage());
+            Mockito.verifyNoInteractions(createUserDelegate, authenticationConnector);
+            throw e;
+        }
+        Assert.fail();
+    }
+
+    @Test(expected = GenericException.class)
+    public void shouldFailVerifyingEmailIfCommunicationFails() throws GenericException {
+        Mockito.when(userConnector.get(any(), any(), any()))
+                .thenThrow(new WebException("Error message", "COMMUNICATION_FAILURE"));
+        try {
+            subject.verify(email);
+        } catch (GenericException e) {
+            Assert.assertEquals("Error message", e.getMessage());
+            Mockito.verifyNoInteractions(otpService, mailService);
+            throw e;
+        }
+        Assert.fail();
     }
 
 }

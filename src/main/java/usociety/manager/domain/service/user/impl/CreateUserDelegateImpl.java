@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.provider.user.UserConnector;
+import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.email.MailService;
 import usociety.manager.domain.service.otp.OtpService;
@@ -43,7 +46,7 @@ public class CreateUserDelegateImpl implements CreateUserDelegate {
     }
 
     @Override
-    public void execute(CreateUserRequest request) throws GenericException {
+    public UserApi execute(CreateUserRequest request) throws GenericException {
         if (validateOtp) {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
@@ -51,14 +54,17 @@ public class CreateUserDelegateImpl implements CreateUserDelegate {
         String photoUrl = cloudStorageService.upload(request.getPhoto());
         request.setPhoto(photoUrl);
 
+        UserDTO userDTO;
         try {
-            userConnector.create(request);
+            userDTO = userConnector.create(request);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
             throw new GenericException("User could not be created", "ERROR_CREATING_USER", ex);
         }
 
         mailService.send(request.getEmail(), buildEmailContent(request), TRUE);
+
+        return Converter.user(userDTO);
     }
 
     private String buildEmailContent(CreateUserRequest request) {

@@ -1,5 +1,7 @@
 package usociety.manager.domain.service.user.impl;
 
+import static usociety.manager.domain.util.Constants.USER_NOT_FOUND;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,8 +14,8 @@ import usociety.manager.app.api.TokenApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.app.rest.request.UpdateUserRequest;
-import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
@@ -27,7 +29,6 @@ import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.service.user.CreateUserDelegate;
 import usociety.manager.domain.service.user.UpdateUserDelegate;
 import usociety.manager.domain.service.user.UserService;
-import usociety.manager.domain.util.Constants;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -60,13 +61,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse create(CreateUserRequest request) throws GenericException {
         validateUser(request.getUsername(), request.getEmail());
+        UserApi user = createUserDelegate.execute(request);
 
-        createUserDelegate.execute(request);
-
-        return login(UserLoginRequest.newBuilder()
-                .username(request.getUsername())
-                .password(request.getPassword())
-                .build());
+        TokenApi token = authenticationConnector.login(new LoginRequest(request.getUsername(), request.getPassword()));
+        return new LoginResponse(user, token);
     }
 
     @Override
@@ -96,7 +94,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResponse login(UserLoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         UserDTO user = userConnector.get(request.getUsername());
         TokenApi token = authenticationConnector.login(request);
 
@@ -139,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 throw new GenericException("User is already registered", "USER_ALREADY_EXISTS");
             }
         } catch (WebException ex) {
-            if (!Constants.USER_NOT_FOUND.equals(ex.getErrorCode())) {
+            if (!USER_NOT_FOUND.equals(ex.getErrorCode())) {
                 throw new GenericException(ex.getMessage());
             }
         }

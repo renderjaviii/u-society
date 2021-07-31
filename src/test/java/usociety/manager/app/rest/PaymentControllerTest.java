@@ -109,8 +109,7 @@ public class PaymentControllerTest extends TestUtils {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andReturn();
 
-        String contentResponse = mvcResult.getResponse().getContentAsString();
-        ApiError executed = mapper.readValue(contentResponse, ApiError.class);
+        ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
 
         String errorDescription = executed.getDescription();
         Assert.assertTrue(errorDescription.contains("documentNumber must match \"[\\d+]{7,11}\""));
@@ -140,8 +139,7 @@ public class PaymentControllerTest extends TestUtils {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andReturn();
 
-        String contentResponse = mvcResult.getResponse().getContentAsString();
-        ApiError executed = mapper.readValue(contentResponse, ApiError.class);
+        ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
 
         String errorDescription = executed.getDescription();
         Assert.assertTrue(errorDescription.contains("pseBankCode must be greater than or equal to 1"));

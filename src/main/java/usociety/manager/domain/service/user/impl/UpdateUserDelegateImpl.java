@@ -1,7 +1,6 @@
 package usociety.manager.domain.service.user.impl;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +58,7 @@ public class UpdateUserDelegateImpl implements UpdateUserDelegate {
     private String processPhotoAndGetUrl(UserDTO user, UpdateUserRequest request)
             throws GenericException {
         String currentUserPhoto = user.getPhoto();
-        if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(user.getPhoto())) {
+        if (StringUtils.isNotEmpty(request.getPhoto()) && !request.getPhoto().equals(user.getPhoto())) {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }
@@ -80,10 +79,7 @@ public class UpdateUserDelegateImpl implements UpdateUserDelegate {
         });
 
         for (Long categoryId : categorySet) {
-            userCategoryRepository.save(UserCategory.newBuilder()
-                    .category(getCategoryEntity(categoryId))
-                    .userId(user.getId())
-                    .build());
+            userCategoryRepository.save(new UserCategory(user.getId(), getCategoryEntity(categoryId)));
         }
     }
 
