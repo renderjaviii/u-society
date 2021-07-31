@@ -6,17 +6,16 @@ import javax.mail.MessagingException;
 
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserGroupApi;
-import usociety.manager.app.rest.request.CreateGroupRequest;
-import usociety.manager.app.rest.request.UpdateGroupRequest;
+import usociety.manager.app.rest.request.CreateOrUpdateGroupRequest;
 import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
 
 public interface GroupService {
 
-    GroupApi create(String username, CreateGroupRequest request) throws GenericException;
+    GroupApi create(String username, CreateOrUpdateGroupRequest request) throws GenericException;
 
-    void update(String username, UpdateGroupRequest request) throws GenericException;
+    GroupApi update(String username, Long id, CreateOrUpdateGroupRequest request) throws GenericException;
 
     void join(String username, Long id) throws GenericException, MessagingException;
 

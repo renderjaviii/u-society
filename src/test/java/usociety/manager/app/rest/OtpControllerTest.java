@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import usociety.manager.TestUtils;
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.app.handler.RestExceptionHandler;
 import usociety.manager.domain.service.otp.OtpService;
@@ -73,7 +74,7 @@ public class OtpControllerTest extends TestUtils {
         String email = "email@domain.com";
         String otpCode = "12345";
 
-        mockMvc.perform(MockMvcRequestBuilders.patch(BASE_PATH.concat("/validate"))
+        mockMvc.perform(MockMvcRequestBuilders.post(BASE_PATH.concat("/validate"))
                 .param("email", email)
                 .param("otpCode", otpCode))
                 .andExpect(MockMvcResultMatchers.status().isOk());

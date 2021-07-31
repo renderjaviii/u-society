@@ -3,6 +3,7 @@ package usociety.manager.domain.service.user.impl;
 import static org.mockito.ArgumentMatchers.any;
 import static usociety.manager.app.api.UserApiFixture.email;
 import static usociety.manager.app.api.UserApiFixture.username;
+import static usociety.manager.domain.util.Constants.USER_NOT_FOUND;
 
 import java.util.Collections;
 import java.util.List;
@@ -127,6 +128,23 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void shouldVerifyEmailCorrectlyIfUserDoesNotExists() throws GenericException {
+        Mockito.when(userConnector.get(any(), any(), any()))
+                .thenThrow(new WebException("Error message", USER_NOT_FOUND));
+
+        Mockito.when(otpService.create(any())).thenReturn(OtpApi.newBuilder()
+                .otpCode(OTP_CODE)
+                .build());
+
+        subject.verify(email);
+
+        InOrder inOrder = Mockito.inOrder(userConnector, otpService, mailService);
+        inOrder.verify(userConnector).get(null, null, email);
+        inOrder.verify(otpService).create(email);
+        inOrder.verify(mailService).sendOtp(email, OTP_CODE);
+    }
+
+    @Test
     public void shouldGetUserByUsernameCorrectly() {
         userApi.setCategoryList(Collections.emptyList());
 
@@ -235,20 +253,6 @@ public class UserServiceImplTest {
             Assert.assertEquals("UNEXPECTED_ERROR", e.getErrorCode());
             Assert.assertEquals(errorMessage, e.getMessage());
             Mockito.verifyNoInteractions(createUserDelegate, authenticationConnector);
-            throw e;
-        }
-        Assert.fail();
-    }
-
-    @Test(expected = GenericException.class)
-    public void shouldFailVerifyingEmailIfCommunicationFails() throws GenericException {
-        Mockito.when(userConnector.get(any(), any(), any()))
-                .thenThrow(new WebException("Error message", "COMMUNICATION_FAILURE"));
-        try {
-            subject.verify(email);
-        } catch (GenericException e) {
-            Assert.assertEquals("Error message", e.getMessage());
-            Mockito.verifyNoInteractions(otpService, mailService);
             throw e;
         }
         Assert.fail();

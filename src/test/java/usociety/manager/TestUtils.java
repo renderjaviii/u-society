@@ -1,4 +1,4 @@
-package usociety.manager.app.rest;
+package usociety.manager;
 
 import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -49,7 +50,11 @@ public abstract class TestUtils {
 
     protected <T> T readMvcResultValue(MvcResult mvcResult, Class<T> clazz) {
         try {
-            return mapper.readValue(mvcResult.getResponse().getContentAsString(), clazz);
+            String responseContent = mvcResult.getResponse().getContentAsString();
+            if (StringUtils.isEmpty(responseContent)) {
+                return null;
+            }
+            return mapper.readValue(responseContent, clazz);
         } catch (JsonProcessingException | UnsupportedEncodingException ex) {
             throw new RuntimeException("Error reading value", ex);
         }

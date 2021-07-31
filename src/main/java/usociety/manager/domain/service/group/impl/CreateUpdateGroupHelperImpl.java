@@ -4,8 +4,11 @@ import static com.amazonaws.util.StringUtils.COMMA_SEPARATOR;
 import static java.lang.Boolean.TRUE;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
+import static usociety.manager.domain.util.Constants.FORBIDDEN_ACCESS;
+import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,7 +22,7 @@ import com.github.slugify.Slugify;
 
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
-import usociety.manager.app.rest.request.CreateGroupRequest;
+import usociety.manager.app.rest.request.CreateOrUpdateGroupRequest;
 import usociety.manager.domain.converter.Converter;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Category;
@@ -30,12 +33,13 @@ import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.email.SendAsyncEmailDelegate;
-import usociety.manager.domain.service.group.CreateGroupDelegate;
+import usociety.manager.domain.service.group.CreateUpdateGroupHelper;
 
 @Component
-public class CreateGroupDelegateImpl implements CreateGroupDelegate {
+public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
 
     private static final String GROUP_NAME_ERROR_FORMAT = "Group with name: %s already exists";
+    private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
     private static final String CREATING_GROUP_ERROR_CODE = "ERROR_CREATING_GROUP";
     private static final String ADMINISTRATOR_ROLE = "Administrator";
 
@@ -47,12 +51,12 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
     private final Slugify slugify;
 
     @Autowired
-    public CreateGroupDelegateImpl(UserGroupRepository userGroupRepository,
-                                   CloudStorageService cloudStorageService,
-                                   SendAsyncEmailDelegate sendAsyncEmailDelegate,
-                                   CategoryService categoryService,
-                                   GroupRepository groupRepository,
-                                   Slugify slugify) {
+    public CreateUpdateGroupHelperImpl(UserGroupRepository userGroupRepository,
+                                       CloudStorageService cloudStorageService,
+                                       SendAsyncEmailDelegate sendAsyncEmailDelegate,
+                                       CategoryService categoryService,
+                                       GroupRepository groupRepository,
+                                       Slugify slugify) {
         this.userGroupRepository = userGroupRepository;
         this.cloudStorageService = cloudStorageService;
         this.sendAsyncEmailDelegate = sendAsyncEmailDelegate;
@@ -63,7 +67,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
 
     @Override
     @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
-    public GroupApi execute(UserApi user, CreateGroupRequest request)
+    public GroupApi create(UserApi user, CreateOrUpdateGroupRequest request)
             throws GenericException {
         validateExistingGroup(request);
 
@@ -83,7 +87,32 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
         return Converter.group(savedGroup);
     }
 
-    private void validateExistingGroup(CreateGroupRequest request) throws GenericException {
+    @Override
+    @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
+    public GroupApi update(UserApi user, Long id, CreateOrUpdateGroupRequest request) throws GenericException {
+        Group group = getGroup(id);
+
+        UserGroup userGroup = getUserGroup(user.getId(), id);
+        if (!userGroup.isAdmin()) {
+            throw new GenericException("Only admins can perform this operation", FORBIDDEN_ACCESS);
+        }
+
+        Category category = categoryService.get(request.getCategory().getId());
+        Group updatedGroup = groupRepository.save(Group.newBuilder()
+                .objectives(removeCommasAndCapitalize(request.getObjectives()))
+                .slug(slugify.slugify(request.getName()))
+                .rules(removeCommasAndCapitalize(request.getRules()))
+                .description(request.getDescription())
+                .photo(getPhoto(request, group))
+                .name(request.getName())
+                .category(category)
+                .id(group.getId())
+                .build());
+
+        return Converter.group(updatedGroup);
+    }
+
+    private void validateExistingGroup(CreateOrUpdateGroupRequest request) throws GenericException {
         Optional<Group> optionalGroup = groupRepository.findByName(request.getName());
         if (optionalGroup.isPresent()) {
             String errorMessage = String.format(GROUP_NAME_ERROR_FORMAT, request.getName());
@@ -91,7 +120,7 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
         }
     }
 
-    private Group saveGroup(CreateGroupRequest request, Category category, String photoUrl) {
+    private Group saveGroup(CreateOrUpdateGroupRequest request, Category category, String photoUrl) {
         return groupRepository.save(Group.newBuilder()
                 .objectives(removeCommasAndCapitalize(request.getObjectives()))
                 .slug(slugify.slugify(request.getName()))
@@ -120,6 +149,25 @@ public class CreateGroupDelegateImpl implements CreateGroupDelegate {
                 .group(savedGroup)
                 .isAdmin(TRUE)
                 .build());
+    }
+
+    private UserGroup getUserGroup(Long userId, Long groupId) throws GenericException {
+        return userGroupRepository
+                .findByGroupIdAndUserIdAndStatus(groupId, userId, ACTIVE.getValue())
+                .orElseThrow(
+                        () -> new GenericException("User is not an active member", UPDATING_MEMBERSHIP_ERROR_CODE));
+    }
+
+    private String getPhoto(CreateOrUpdateGroupRequest request, Group group) throws GenericException {
+        boolean photoHasChanged = Objects.nonNull(request.getPhoto())
+                && !request.getPhoto().equals(group.getPhoto());
+
+        return photoHasChanged ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto();
+    }
+
+    private Group getGroup(Long id) throws GenericException {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new GenericException("Group does not exist", GROUP_NOT_FOUND));
     }
 
 }

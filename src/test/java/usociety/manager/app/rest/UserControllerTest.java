@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import usociety.manager.TestUtils;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.TokenApiFixture;
 import usociety.manager.app.api.UserApi;
@@ -181,8 +182,8 @@ public class UserControllerTest extends TestUtils {
 
     @Test
     public void shouldFailDeletingUserIfTokenDoesNotBelongToHim() throws Exception {
-        MvcResult mvcResult = mockMvc
-                .perform(MockMvcRequestBuilders.delete("/services/users/{username}", "fake-username"))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/services/users/{username}", "fake-username"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn();
 
@@ -198,8 +199,8 @@ public class UserControllerTest extends TestUtils {
         ChangePasswordRequest request = new ChangePasswordRequest("1234ABC", "T3$t123abc");
         String otpCode = "2468";
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/services/users/{username}/change-password",
-                "fake-username")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .patch("/services/users/{username}/change-password", "fake-username")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request))
                 .param("otpCode", otpCode))

@@ -13,59 +13,54 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
+import usociety.manager.app.util.validator.AlphanumericConstraint;
 
-@ApiModel(value = "Request to update group.")
+@ApiModel(value = "Create or update group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateGroupRequest extends BaseObject {
-
-    @NotNull
-    @JsonProperty
-    private Long id;
+public class CreateOrUpdateGroupRequest extends BaseObject {
 
     @NotEmpty
+    @Size(max = 100)
+    @AlphanumericConstraint
     @JsonProperty
     private String name;
 
-    @NotEmpty
     @JsonProperty
     private String description;
 
     @JsonProperty
     private String photo;
 
-    @Size(min = 1)
-    @JsonProperty
-    private List<String> objectives;
-
-    @Size(min = 1)
-    @JsonProperty
-    private List<String> rules;
-
     @Valid
     @NotNull
     @JsonProperty
     private CategoryApi category;
 
-    public UpdateGroupRequest() {
+    @NotNull
+    @Size(min = 1)
+    @JsonProperty
+    private List<String> objectives;
+
+    @NotNull
+    @Size(min = 1)
+    @JsonProperty
+    private List<String> rules;
+
+    public CreateOrUpdateGroupRequest() {
         super();
     }
 
-    private UpdateGroupRequest(Builder builder) {
-        id = builder.id;
+    private CreateOrUpdateGroupRequest(Builder builder) {
         name = builder.name;
         description = builder.description;
         photo = builder.photo;
+        category = builder.category;
         objectives = builder.objectives;
         rules = builder.rules;
-        category = builder.category;
     }
 
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
@@ -74,10 +69,6 @@ public class UpdateGroupRequest extends BaseObject {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getPhoto() {
-        return photo;
     }
 
     public List<String> getObjectives() {
@@ -92,6 +83,10 @@ public class UpdateGroupRequest extends BaseObject {
         return category;
     }
 
+    public String getPhoto() {
+        return photo;
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
@@ -104,7 +99,6 @@ public class UpdateGroupRequest extends BaseObject {
 
     public static final class Builder {
 
-        private Long id;
         private String name;
         private String description;
         private String photo;
@@ -113,11 +107,7 @@ public class UpdateGroupRequest extends BaseObject {
         private CategoryApi category;
 
         private Builder() {
-        }
-
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
+            super();
         }
 
         public Builder name(String name) {
@@ -150,8 +140,8 @@ public class UpdateGroupRequest extends BaseObject {
             return this;
         }
 
-        public UpdateGroupRequest build() {
-            return new UpdateGroupRequest(this);
+        public CreateOrUpdateGroupRequest build() {
+            return new CreateOrUpdateGroupRequest(this);
         }
 
     }
