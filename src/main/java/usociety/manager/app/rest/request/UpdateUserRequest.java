@@ -21,7 +21,6 @@ public class UpdateUserRequest extends BaseObject {
     @JsonProperty
     private String photo;
 
-    //@Size(min = 1)
     @JsonProperty
     private Set<Long> categoryList;
 

@@ -51,7 +51,7 @@ public class UserApiFixture {
         lastAccessAt = dateTime;
 
         defaultValue = UserApi.newBuilder()
-                .categoryList(categoryList)
+                .categoryList(Collections.emptyList())
                 .lastAccessAt(lastAccessAt)
                 .createdAt(createdAt)
                 .username(username)

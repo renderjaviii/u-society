@@ -114,7 +114,7 @@ public class CreatePostRequest extends BaseObject {
         private LocalDateTime creationDate;
         private boolean isPublic;
         private String image;
-        private @Valid @NotNull PostAdditionalData content;
+        private PostAdditionalData content;
         private List<ReactApi> reacts;
         private List<CommentApi> comments;
         private String description;
@@ -142,7 +142,7 @@ public class CreatePostRequest extends BaseObject {
             return this;
         }
 
-        public Builder content(@Valid @NotNull PostAdditionalData content) {
+        public Builder content(PostAdditionalData content) {
             this.content = content;
             return this;
         }

@@ -56,7 +56,7 @@ public class CreateUserDelegateImplTest {
 
     @Before
     public void setUp() {
-        ReflectionTestUtils.setField(subject, "validateOtp", TRUE);
+        ReflectionTestUtils.setField(subject, "validateOtp", TRUE, Boolean.class);
 
         request = CreateUserRequest.newBuilder()
                 .password(UserApiFixture.password)

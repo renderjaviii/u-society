@@ -27,7 +27,7 @@ public class CreateUserDelegateImpl implements CreateUserDelegate {
             "</html></body>";
 
     @Value("${config.user.validate-otp:0}")
-    private boolean validateOtp;
+    private Boolean validateOtp;
 
     private final CloudStorageService cloudStorageService;
     private final UserConnector userConnector;
