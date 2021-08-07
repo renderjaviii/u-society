@@ -42,7 +42,7 @@
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
         <sonar.coverage.exclusions>
-            **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java
+            **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java, **/Converter.java
         </sonar.coverage.exclusions>
         <sonar.exclusions>**/Application.java, **/RestExceptionHandler.java</sonar.exclusions>
     </properties>
