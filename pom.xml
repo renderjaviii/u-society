@@ -16,9 +16,18 @@
 
     <properties>
         <java.version>1.8</java.version>
+
         <sonar.projectKey>u-society:manager</sonar.projectKey>
         <sonar.organization>renderjaviii</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../target/jacoco.exec
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.language>java</sonar.language>
+        <sonar.exclusions>**/app/config/*.*, **/domain/**/*.*</sonar.exclusions>
 
         <mysql-connector.version>8.0.19</mysql-connector.version>
         <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
@@ -149,6 +158,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
         </dependency>
 
         <dependency>
