@@ -1,3 +1,7 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=u-society%3Amanager&metric=alert_status)](https://sonarcloud.io/dashboard?id=u-society%3Amanager)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=u-society%3Amanager&metric=security_rating)](https://sonarcloud.io/dashboard?id=u-society%3Amanager)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=u-society%3Amanager&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=u-society%3Amanager)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=u-society%3Amanager&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=u-society%3Amanager)
 
 # Welcome to U Society - REST Manager!
 
