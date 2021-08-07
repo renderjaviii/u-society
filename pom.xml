@@ -27,7 +27,7 @@
             ${project.basedir}/../target/jacoco.exec
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
-        <sonar.exclusions>**/app/config/*.*, **/domain/**/*.*</sonar.exclusions>
+        <sonar.exclusions>**/*Message*.java, **/*Post*.java, **/app/config/*.*, **/domain/**/*.*</sonar.exclusions>
 
         <mysql-connector.version>8.0.19</mysql-connector.version>
         <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
