@@ -13,7 +13,7 @@ import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "User Api")
 @JsonRootName(value = "user")
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserApi extends BaseObject {
 
     @JsonProperty

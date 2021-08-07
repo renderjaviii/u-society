@@ -28,7 +28,6 @@
         <jackson-databind.version>2.10.3</jackson-databind.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <reactor-spring.version>1.0.1.RELEASE</reactor-spring.version>
-        <model-mapper.version>2.3.5</model-mapper.version>
         <aws-java-sdk.version>1.11.133</aws-java-sdk.version>
         <slugify.version>2.4</slugify.version>
         <tomcat-embed-core.version>9.0.33</tomcat-embed-core.version>
@@ -92,12 +91,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>${model-mapper.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
@@ -156,6 +149,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
 

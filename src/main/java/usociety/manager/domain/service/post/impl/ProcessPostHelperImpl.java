@@ -57,8 +57,8 @@ public class ProcessPostHelperImpl extends AbstractDelegateImpl implements Proce
 
     @Override
     @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
-    public PostApi create(UserApi user, CreatePostRequest request) throws GenericException {
-        Group group = getGroup(request.getGroupId());
+    public PostApi create(UserApi user, Long groupId, CreatePostRequest request) throws GenericException {
+        Group group = getGroup(groupId);
 
         validateRequest(request);
         processContent(request);

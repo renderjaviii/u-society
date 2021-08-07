@@ -6,6 +6,6 @@ import usociety.manager.domain.model.Post;
 
 public interface ReactService {
 
-    void create(String username, Post post, ReactTypeEnum value) throws GenericException;
+    void createOrUpdate(String username, Post post, ReactTypeEnum value) throws GenericException;
 
 }

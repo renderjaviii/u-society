@@ -63,12 +63,12 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
     }
 
     @Override
-    public List<PostApi> execute(UserApi user, Long groupId, int page) throws GenericException {
+    public List<PostApi> execute(UserApi user, Long groupId, int page, int pageSize) throws GenericException {
         Optional<UserGroup> optionalUserGroup = userGroupRepository
                 .findByGroupIdAndUserIdAndStatus(groupId, user.getId(), ACTIVE.getValue());
 
         boolean isMember = optionalUserGroup.isPresent();
-        List<Post> posts = getGroupPosts(groupId, isMember, page);
+        List<Post> posts = getGroupPosts(groupId, isMember, page, pageSize);
 
         List<PostApi> response = new ArrayList<>();
         for (Post post : posts) {
@@ -83,9 +83,9 @@ public class GetAllGroupPostsDelegateImpl extends AbstractDelegateImpl implement
         return response;
     }
 
-    private List<Post> getGroupPosts(Long groupId, boolean isMember, int page) {
+    private List<Post> getGroupPosts(Long groupId, boolean isMember, int page, int pageSize) {
         List<Post> posts = postRepository
-                .findAllByGroupIdOrderByCreationDateDesc(groupId, PageableUtils.paginate(page));
+                .findAllByGroupIdOrderByCreationDateDesc(groupId, PageableUtils.paginate(page, pageSize));
 
         if (!isMember) {
             return posts.stream()

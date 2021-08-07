@@ -2,6 +2,7 @@ package usociety.manager.domain.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,6 +47,12 @@ public class Group extends BaseObject {
     @Convert(converter = StringListConverter.class)
     private List<String> rules;
 
+    @Column(name = "created_at", updatable = false, nullable = false, columnDefinition = "DATE")
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at", columnDefinition = "DATE")
+    private LocalDate updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
@@ -57,11 +64,13 @@ public class Group extends BaseObject {
     private Group(Builder builder) {
         id = builder.id;
         name = builder.name;
+        slug = builder.slug;
         description = builder.description;
         photo = builder.photo;
-        slug = builder.slug;
         objectives = builder.objectives;
         rules = builder.rules;
+        createdAt = builder.createdAt;
+        updatedAt = builder.updatedAt;
         category = builder.category;
     }
 
@@ -73,64 +82,40 @@ public class Group extends BaseObject {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getPhoto() {
         return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
     }
 
     public List<String> getObjectives() {
         return objectives;
     }
 
-    public void setObjectives(List<String> objectives) {
-        this.objectives = objectives;
-    }
-
     public List<String> getRules() {
         return rules;
-    }
-
-    public void setRules(List<String> rules) {
-        this.rules = rules;
     }
 
     public Category getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public String getSlug() {
         return slug;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
     }
 
     @Override
@@ -157,6 +142,8 @@ public class Group extends BaseObject {
         private String photo;
         private List<String> objectives;
         private List<String> rules;
+        private LocalDate createdAt;
+        private LocalDate updatedAt;
         private Category category;
         private String slug;
 
@@ -196,6 +183,16 @@ public class Group extends BaseObject {
 
         public Builder rules(List<String> rules) {
             this.rules = rules;
+            return this;
+        }
+
+        public Builder createdAt(LocalDate createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder updatedAt(LocalDate updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 

@@ -25,9 +25,9 @@ public class ChangePasswordRequest extends BaseObject {
         super();
     }
 
-    private ChangePasswordRequest(Builder builder) {
-        oldPassword = builder.oldPassword;
-        newPassword = builder.newPassword;
+    public ChangePasswordRequest(String oldPassword, String newPassword) {
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
     }
 
     public String getOldPassword() {
@@ -46,35 +46,6 @@ public class ChangePasswordRequest extends BaseObject {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
-    public static final class Builder {
-
-        private String oldPassword;
-        private String newPassword;
-
-        private Builder() {
-            super();
-        }
-
-        public Builder oldPassword(String oldPassword) {
-            this.oldPassword = oldPassword;
-            return this;
-        }
-
-        public Builder newPassword(String newPassword) {
-            this.newPassword = newPassword;
-            return this;
-        }
-
-        public ChangePasswordRequest build() {
-            return new ChangePasswordRequest(this);
-        }
-
     }
 
 }

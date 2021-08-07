@@ -50,21 +50,21 @@ public class SurveyServiceImpl extends AbstractServiceImpl implements SurveyServ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void create(String username, Post post, Integer vote) throws GenericException {
+    public void create(String username, Post post, Integer option) throws GenericException {
         UserApi user = getUser(username);
 
         PostApi postApi = Converter.post(post);
         PostAdditionalData postAdditionalData = postApi.getContent();
 
-        validateSurveyConstraints(vote, post, postAdditionalData);
+        validateSurveyConstraints(option, post, postAdditionalData);
 
         surveyRepository.save(Survey.newBuilder()
                 .userId(user.getId())
                 .post(post)
-                .vote(vote)
+                .vote(option)
                 .build());
 
-        updatePostMetadata(vote, postApi, postAdditionalData);
+        updatePostMetadata(option, postApi, postAdditionalData);
     }
 
     private void validateSurveyConstraints(Integer vote, Post post, PostAdditionalData postAdditionalData)

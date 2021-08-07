@@ -34,7 +34,7 @@ public class Otp extends BaseObject {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
-    @Column(name = "username_owner", nullable = false, updatable = false)
+    @Column(name = "username_owner", updatable = false)
     private String usernameOwner;
 
     @Column(name = "email_owner", nullable = false)

@@ -22,7 +22,7 @@ services:
       - "../../../../u-society-auth-api/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/3-authentication-schema.sql"
       - "../../../../u-society-auth-api/src/main/resources/data.sql:/docker-entrypoint-initdb.d/4-authentication-data.sql"
 
-networks: 
+networks:
   default:
     name: "company-database-network"
 

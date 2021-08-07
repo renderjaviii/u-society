@@ -37,21 +37,25 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
 
     private static final String UPLOADING_FILE_ERROR_CODE = "UPLOADING_FILE_FAILED";
     private static final String FILE_URL_FORMAT = "%s/%s";
+    public static final String ENCODING_PREFIX = "base64,";
 
-    @Value("${config.aws.access-key}")
+    @Value("${config.aws.access-key:accessKey}")
     private String accessKey;
 
-    @Value("${config.aws.secret-key}")
+    @Value("${config.aws.secret-key:secretKey}")
     private String secretKey;
 
-    @Value("${config.aws.session-token}")
+    @Value("${config.aws.session-token:awsSessionToken}")
     private String sessionToken;
 
-    @Value("${config.aws.endpoint-url}")
+    @Value("${config.aws.endpoint-url:endpoint}")
     private String endpointUrl;
 
-    @Value("${config.aws.bucket-name}")
+    @Value("${config.aws.bucket-name:bucketName}")
     private String bucketName;
+
+    @Value("${config.aws.use-mock:true}")
+    private boolean useMock;
 
     private final Clock clock;
 
@@ -74,24 +78,17 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
 
     @Override
     public String upload(String base64Image) throws GenericException {
+
         if (StringUtils.isNotEmpty(base64Image)) {
             String fileName = generateFileName();
-            File file = convertBase64ToFile(base64Image, fileName);
-            String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
 
-            try {
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
-                s3client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (Exception ex) {
-                s3client.deleteObject(bucketName, fileName);
-                throw new GenericException("Error deleting file from S3", UPLOADING_FILE_ERROR_CODE, ex);
-            } finally {
-                try {
-                    Files.delete(file.toPath());
-                } catch (IOException ex) {
-                    LOGGER.error("Error deleting local file", ex);
-                }
+            String fileUrl = String.format(FILE_URL_FORMAT, endpointUrl, fileName);
+            if (useMock) {
+                return fileUrl;
             }
+
+            File file = convertBase64ToFile(base64Image, fileName);
+            uploadFile(fileName, file);
             return fileUrl;
         }
         return null;
@@ -104,12 +101,16 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
         }
     }
 
+    private String generateFileName() {
+        return String.format("%s-image", LocalDateTime.now(clock));
+    }
+
     private File convertBase64ToFile(String base64Image, String fileName) throws GenericException {
         File file;
         try {
-            String encodingPrefix = "base64,";
-            int contentStartIndex = base64Image.indexOf(encodingPrefix) + encodingPrefix.length();
+            int contentStartIndex = base64Image.indexOf(ENCODING_PREFIX) + ENCODING_PREFIX.length();
             byte[] decodedBytes = Base64.getDecoder().decode(base64Image.substring(contentStartIndex));
+
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception ex) {
@@ -119,8 +120,24 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
         return file;
     }
 
-    private String generateFileName() {
-        return String.format("%s-image", LocalDateTime.now(clock));
+    private void uploadFile(String fileName, File file) throws GenericException {
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+            s3client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (Exception ex) {
+            s3client.deleteObject(bucketName, fileName);
+            throw new GenericException("Error uploading file to S3", UPLOADING_FILE_ERROR_CODE, ex);
+        } finally {
+            deleteLocalFile(file);
+        }
+    }
+
+    private void deleteLocalFile(File file) {
+        try {
+            Files.delete(file.toPath());
+        } catch (IOException ex) {
+            LOGGER.error("Error deleting local file", ex);
+        }
     }
 
 }

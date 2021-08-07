@@ -13,6 +13,8 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     Optional<UserGroup> findByGroupIdAndUserId(Long groupId, Long userId);
 
+    Optional<UserGroup> findByGroupIdAndUserIdAndIsAdmin(Long groupId, Long userId, boolean isAdmin);
+
     List<UserGroup> findAllByGroupIdAndUserIdNot(Long groupId, Long userId);
 
     Optional<UserGroup> findByGroupIdAndIsAdmin(Long groupId, boolean isAdmin);

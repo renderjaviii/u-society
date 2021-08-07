@@ -8,50 +8,45 @@ import org.springframework.stereotype.Service;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserGroupApi;
-import usociety.manager.app.rest.request.CreateGroupRequest;
-import usociety.manager.app.rest.request.UpdateGroupRequest;
+import usociety.manager.app.rest.request.CreateOrUpdateGroupRequest;
 import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.model.Group;
-import usociety.manager.domain.service.group.CreateGroupDelegate;
+import usociety.manager.domain.service.group.CreateUpdateGroupHelper;
 import usociety.manager.domain.service.group.GetGroupHelper;
 import usociety.manager.domain.service.group.GroupMembershipHelper;
 import usociety.manager.domain.service.group.GroupService;
-import usociety.manager.domain.service.group.UpdateGroupDelegate;
 import usociety.manager.domain.service.user.UserService;
 
 @Service
 public class GroupServiceImpl implements GroupService {
 
+    private final CreateUpdateGroupHelper createUpdateGroupHelper;
     private final GroupMembershipHelper groupMembershipHelper;
-    private final UpdateGroupDelegate updateGroupDelegate;
-    private final CreateGroupDelegate createGroupDelegate;
     private final GetGroupHelper getGroupHelper;
     private final UserService userService;
 
     @Autowired
-    public GroupServiceImpl(GroupMembershipHelper groupMembershipHelper,
-                            UpdateGroupDelegate updateGroupDelegate,
-                            CreateGroupDelegate createGroupDelegate,
+    public GroupServiceImpl(CreateUpdateGroupHelper createUpdateGroupHelper,
+                            GroupMembershipHelper groupMembershipHelper,
                             GetGroupHelper getGroupHelper,
                             UserService userService) {
+        this.createUpdateGroupHelper = createUpdateGroupHelper;
         this.groupMembershipHelper = groupMembershipHelper;
-        this.updateGroupDelegate = updateGroupDelegate;
-        this.createGroupDelegate = createGroupDelegate;
         this.getGroupHelper = getGroupHelper;
         this.userService = userService;
     }
 
     @Override
-    public GroupApi create(String username, CreateGroupRequest request)
+    public GroupApi create(String username, CreateOrUpdateGroupRequest request)
             throws GenericException {
-        return createGroupDelegate.execute(getUser(username), request);
+        return createUpdateGroupHelper.create(getUser(username), request);
     }
 
     @Override
-    public void update(String username, UpdateGroupRequest request)
+    public GroupApi update(String username, Long id, CreateOrUpdateGroupRequest request)
             throws GenericException {
-        updateGroupDelegate.execute(getUser(username), request);
+        return createUpdateGroupHelper.update(getUser(username), id, request);
     }
 
     @Override

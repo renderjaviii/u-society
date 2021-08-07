@@ -19,6 +19,7 @@ import usociety.manager.domain.repository.MessageRepository;
 import usociety.manager.domain.service.common.CloudStorageService;
 import usociety.manager.domain.service.common.impl.AbstractServiceImpl;
 import usociety.manager.domain.service.message.MessageService;
+import usociety.manager.domain.util.PageableUtils;
 
 @Service
 public class MessageServiceImpl extends AbstractServiceImpl implements MessageService {
@@ -38,10 +39,10 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
 
     @Override
     @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
-    public void sendGroupMessage(String username, MessageApi message) throws GenericException {
+    public void sendGroupMessage(String username, Long groupId, MessageApi message) throws GenericException {
         UserApi user = getUser(username);
-        Group group = getGroup(message.getGroup().getId());
-        validateIfUserIsMember(username, group.getId(), SENDING_MESSAGE_ERROR_CODE);
+        Group group = getGroup(groupId);
+        validateIfUserIsMember(username, groupId, SENDING_MESSAGE_ERROR_CODE);
 
         String content = processContent(message);
 
@@ -55,15 +56,19 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     @Override
-    public List<MessageApi> getGroupMessages(String username, Long groupId) throws GenericException {
+    public List<MessageApi> getGroupMessages(String username, Long groupId, int page, int pageSize)
+            throws GenericException {
         validateIfUserIsMember(username, groupId, GETTING_GROUP_MESSAGES_ERROR_CODE);
 
-        List<MessageApi> groupMessages = new ArrayList<>();
-        for (Message message : messageRepository.findAllByGroupIdOrderByCreationDateDesc(groupId)) {
-            groupMessages.add(buildGroupMessage(message));
+        List<Message> messages = messageRepository
+                .findAllByGroupIdOrderByCreationDateDesc(groupId, PageableUtils.paginate(page, pageSize));
+
+        List<MessageApi> response = new ArrayList<>();
+        for (Message message : messages) {
+            response.add(buildGroupMessage(message));
         }
 
-        return groupMessages;
+        return response;
     }
 
     private String processContent(MessageApi message) throws GenericException {

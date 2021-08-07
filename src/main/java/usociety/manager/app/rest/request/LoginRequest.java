@@ -10,24 +10,24 @@ import usociety.manager.app.util.BaseObject;
 
 @ApiModel(value = "Request to user login.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserLoginRequest extends BaseObject {
+public class LoginRequest extends BaseObject {
 
     @NotNull
     @JsonProperty(value = "username")
     private String username;
 
-    //TODO: Hide this data on logs
+    //TODO: Hide this info from logs
     @NotNull
     @JsonProperty(value = "password")
     private String password;
 
-    public UserLoginRequest() {
+    public LoginRequest() {
         super();
     }
 
-    private UserLoginRequest(Builder builder) {
-        username = builder.username;
-        password = builder.password;
+    public LoginRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -38,10 +38,6 @@ public class UserLoginRequest extends BaseObject {
         return password;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
@@ -50,31 +46,6 @@ public class UserLoginRequest extends BaseObject {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public static final class Builder {
-
-        private String username;
-        private String password;
-
-        private Builder() {
-            super();
-        }
-
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public UserLoginRequest build() {
-            return new UserLoginRequest(this);
-        }
-
     }
 
 }

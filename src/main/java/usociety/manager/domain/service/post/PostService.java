@@ -10,9 +10,9 @@ import usociety.manager.domain.exception.GenericException;
 
 public interface PostService {
 
-    PostApi create(String username, CreatePostRequest request) throws GenericException;
+    PostApi create(String username, Long groupId, CreatePostRequest request) throws GenericException;
 
-    List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page) throws GenericException;
+    List<PostApi> getAllByUserAndGroup(String username, Long groupId, int page, int pageSize) throws GenericException;
 
     void update(PostApi post);
 
@@ -20,6 +20,6 @@ public interface PostService {
 
     void comment(String username, Long postId, CommentPostRequest request) throws GenericException;
 
-    void vote(String username, Long postId, Integer vote) throws GenericException;
+    void vote(String username, Long postId, Integer option) throws GenericException;
 
 }

@@ -12,7 +12,7 @@ import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
 @ApiModel(value = "Get group response.")
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetGroupResponse extends BaseObject {
 
     @JsonProperty

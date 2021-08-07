@@ -11,7 +11,7 @@ public interface UserConnector extends AbstractConnector {
 
     UserDTO create(CreateUserRequest body);
 
-    void update(UserDTO body);
+    UserDTO update(UserDTO body);
 
     UserDTO get(String username);
 

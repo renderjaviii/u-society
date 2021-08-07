@@ -20,7 +20,7 @@ public class CommentPostRequest extends BaseObject {
         super();
     }
 
-    public CommentPostRequest(@NotEmpty String comment) {
+    public CommentPostRequest(String comment) {
         this.comment = comment;
     }
 

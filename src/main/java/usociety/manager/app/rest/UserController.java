@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,14 +30,13 @@ import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
+import usociety.manager.app.rest.request.LoginRequest;
 import usociety.manager.app.rest.request.UpdateUserRequest;
-import usociety.manager.app.rest.request.UserLoginRequest;
 import usociety.manager.app.rest.response.LoginResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.exception.UserValidationException;
 import usociety.manager.domain.service.user.UserService;
 
-@CrossOrigin(origins = "*", maxAge = 86400)
 @Validated
 @RestController
 @RequestMapping(path = "services/users")
@@ -55,7 +53,7 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "User created."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -70,14 +68,13 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User verified and OTP sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/verify-email")
+    @PostMapping(path = "/{email}/verify")
     public ResponseEntity<Void> verify(
-            @Email @RequestParam(name = "email") final String email,
-            @RequestParam(name = "resendCode", required = false) final boolean resendCode
+            @Email @NotEmpty @PathVariable(name = "email") final String email
     ) throws GenericException {
-        userService.verify(email, resendCode);
+        userService.verify(email);
         return ResponseEntity.ok().build();
     }
 
@@ -85,11 +82,11 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Account enabled."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(path = "/enable-account")
+    @PostMapping(path = "/{email}/enable-account")
     public ResponseEntity<Void> enableAccount(
-            @Email @RequestParam(name = "email") final String email,
+            @Email @NotEmpty @PathVariable(name = "email") final String email,
             @NotEmpty @RequestParam(name = "otpCode") final String otpCode
     ) throws GenericException {
         userService.enableAccount(email, otpCode);
@@ -100,7 +97,7 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @GetMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> get(@PathVariable(value = "username") final String username)
@@ -112,24 +109,23 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
-        userService.update(getUser(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userService.update(getUser(), request));
     }
 
     @ApiOperation(value = "Login.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Token data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/login",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final UserLoginRequest request)
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request)
             throws GenericException {
         return new ResponseEntity<>(userService.login(request), OK);
     }
@@ -138,7 +134,7 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "User deleted."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username)
@@ -152,7 +148,7 @@ public class UserController extends AbstractController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Password changed."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 409, message = "Internal validation error.", response = ApiError.class),
+            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PatchMapping(path = "/{username}/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(

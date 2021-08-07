@@ -1,5 +1,6 @@
 package usociety.manager.app.util.validator;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import java.lang.reflect.Field;
@@ -8,21 +9,22 @@ import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 
 @SuppressWarnings( { "java:S5869", "java:S3011" })
 public class AlphanumericValidator implements ConstraintValidator<AlphanumericConstraint, String> {
 
     private static final String FIELD_NAME_ATTRIBUTE = "basePath";
-    public static final String ALPHANUMERIC_REGEX = "[\\w\\d]+";
+    public static final String ALPHANUMERIC_REGEX = "[\\w\\d\\s]+";
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return Pattern.matches(ALPHANUMERIC_REGEX, value);
+        return StringUtils.isNotEmpty(value) ? Pattern.matches(ALPHANUMERIC_REGEX, value) : FALSE;
     }
 
     /**
-     * Function that allows to get the attribute name dynamically using reflection
+     * Function that allows to get the attribute's name dynamically using reflection
      *
      * @return Validated field's name
      */

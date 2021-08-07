@@ -19,7 +19,6 @@ This microservice has the function of the resource server, so, if it’s the hea
 - _Spring Security_ (It provides the authentication and authorization mechanisms)  
 - _Webflux_ (Reactive REST client used to interconnect all the microservices' ecosystem)  
 - _Swagger UI_ (Used to document the API)  
-- _Model mapper_ (Used to convert between Java objects and matching JSON structures)  
 - _Spring mail_ (It provides the mail support)  
 - _Gmail SMTP_ (Email provider used to send emails)  
 - _Apache tomcat_ (Web server container)  

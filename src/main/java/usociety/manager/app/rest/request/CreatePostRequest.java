@@ -38,10 +38,6 @@ public class CreatePostRequest extends BaseObject {
     @JsonProperty
     private PostAdditionalData content;
 
-    @NotNull
-    @JsonProperty
-    private Long groupId;
-
     @JsonProperty
     private List<ReactApi> reacts;
 
@@ -53,6 +49,21 @@ public class CreatePostRequest extends BaseObject {
 
     public CreatePostRequest() {
         super();
+    }
+
+    private CreatePostRequest(Builder builder) {
+        expirationDate = builder.expirationDate;
+        creationDate = builder.creationDate;
+        isPublic = builder.isPublic;
+        image = builder.image;
+        content = builder.content;
+        reacts = builder.reacts;
+        comments = builder.comments;
+        description = builder.description;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public LocalDateTime getExpirationDate() {
@@ -69,10 +80,6 @@ public class CreatePostRequest extends BaseObject {
 
     public PostAdditionalData getContent() {
         return content;
-    }
-
-    public Long getGroupId() {
-        return groupId;
     }
 
     public List<ReactApi> getReacts() {
@@ -99,6 +106,66 @@ public class CreatePostRequest extends BaseObject {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    public static final class Builder {
+
+        private LocalDateTime expirationDate;
+        private LocalDateTime creationDate;
+        private boolean isPublic;
+        private String image;
+        private PostAdditionalData content;
+        private List<ReactApi> reacts;
+        private List<CommentApi> comments;
+        private String description;
+
+        private Builder() {
+        }
+
+        public Builder expirationDate(LocalDateTime expirationDate) {
+            this.expirationDate = expirationDate;
+            return this;
+        }
+
+        public Builder creationDate(LocalDateTime creationDate) {
+            this.creationDate = creationDate;
+            return this;
+        }
+
+        public Builder isPublic(boolean isPublic) {
+            this.isPublic = isPublic;
+            return this;
+        }
+
+        public Builder image(String image) {
+            this.image = image;
+            return this;
+        }
+
+        public Builder content(PostAdditionalData content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder reacts(List<ReactApi> reacts) {
+            this.reacts = reacts;
+            return this;
+        }
+
+        public Builder comments(List<CommentApi> comments) {
+            this.comments = comments;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public CreatePostRequest build() {
+            return new CreatePostRequest(this);
+        }
+
     }
 
 }

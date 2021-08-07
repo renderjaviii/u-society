@@ -39,7 +39,6 @@ public class MessageApi extends BaseObject {
     @JsonProperty
     private UserApi user;
 
-    @NotNull
     @ApiModelProperty("Group")
     @JsonProperty
     private GroupApi group;

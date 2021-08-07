@@ -1,12 +1,9 @@
 package usociety.manager.domain.converter;
 
-import static java.lang.Boolean.TRUE;
-
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.api.GroupApi;
@@ -21,22 +18,17 @@ import usociety.manager.domain.model.Post;
 import usociety.manager.domain.provider.authentication.dto.TokenDTO;
 import usociety.manager.domain.provider.user.dto.UserDTO;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
+import usociety.manager.domain.util.mapper.CustomObjectMapper;
+import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
 
 public class Converter {
 
-    private static final ModelMapper modelMapper;
-    private static final ObjectMapper objectMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
+
+    private static CustomObjectMapper objectMapper = new CustomObjectMapperImpl();
 
     private Converter() {
         super();
-    }
-
-    static {
-        modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)
-                .setFieldMatchingEnabled(TRUE);
-        objectMapper = new ObjectMapper();
     }
 
     public static TokenApi token(TokenDTO tokenDTO) {
@@ -51,46 +43,92 @@ public class Converter {
     }
 
     public static UserApi user(UserDTO user) {
-        return modelMapper.map(user, UserApi.class);
+        return UserApi.newBuilder()
+                .lastAccessAt(user.getLastAccessAt())
+                .createdAt(user.getCreatedAt())
+                .username(user.getUsername())
+                .photo(user.getPhoto())
+                .email(user.getEmail())
+                .name(user.getName())
+                .id(user.getId())
+                .build();
     }
 
     public static UserDTO user(UserApi user) {
-        return modelMapper.map(user, UserDTO.class);
+        return UserDTO.newBuilder()
+                .lastAccessAt(user.getLastAccessAt())
+                .createdAt(user.getCreatedAt())
+                .username(user.getUsername())
+                .photo(user.getPhoto())
+                .email(user.getEmail())
+                .name(user.getName())
+                .id(user.getId())
+                .build();
     }
 
     public static OtpApi otp(Otp otp) {
-        return modelMapper.map(otp, OtpApi.class);
+        return OtpApi.newBuilder()
+                .userEmailOwner(otp.getEmailOwner())
+                .usernameOwner(otp.getUsernameOwner())
+                .createdAt(otp.getCreatedAt())
+                .expiresAt(otp.getExpiresAt())
+                .otpCode(otp.getOtpCode())
+                .active(otp.isActive())
+                .id(otp.getId())
+                .build();
     }
 
     public static CategoryApi category(Category category) {
-        return modelMapper.map(category, CategoryApi.class);
+        return new CategoryApi(category.getId(), category.getName());
     }
 
     public static GroupApi group(Group group) {
-        GroupApi groupApi = modelMapper.map(group, GroupApi.class);
-        groupApi.setObjectives(group.getObjectives());
-        groupApi.setRules(group.getRules());
-        return groupApi;
+        return GroupApi.newBuilder()
+                .category(category(group.getCategory()))
+                .description(group.getDescription())
+                .objectives(group.getObjectives())
+                .rules(group.getRules())
+                .photo(group.getPhoto())
+                .name(group.getName())
+                .slug(group.getSlug())
+                .id(group.getId())
+                .build();
     }
 
     public static PostApi post(Post post) {
-        PostApi postApi = modelMapper.map(post, PostApi.class);
+        PostAdditionalData postAdditionalData = null;
         try {
-            postApi.setContent(objectMapper.readValue(post.getContent(), PostAdditionalData.class));
-        } catch (JsonProcessingException ignored) {
-            //It's no necessary.
+            postAdditionalData = objectMapper.readValue(post.getContent(), PostAdditionalData.class);
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Error reading post's content", ex);
         }
-        return postApi;
+
+        return PostApi.newBuilder()
+                .expirationDate(post.getExpirationDate())
+                .creationDate(post.getCreationDate())
+                .description(post.getDescription())
+                .content(postAdditionalData)
+                .isPublic(post.isPublic())
+                .id(post.getId())
+                .build();
     }
 
     public static Post post(PostApi postApi) {
-        Post post = modelMapper.map(postApi, Post.class);
+        String postContent = null;
         try {
-            post.setContent(objectMapper.writeValueAsString(postApi.getContent()));
-        } catch (JsonProcessingException e) {
-            //It's no necessary.
+            postContent = objectMapper.writeValueAsString(postApi.getContent());
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Error writing post's content", ex);
         }
-        return post;
+
+        return Post.newBuilder()
+                .expirationDate(postApi.getExpirationDate())
+                .creationDate(postApi.getCreationDate())
+                .description(postApi.getDescription())
+                .isPublic(postApi.isPublic())
+                .content(postContent)
+                .id(postApi.getId())
+                .build();
     }
 
 }

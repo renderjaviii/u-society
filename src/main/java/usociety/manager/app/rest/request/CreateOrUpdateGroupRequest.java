@@ -15,9 +15,9 @@ import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.validator.AlphanumericConstraint;
 
-@ApiModel(value = "Create group request.")
+@ApiModel(value = "Create or update group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateGroupRequest extends BaseObject {
+public class CreateOrUpdateGroupRequest extends BaseObject {
 
     @NotEmpty
     @Size(max = 100)
@@ -36,22 +36,27 @@ public class CreateGroupRequest extends BaseObject {
     @JsonProperty
     private CategoryApi category;
 
+    @NotNull
+    @Size(min = 1)
     @JsonProperty
     private List<String> objectives;
 
+    @NotNull
+    @Size(min = 1)
     @JsonProperty
     private List<String> rules;
 
-    public CreateGroupRequest() {
+    public CreateOrUpdateGroupRequest() {
         super();
     }
 
-    private CreateGroupRequest(Builder builder) {
+    private CreateOrUpdateGroupRequest(Builder builder) {
         name = builder.name;
         description = builder.description;
+        photo = builder.photo;
+        category = builder.category;
         objectives = builder.objectives;
         rules = builder.rules;
-        category = builder.category;
     }
 
     public static Builder newBuilder() {
@@ -96,6 +101,7 @@ public class CreateGroupRequest extends BaseObject {
 
         private String name;
         private String description;
+        private String photo;
         private List<String> objectives;
         private List<String> rules;
         private CategoryApi category;
@@ -114,6 +120,11 @@ public class CreateGroupRequest extends BaseObject {
             return this;
         }
 
+        public Builder photo(String photo) {
+            this.photo = photo;
+            return this;
+        }
+
         public Builder objectives(List<String> objectives) {
             this.objectives = objectives;
             return this;
@@ -129,8 +140,8 @@ public class CreateGroupRequest extends BaseObject {
             return this;
         }
 
-        public CreateGroupRequest build() {
-            return new CreateGroupRequest(this);
+        public CreateOrUpdateGroupRequest build() {
+            return new CreateOrUpdateGroupRequest(this);
         }
 
     }
