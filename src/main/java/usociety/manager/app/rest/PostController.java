@@ -112,10 +112,10 @@ public class PostController extends AbstractController {
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
             @NotNull @PathVariable("id") Long id,
-            @NotNull @PositiveOrZero @RequestParam("vote") Integer option
+            @NotNull @PositiveOrZero @RequestParam("option") Integer vote
     )
             throws GenericException {
-        postService.vote(getUser(), id, option);
+        postService.vote(getUser(), id, vote);
         return ResponseEntity.ok().build();
     }
 

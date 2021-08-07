@@ -82,12 +82,12 @@ public class PostServiceImpl extends AbstractServiceImpl implements PostService 
     }
 
     @Override
-    public void vote(String username, Long postId, Integer option) throws GenericException {
+    public void vote(String username, Long postId, Integer vote) throws GenericException {
         Post post = getPost(postId);
         validateIsUserIsMember(username, post.getGroup().getId());
 
         surveyService.validateIfUserHasAlreadyInteracted(username, post);
-        surveyService.create(username, post, option);
+        surveyService.create(username, post, vote);
     }
 
     private Post getPost(Long postId) throws GenericException {

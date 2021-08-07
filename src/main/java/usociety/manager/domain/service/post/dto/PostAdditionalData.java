@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.PostTypeEnum;
 
 @ApiModel("Post additional data based on the type.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class PostAdditionalData {
+public class PostAdditionalData extends BaseObject {
 
     @JsonProperty
     private PostTypeEnum type;
@@ -42,6 +43,10 @@ public class PostAdditionalData {
         return type;
     }
 
+    public void setType(PostTypeEnum type) {
+        this.type = type;
+    }
+
     public String getValue() {
         return value;
     }
@@ -52,6 +57,25 @@ public class PostAdditionalData {
 
     public List<SurveyOption> getOptions() {
         return options;
+    }
+
+    public void setOptions(List<SurveyOption> options) {
+        this.options = options;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 
     public static final class Builder {

@@ -20,6 +20,6 @@ public interface PostService {
 
     void comment(String username, Long postId, CommentPostRequest request) throws GenericException;
 
-    void vote(String username, Long postId, Integer option) throws GenericException;
+    void vote(String username, Long postId, Integer vote) throws GenericException;
 
 }

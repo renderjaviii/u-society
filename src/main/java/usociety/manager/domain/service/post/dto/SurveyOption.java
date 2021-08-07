@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import usociety.manager.app.util.BaseObject;
 
 @ApiModel("Survey option representation.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class SurveyOption {
+public class SurveyOption extends BaseObject {
 
     @JsonProperty
     private Integer id;
@@ -26,7 +27,7 @@ public class SurveyOption {
     }
 
     private SurveyOption(Builder builder) {
-        setId(builder.id);
+        id = builder.id;
         amount = builder.amount;
         value = builder.value;
     }
@@ -53,6 +54,21 @@ public class SurveyOption {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 
     public static final class Builder {
