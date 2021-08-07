@@ -35,7 +35,6 @@
         <sonar.projectKey>u-society:manager</sonar.projectKey>
         <sonar.organization>renderjaviii</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -46,7 +45,6 @@
             **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java
         </sonar.coverage.exclusions>
         <sonar.exclusions>**/Application.java, **/RestExceptionHandler.java</sonar.exclusions>
-
     </properties>
 
     <dependencies>

@@ -37,7 +37,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
             "</body></html>";
 
     private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
-    private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_TO_GROUP";
+    private static final String JOINING_GROUP_ERROR_CODE = "ERROR_JOINING_GROUP";
 
     @Value("${config.app.domain:https://usociety-68208.web.app/}")
     private String applicationDomain;
@@ -66,7 +66,7 @@ public class GroupMembershipHelperImpl implements GroupMembershipHelper {
         userGroup.setRole(member.getRole());
 
         String status = request.getStatus().getValue();
-        userGroup.setStatus(StringUtils.isNotEmpty(status) ? status : user.getRole());
+        userGroup.setStatus(StringUtils.isNotEmpty(status) ? status : member.getRole());
         userGroupRepository.save(userGroup);
     }
 

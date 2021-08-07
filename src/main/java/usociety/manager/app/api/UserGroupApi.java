@@ -1,5 +1,7 @@
 package usociety.manager.app.api;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,6 +13,7 @@ import usociety.manager.domain.enums.UserGroupStatusEnum;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserGroupApi extends BaseObject {
 
+    @NotNull
     @JsonProperty
     private UserApi member;
 
