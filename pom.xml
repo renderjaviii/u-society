@@ -45,6 +45,9 @@
             **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java, **/Converter.java
         </sonar.coverage.exclusions>
         <sonar.exclusions>**/Application.java, **/RestExceptionHandler.java</sonar.exclusions>
+        <sonar.cpd.exclusions>
+            **/*Api.java, **/*DTO.java, **/domain/model/**/*.*
+        </sonar.cpd.exclusions>
     </properties>
 
     <dependencies>
