@@ -27,7 +27,7 @@ import usociety.manager.domain.service.otp.OtpService;
 @Validated
 @RestController
 @RequestMapping(path = "services/otps")
-public class OtpController {
+public class OtpController extends AbstractController {
 
     private final OtpService otpService;
 
@@ -55,10 +55,9 @@ public class OtpController {
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
     @PostMapping(path = "/validate")
     public ResponseEntity<Void> validate(
-            @Email @NotEmpty @RequestParam(name = "email") final String email,
-            @NotEmpty @RequestParam(name = "otpCode") final String otpCode
+            @Email @NotEmpty @RequestParam(name = "email") final String email
     ) throws GenericException {
-        otpService.validate(email, otpCode);
+        otpService.validate(email, getHeader("otpCode"));
         return ResponseEntity.ok().build();
     }
 

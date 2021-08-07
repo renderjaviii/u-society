@@ -125,7 +125,7 @@ public class S3CloudStorageServiceImplTest {
     @Test
     @SuppressWarnings( { "java:S2699" })
     public void shouldCallInitMethodCorrectly() {
-        subject.init();
+        ReflectionTestUtils.invokeMethod(subject, "init");
     }
 
 }

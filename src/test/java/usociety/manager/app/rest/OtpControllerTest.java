@@ -1,6 +1,10 @@
 package usociety.manager.app.rest;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.time.LocalDateTime;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -30,6 +35,8 @@ public class OtpControllerTest extends TestUtils {
     private static final String BASE_PATH = "/services/otps";
 
     @Mock
+    private HttpServletRequest httpServletRequest;
+    @Mock
     private OtpService otpService;
 
     @InjectMocks
@@ -39,6 +46,8 @@ public class OtpControllerTest extends TestUtils {
 
     @Before
     public void setUp() {
+        ReflectionTestUtils.setField(subject, "httpServletRequest", httpServletRequest);
+
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
                 .setControllerAdvice(new RestExceptionHandler(), new RestExceptionHandler())
                 .build();
@@ -56,7 +65,7 @@ public class OtpControllerTest extends TestUtils {
                 .otpCode("12345")
                 .id(1L)
                 .build();
-        Mockito.when(otpService.create(Mockito.any())).thenReturn(otp);
+        Mockito.when(otpService.create(any())).thenReturn(otp);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(BASE_PATH)
                 .param("email", email))
@@ -71,15 +80,16 @@ public class OtpControllerTest extends TestUtils {
 
     @Test
     public void shouldValidateOtpCorrectly() throws Exception {
-        String email = "email@domain.com";
         String otpCode = "12345";
+        Mockito.when(httpServletRequest.getHeader(any())).thenReturn(otpCode);
 
+        String email = "email@domain.com";
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_PATH.concat("/validate"))
-                .param("email", email)
-                .param("otpCode", otpCode))
+                .param("email", email))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(otpService, Mockito.only()).validate(email, otpCode);
+        Mockito.verify(httpServletRequest).getHeader("otpCode");
     }
 
 }

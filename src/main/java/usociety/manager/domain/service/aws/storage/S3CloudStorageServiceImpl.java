@@ -67,7 +67,7 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
     }
 
     @PostConstruct
-    protected void init() {
+    private void init() {
         AWSCredentials credentials = new BasicSessionCredentials(accessKey, secretKey, sessionToken);
         s3client = AmazonS3ClientBuilder
                 .standard()
