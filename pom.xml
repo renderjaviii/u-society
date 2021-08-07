@@ -16,19 +16,6 @@
 
     <properties>
         <java.version>1.8</java.version>
-
-        <sonar.projectKey>u-society:manager</sonar.projectKey>
-        <sonar.organization>renderjaviii</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/../target/jacoco.exec
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.language>java</sonar.language>
-        <sonar.exclusions>**/*Message*.java, **/*Post*.java, **/app/config/*.*, **/domain/**/*.*</sonar.exclusions>
-
         <mysql-connector.version>8.0.19</mysql-connector.version>
         <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
         <spring-security-jwt.version>1.1.0.RELEASE</spring-security-jwt.version>
@@ -44,6 +31,22 @@
         <spring-boot-starter-cache.version>2.4.3</spring-boot-starter-cache.version>
         <redis.version>2.4.3</redis.version>
         <jacoco.version>0.8.7</jacoco.version>
+
+        <sonar.projectKey>u-society:manager</sonar.projectKey>
+        <sonar.organization>renderjaviii</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../target/jacoco.exec
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.language>java</sonar.language>
+        <sonar.coverage.exclusions>
+            **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java
+        </sonar.coverage.exclusions>
+        <sonar.exclusions>**/Application.java, **/RestExceptionHandler.java</sonar.exclusions>
+
     </properties>
 
     <dependencies>
