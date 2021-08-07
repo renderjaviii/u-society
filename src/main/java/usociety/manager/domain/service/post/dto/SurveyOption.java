@@ -66,11 +66,6 @@ public class SurveyOption extends BaseObject {
         return super.hashCode();
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
     public static final class Builder {
 
         private Integer id;

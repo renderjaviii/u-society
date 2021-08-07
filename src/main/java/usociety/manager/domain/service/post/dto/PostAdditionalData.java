@@ -73,11 +73,6 @@ public class PostAdditionalData extends BaseObject {
         return super.hashCode();
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
     public static final class Builder {
 
         private PostTypeEnum type;
