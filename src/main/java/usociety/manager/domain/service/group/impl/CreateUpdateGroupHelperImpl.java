@@ -74,7 +74,7 @@ public class CreateUpdateGroupHelperImpl extends AbstractDelegateImpl implements
         validateExistingGroup(request);
 
         Category category = categoryService.get(request.getCategory().getId());
-        String photoUrl = cloudStorageService.upload(request.getPhoto());
+        String photoUrl = cloudStorageService.uploadImage(request.getPhoto());
 
         Group savedGroup;
         try {
@@ -165,7 +165,7 @@ public class CreateUpdateGroupHelperImpl extends AbstractDelegateImpl implements
     private String getPhoto(CreateOrUpdateGroupRequest request, Group group) throws GenericException {
         if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(group.getPhoto())) {
             cloudStorageService.delete(group.getPhoto());
-            return cloudStorageService.upload(request.getPhoto());
+            return cloudStorageService.uploadImage(request.getPhoto());
         }
         return group.getPhoto();
     }

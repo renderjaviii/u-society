@@ -85,7 +85,7 @@ public class CreateUserDelegateImplTest {
     @Test
     public void shouldCreateUserCorrectly() throws GenericException {
         String photoUrl = "photo-url";
-        when(cloudStorageService.upload(any())).thenReturn(photoUrl);
+        when(cloudStorageService.uploadImage(any())).thenReturn(photoUrl);
         when(userConnector.create(any())).thenReturn(userDTO);
 
         UserApi executed = subject.execute(request);
@@ -94,7 +94,7 @@ public class CreateUserDelegateImplTest {
 
         InOrder inOrder = Mockito.inOrder(otpService, cloudStorageService, userConnector);
         inOrder.verify(otpService).validate(email, OTP_CODE);
-        inOrder.verify(cloudStorageService).upload("base64Image");
+        inOrder.verify(cloudStorageService).uploadImage("base64Image");
         inOrder.verify(userConnector).create(request);
     }
 
@@ -103,7 +103,7 @@ public class CreateUserDelegateImplTest {
         ReflectionTestUtils.setField(subject, "validateOtp", FALSE);
 
         String photoUrl = "photo-url";
-        when(cloudStorageService.upload(any())).thenReturn(photoUrl);
+        when(cloudStorageService.uploadImage(any())).thenReturn(photoUrl);
         when(userConnector.create(any())).thenReturn(userDTO);
 
         UserApi executed = subject.execute(request);
@@ -111,7 +111,7 @@ public class CreateUserDelegateImplTest {
         Assert.assertEquals(userApi, executed);
 
         InOrder inOrder = Mockito.inOrder(otpService, cloudStorageService, userConnector);
-        inOrder.verify(cloudStorageService).upload("base64Image");
+        inOrder.verify(cloudStorageService).uploadImage("base64Image");
         inOrder.verify(userConnector).create(request);
 
         Mockito.verifyNoInteractions(otpService);
@@ -137,7 +137,7 @@ public class CreateUserDelegateImplTest {
     @Test(expected = GenericException.class)
     public void shouldNotCreateUserIfImageCannotBeUploaded() throws GenericException {
         String errorMessage = "Image could not be uploaded";
-        when(cloudStorageService.upload(any())).thenThrow(new GenericException(errorMessage));
+        when(cloudStorageService.uploadImage(any())).thenThrow(new GenericException(errorMessage));
         try {
             subject.execute(CreateUserRequest.newBuilder().username(username).otpCode(OTP_CODE).build());
         } catch (GenericException e) {
@@ -152,7 +152,7 @@ public class CreateUserDelegateImplTest {
     @Test(expected = GenericException.class)
     public void shouldDeleteImageIfUserCreationFails() throws GenericException {
         String photoUrl = "photo-url";
-        when(cloudStorageService.upload(any())).thenReturn(photoUrl);
+        when(cloudStorageService.uploadImage(any())).thenReturn(photoUrl);
         when(userConnector.create(any())).thenThrow(new WebException("Error."));
 
         try {

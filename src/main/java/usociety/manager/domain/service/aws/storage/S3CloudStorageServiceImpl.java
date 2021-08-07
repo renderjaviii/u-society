@@ -67,7 +67,7 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
     }
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         AWSCredentials credentials = new BasicSessionCredentials(accessKey, secretKey, sessionToken);
         s3client = AmazonS3ClientBuilder
                 .standard()
@@ -77,7 +77,7 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
     }
 
     @Override
-    public String upload(String base64Image) throws GenericException {
+    public String uploadImage(String base64Image) throws GenericException {
 
         if (StringUtils.isNotEmpty(base64Image)) {
             String fileName = generateFileName();
@@ -114,7 +114,7 @@ public class S3CloudStorageServiceImpl implements CloudStorageService {
             file = new File(fileName);
             FileUtils.writeByteArrayToFile(file, decodedBytes);
         } catch (Exception ex) {
-            throw new GenericException("Error reading base64 file.", UPLOADING_FILE_ERROR_CODE, ex);
+            throw new GenericException("Error reading base64 file", UPLOADING_FILE_ERROR_CODE, ex);
         }
 
         return file;

@@ -73,7 +73,7 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
 
     private String processContent(MessageApi message) throws GenericException {
         if (MessageTypeEnum.IMAGE.equals(message.getType())) {
-            return cloudStorageService.upload(message.getContent());
+            return cloudStorageService.uploadImage(message.getContent());
         }
         return message.getContent();
     }

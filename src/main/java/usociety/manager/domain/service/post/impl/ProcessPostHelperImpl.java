@@ -101,7 +101,7 @@ public class ProcessPostHelperImpl extends AbstractDelegateImpl implements Proce
                 surveyOption.setId(index);
             }
         } else if (PostTypeEnum.IMAGE == content.getType()) {
-            String imageUrl = cloudStorageService.upload(request.getImage());
+            String imageUrl = cloudStorageService.uploadImage(request.getImage());
             content.setValue(imageUrl);
         }
     }

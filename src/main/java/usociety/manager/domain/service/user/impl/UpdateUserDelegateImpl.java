@@ -62,7 +62,7 @@ public class UpdateUserDelegateImpl implements UpdateUserDelegate {
             if (StringUtils.isNotEmpty(currentUserPhoto)) {
                 cloudStorageService.delete(currentUserPhoto);
             }
-            return cloudStorageService.upload(request.getPhoto());
+            return cloudStorageService.uploadImage(request.getPhoto());
         }
         return currentUserPhoto;
     }

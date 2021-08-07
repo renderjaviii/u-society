@@ -51,7 +51,7 @@ public class CreateUserDelegateImpl implements CreateUserDelegate {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
 
-        String photoUrl = cloudStorageService.upload(request.getPhoto());
+        String photoUrl = cloudStorageService.uploadImage(request.getPhoto());
         request.setPhoto(photoUrl);
 
         UserDTO userDTO;

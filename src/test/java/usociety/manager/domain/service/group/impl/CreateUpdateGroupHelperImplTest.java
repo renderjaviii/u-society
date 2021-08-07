@@ -101,7 +101,7 @@ public class CreateUpdateGroupHelperImplTest {
     @Test
     public void shouldCreateGroupCorrectly() throws GenericException {
         Mockito.when(categoryService.get(any())).thenReturn(category);
-        Mockito.when(cloudStorageService.upload(any())).thenReturn("group-image-url");
+        Mockito.when(cloudStorageService.uploadImage(any())).thenReturn("group-image-url");
         Mockito.when(groupRepository.save(any())).thenReturn(groupEntity);
 
         GroupApi executed = subject.create(UserApiFixture.defaultValue, createGroupRequest);
@@ -118,7 +118,7 @@ public class CreateUpdateGroupHelperImplTest {
 
         inOrder.verify(groupRepository).findByName("Group name");
         inOrder.verify(categoryService).get(1L);
-        inOrder.verify(cloudStorageService).upload("base64Photo");
+        inOrder.verify(cloudStorageService).uploadImage("base64Photo");
         inOrder.verify(slugify).slugify("Group name");
 
         ArgumentCaptor<Group> groupArgumentCaptor = ArgumentCaptor.forClass(Group.class);
@@ -148,7 +148,7 @@ public class CreateUpdateGroupHelperImplTest {
     public void shouldFailCreatingGroupAndExecuteRollbackCorrectly() throws GenericException {
         Mockito.when(categoryService.get(any())).thenReturn(category);
         String fileUrl = "group-image-url";
-        Mockito.when(cloudStorageService.upload(any())).thenReturn(fileUrl);
+        Mockito.when(cloudStorageService.uploadImage(any())).thenReturn(fileUrl);
         Mockito.when(groupRepository.save(any())).thenThrow(new RuntimeException("SQL integrity violation"));
 
         try {
@@ -192,7 +192,7 @@ public class CreateUpdateGroupHelperImplTest {
                         .id(31L)
                         .build()));
         Mockito.when(categoryService.get(any())).thenReturn(category);
-        Mockito.when(cloudStorageService.upload(any())).thenReturn("new-group-image-url");
+        Mockito.when(cloudStorageService.uploadImage(any())).thenReturn("new-group-image-url");
         Mockito.when(slugify.slugify(any())).thenReturn("new-group-name");
         Mockito.when(groupRepository.save(any())).thenReturn(groupEntity);
 
@@ -223,7 +223,7 @@ public class CreateUpdateGroupHelperImplTest {
                         UserGroupStatusEnum.ACTIVE.getValue());
         inOrder.verify(categoryService).get(1L);
         inOrder.verify(cloudStorageService).delete("group-image-url");
-        inOrder.verify(cloudStorageService).upload("newBase64Photo");
+        inOrder.verify(cloudStorageService).uploadImage("newBase64Photo");
         inOrder.verify(slugify).slugify("New group name");
 
         ArgumentCaptor<Group> groupArgumentCaptor = ArgumentCaptor.forClass(Group.class);

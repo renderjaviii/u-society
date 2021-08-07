@@ -93,7 +93,7 @@ public class UpdateUserDelegateImplTest {
 
     @Test
     public void shouldUpdateUserCorrectly() throws GenericException {
-        Mockito.when(cloudStorageService.upload(any())).thenReturn(NEW_IMAGE_URL);
+        Mockito.when(cloudStorageService.uploadImage(any())).thenReturn(NEW_IMAGE_URL);
 
         Category currentCategory = new Category(UserApiFixture.category.getId(), UserApiFixture.category.getName());
         UserCategory currentUserCategory = new UserCategory(5L, UserApiFixture.id, currentCategory);
@@ -118,7 +118,7 @@ public class UpdateUserDelegateImplTest {
 
         inOrder.verify(userConnector).get(UserApiFixture.username);
         inOrder.verify(cloudStorageService).delete(CURRENT_IMAGE_URL);
-        inOrder.verify(cloudStorageService).upload(newImageBase64);
+        inOrder.verify(cloudStorageService).uploadImage(newImageBase64);
         inOrder.verify(userCategoryRepository).findAllByUserId(UserApiFixture.id);
 
         //Only is required the entity id to determinate if two database registries are the equal
