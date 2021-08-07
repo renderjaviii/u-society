@@ -22,7 +22,7 @@ public class GroupApiFixture {
     static {
         Faker faker = new Faker();
 
-        slug = faker.internet().slug(Arrays.asList("fake", "group", "name"), null);
+        slug = faker.internet().slug(Arrays.asList("fake", "group", "name"), "-");
         category = new CategoryApi(123L, "Category ABC");
         objectives = Arrays.asList("Main", "Secondary");
         rules = Collections.singletonList("Important");

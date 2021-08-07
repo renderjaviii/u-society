@@ -7,6 +7,7 @@ import static usociety.manager.domain.enums.UserGroupStatusEnum.ACTIVE;
 import static usociety.manager.domain.util.Constants.FORBIDDEN_ACCESS;
 import static usociety.manager.domain.util.Constants.GROUP_NOT_FOUND;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,11 +33,12 @@ import usociety.manager.domain.repository.GroupRepository;
 import usociety.manager.domain.repository.UserGroupRepository;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.service.common.CloudStorageService;
+import usociety.manager.domain.service.common.impl.AbstractDelegateImpl;
 import usociety.manager.domain.service.email.SendAsyncEmailDelegate;
 import usociety.manager.domain.service.group.CreateUpdateGroupHelper;
 
 @Component
-public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
+public class CreateUpdateGroupHelperImpl extends AbstractDelegateImpl implements CreateUpdateGroupHelper {
 
     private static final String GROUP_NAME_ERROR_FORMAT = "Group with name: %s already exists";
     private static final String UPDATING_MEMBERSHIP_ERROR_CODE = "ERROR_UPDATING_MEMBERSHIP";
@@ -76,11 +78,13 @@ public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
 
         Group savedGroup;
         try {
-            savedGroup = saveGroup(request, category, photoUrl);
+            Group.Builder groupBuilder = Group.newBuilder().createdAt(LocalDate.now(clock));
+            savedGroup = saveGroup(request, groupBuilder, category, photoUrl);
+
             associateUserToGroup(user, savedGroup);
         } catch (Exception ex) {
             cloudStorageService.delete(photoUrl);
-            throw new GenericException("Unexpected error creating group", CREATING_GROUP_ERROR_CODE);
+            throw new GenericException("Unexpected error creating group", CREATING_GROUP_ERROR_CODE, ex);
         }
 
         sendAsyncEmailDelegate.execute(user, savedGroup, category);
@@ -91,6 +95,7 @@ public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
     @Transactional(dontRollbackOn = GenericException.class, rollbackOn = Exception.class)
     public GroupApi update(UserApi user, Long id, CreateOrUpdateGroupRequest request) throws GenericException {
         Group group = getGroup(id);
+        validateExistingGroup(request);
 
         UserGroup userGroup = getUserGroup(user.getId(), id);
         if (!userGroup.isAdmin()) {
@@ -98,16 +103,12 @@ public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
         }
 
         Category category = categoryService.get(request.getCategory().getId());
-        Group updatedGroup = groupRepository.save(Group.newBuilder()
-                .objectives(removeCommasAndCapitalize(request.getObjectives()))
-                .slug(slugify.slugify(request.getName()))
-                .rules(removeCommasAndCapitalize(request.getRules()))
-                .description(request.getDescription())
-                .photo(getPhoto(request, group))
-                .name(request.getName())
-                .category(category)
-                .id(group.getId())
-                .build());
+        String photoUrl = getPhoto(request, group);
+        Group.Builder groupBuilder = Group.newBuilder().id(group.getId()).updatedAt(LocalDate.now(clock));
+        Group updatedGroup = saveGroup(request,
+                groupBuilder,
+                category,
+                photoUrl);
 
         return Converter.group(updatedGroup);
     }
@@ -120,11 +121,14 @@ public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
         }
     }
 
-    private Group saveGroup(CreateOrUpdateGroupRequest request, Category category, String photoUrl) {
-        return groupRepository.save(Group.newBuilder()
+    private Group saveGroup(CreateOrUpdateGroupRequest request,
+                            Group.Builder builder,
+                            Category category,
+                            String photoUrl) {
+        return groupRepository.save(builder
                 .objectives(removeCommasAndCapitalize(request.getObjectives()))
-                .slug(slugify.slugify(request.getName()))
                 .rules(removeCommasAndCapitalize(request.getRules()))
+                .slug(slugify.slugify(request.getName()))
                 .description(request.getDescription())
                 .name(request.getName())
                 .category(category)
@@ -159,10 +163,11 @@ public class CreateUpdateGroupHelperImpl implements CreateUpdateGroupHelper {
     }
 
     private String getPhoto(CreateOrUpdateGroupRequest request, Group group) throws GenericException {
-        boolean photoHasChanged = Objects.nonNull(request.getPhoto())
-                && !request.getPhoto().equals(group.getPhoto());
-
-        return photoHasChanged ? cloudStorageService.upload(request.getPhoto()) : group.getPhoto();
+        if (Objects.nonNull(request.getPhoto()) && !request.getPhoto().equals(group.getPhoto())) {
+            cloudStorageService.delete(group.getPhoto());
+            return cloudStorageService.upload(request.getPhoto());
+        }
+        return group.getPhoto();
     }
 
     private Group getGroup(Long id) throws GenericException {

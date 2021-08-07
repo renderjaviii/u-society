@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +33,6 @@ import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.group.GroupService;
 
-@CrossOrigin(origins = "*", maxAge = 86400)
 @Validated
 @RestController
 @RequestMapping(path = "services/groups")

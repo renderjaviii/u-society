@@ -47,7 +47,7 @@ public class CreateUserDelegateImpl implements CreateUserDelegate {
 
     @Override
     public UserApi execute(CreateUserRequest request) throws GenericException {
-        if (validateOtp) {
+        if (Boolean.TRUE.equals(validateOtp)) {
             otpService.validate(request.getEmail(), request.getOtpCode());
         }
 

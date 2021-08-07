@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -226,6 +227,31 @@ public class GroupControllerTest extends TestUtils {
 
         ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
         Assert.assertEquals(INVALID_CREDENTIALS, executed.getStatusCode());
+
+        Mockito.verifyNoInteractions(groupService);
+    }
+
+    @Test
+    public void shouldFailCreatingGroupIfRequestIsInvalid() throws Exception {
+        CreateOrUpdateGroupRequest request = CreateOrUpdateGroupRequest.newBuilder()
+                .category(new CategoryApi(null, "Category name"))
+                .description("Group description")
+                .build();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/groups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
+
+        String errorDescription = executed.getDescription();
+        Assert.assertThat(errorDescription, Matchers.containsString("objectives must not be null"));
+        Assert.assertThat(errorDescription, Matchers.containsString("name must not be empty"));
+        Assert.assertThat(errorDescription, Matchers.containsString("name must be alphanumeric"));
+        Assert.assertThat(errorDescription, Matchers.containsString("rules must not be null"));
+        Assert.assertThat(errorDescription, Matchers.containsString("category.id must not be null"));
 
         Mockito.verifyNoInteractions(groupService);
     }

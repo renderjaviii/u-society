@@ -8,6 +8,7 @@ import static usociety.manager.domain.util.Constants.INVALID_CREDENTIALS;
 
 import java.util.Collections;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -210,6 +211,30 @@ public class UserControllerTest extends TestUtils {
         ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
 
         Assert.assertEquals(INVALID_CREDENTIALS, executed.getStatusCode());
+
+        Mockito.verifyNoInteractions(userService);
+    }
+
+    @Test
+    public void shouldFailCreatingUserIfRequestIsInvalid() throws Exception {
+        CreateUserRequest request = CreateUserRequest.newBuilder()
+                .username("invalid$user?")
+                .email("example.com")
+                .build();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        ApiError executed = readMvcResultValue(mvcResult, ApiError.class);
+
+        String errorDescription = executed.getDescription();
+        Assert.assertThat(errorDescription, Matchers.containsString("email must be a well-formed email address"));
+        Assert.assertThat(errorDescription, Matchers.containsString("username must match \"^[a-zA-Z\\d_.]+\""));
+        Assert.assertThat(errorDescription, Matchers.containsString("name must not be blank"));
+        Assert.assertThat(errorDescription, Matchers.containsString("password must not be blank"));
 
         Mockito.verifyNoInteractions(userService);
     }
