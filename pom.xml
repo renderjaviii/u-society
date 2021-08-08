@@ -42,10 +42,11 @@
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
         <sonar.coverage.exclusions>
-            **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java, **/Converter.java,
-            **/ReactiveConnectorImpl.java
+            **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java, **/ReactiveRestClientImpl.java
         </sonar.coverage.exclusions>
-        <sonar.exclusions>**/Application.java, **/RestExceptionHandler.java</sonar.exclusions>
+        <sonar.exclusions>
+            **/Application.java, **/exception/*.*, **/RestExceptionHandler.java
+        </sonar.exclusions>
         <sonar.cpd.exclusions>
             **/*Api.java, **/*DTO.java, **/domain/model/**/*.*
         </sonar.cpd.exclusions>
