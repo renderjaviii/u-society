@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -130,6 +131,7 @@ public class UserController extends AbstractController {
         return new ResponseEntity<>(userService.login(request), OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
     @ApiOperation(value = "Delete.")
     @ApiResponses(value = { @ApiResponse(code = 204, message = "User deleted."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
