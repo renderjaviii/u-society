@@ -74,7 +74,7 @@ public class PostController extends AbstractController {
     }
 
     @ApiOperation(value = "React into a post.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Post react saved."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Post react saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -85,11 +85,11 @@ public class PostController extends AbstractController {
             @NotNull @RequestParam("value") ReactTypeEnum value
     ) throws GenericException {
         postService.react(getUser(), id, value);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Comment into to a post.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Post comment saved."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Post comment saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -100,11 +100,11 @@ public class PostController extends AbstractController {
             @RequestBody CommentPostRequest request
     ) throws GenericException {
         postService.comment(getUser(), id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Vote in survey.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Survey vote saved."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Survey vote saved."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -116,7 +116,7 @@ public class PostController extends AbstractController {
     )
             throws GenericException {
         postService.vote(getUser(), id, vote);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

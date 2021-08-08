@@ -185,7 +185,7 @@ public class GroupControllerTest extends TestUtils {
                 .patch("/services/groups/{id}/update-membership", GroupApiFixture.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(groupService).updateMembership(USERNAME, GroupApiFixture.id, request);
     }
@@ -213,7 +213,7 @@ public class GroupControllerTest extends TestUtils {
     public void shouldJoinToGroupCorrectly() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/services/groups/{id}/join", GroupApiFixture.id))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(groupService).join(USERNAME, GroupApiFixture.id);
     }

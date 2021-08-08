@@ -109,7 +109,7 @@ public class GroupController extends AbstractController {
     }
 
     @ApiOperation(value = "Update membership.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Membership updated."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Membership updated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -120,7 +120,7 @@ public class GroupController extends AbstractController {
             @RequestBody UserGroupApi request
     ) throws GenericException {
         groupService.updateMembership(getUser(), id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Get all by filters.")
@@ -138,7 +138,7 @@ public class GroupController extends AbstractController {
     }
 
     @ApiOperation(value = "Join to group.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Request to join group sent."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Request to join group sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -147,7 +147,7 @@ public class GroupController extends AbstractController {
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException, MessagingException {
         groupService.join(getUser(), id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

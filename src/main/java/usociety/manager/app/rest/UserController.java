@@ -65,7 +65,7 @@ public class UserController extends AbstractController {
     }
 
     @ApiOperation(value = "Verify user data and send otp.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User verified and OTP sent."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "User verified and OTP sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -75,11 +75,11 @@ public class UserController extends AbstractController {
             @Email @NotEmpty @PathVariable(name = "email") final String email
     ) throws GenericException {
         userService.verify(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Enable user through OTP.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Account enabled."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Account enabled."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -90,7 +90,7 @@ public class UserController extends AbstractController {
             @NotEmpty @RequestParam(name = "otpCode") final String otpCode
     ) throws GenericException {
         userService.enableAccount(email, otpCode);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Get.")
@@ -131,7 +131,7 @@ public class UserController extends AbstractController {
     }
 
     @ApiOperation(value = "Delete.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User deleted."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "User deleted."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -141,11 +141,11 @@ public class UserController extends AbstractController {
             throws UserValidationException {
         validateUser(username);
         userService.delete(username);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Change password.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Password changed."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Password changed."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -157,7 +157,7 @@ public class UserController extends AbstractController {
             @Valid @RequestBody ChangePasswordRequest request
     ) throws GenericException {
         userService.changePassword(validateUser(username), otpCode, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

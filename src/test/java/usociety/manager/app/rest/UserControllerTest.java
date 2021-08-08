@@ -77,7 +77,7 @@ public class UserControllerTest extends TestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request))
                 .param("otpCode", otpCode))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).changePassword(USERNAME, otpCode, request);
     }
@@ -85,7 +85,7 @@ public class UserControllerTest extends TestUtils {
     @Test
     public void shouldDeleteUserCorrectly() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/services/users/{username}", USERNAME))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).delete(USERNAME);
     }
@@ -127,7 +127,7 @@ public class UserControllerTest extends TestUtils {
     @Test
     public void shouldVerifyEmailCorrectly() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/services/users/{email}/verify", EMAIL))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).verify(EMAIL);
     }
@@ -162,7 +162,7 @@ public class UserControllerTest extends TestUtils {
         String otpCode = "98765";
         mockMvc.perform(MockMvcRequestBuilders.post("/services/users/{email}/enable-account", EMAIL)
                 .param("otpCode", otpCode))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).enableAccount(EMAIL, otpCode);
     }

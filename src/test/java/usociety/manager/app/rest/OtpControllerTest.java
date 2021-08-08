@@ -86,7 +86,7 @@ public class OtpControllerTest extends TestUtils {
         String email = "email@domain.com";
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_PATH.concat("/validate"))
                 .param("email", email))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(otpService, Mockito.only()).validate(email, otpCode);
         Mockito.verify(httpServletRequest).getHeader("otpCode");

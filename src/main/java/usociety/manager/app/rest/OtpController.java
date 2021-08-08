@@ -48,7 +48,7 @@ public class OtpController extends AbstractController {
     }
 
     @ApiOperation(value = "Validate OTP.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OTP validated."),
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "OTP validated."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
@@ -58,7 +58,7 @@ public class OtpController extends AbstractController {
             @Email @NotEmpty @RequestParam(name = "email") final String email
     ) throws GenericException {
         otpService.validate(email, getHeader("otpCode"));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }
