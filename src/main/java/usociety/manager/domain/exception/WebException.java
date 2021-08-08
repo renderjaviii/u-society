@@ -1,5 +1,7 @@
 package usociety.manager.domain.exception;
 
+import org.apache.commons.lang3.StringUtils;
+
 import usociety.manager.app.api.ApiError;
 
 public class WebException extends RuntimeException {
@@ -19,7 +21,7 @@ public class WebException extends RuntimeException {
     }
 
     public WebException(ApiError error) {
-        super(error.getDescription());
+        super(StringUtils.isNotEmpty(error.getDescription()) ? error.getDescription() : error.getErrorDescription());
         this.errorCode = error.getStatusCode();
     }
 

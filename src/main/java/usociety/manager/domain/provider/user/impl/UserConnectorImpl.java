@@ -5,8 +5,7 @@ import static org.apache.logging.log4j.util.Strings.EMPTY;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -17,64 +16,51 @@ import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
-import usociety.manager.domain.service.web.impl.AbstractConnectorImpl;
+import usociety.manager.domain.provider.web.impl.ReactiveConnectorImpl;
 
 @Component
-@SuppressWarnings("java:S1192")
-public class UserConnectorImpl extends AbstractConnectorImpl implements UserConnector {
+public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConnector {
 
-    @Value("${web.authentication.url}")
-    private String baseUrl;
-    @Value("${web.authentication.users-path}")
-    private String path;
-    @Value("${web.read-time-out:5}")
-    private int timeOut;
+    private final String path;
 
-    @PostConstruct
-    private void init() {
-        setUp(baseUrl, timeOut);
+    @Autowired
+    public UserConnectorImpl(@Value("${web.connection.time-out:5000}") int connectionTimeOut,
+                             @Value("${web.authentication.users-path}") String path,
+                             @Value("${web.read.time-out:30000}") int readTimeOut,
+                             @Value("${web.authentication.url}") String baseUrl) {
+        super(baseUrl, null, readTimeOut, connectionTimeOut);
+        this.path = path;
     }
 
     @Override
     public UserDTO create(CreateUserRequest body) {
-        return post(uriBuilder().path(path).build(), body, UserDTO.class);
+        return post(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
     }
 
     @Override
     public UserDTO update(UserDTO body) {
-        return patch(uriBuilder()
-                        .path(path)
-                        .build(),
-                body,
-                UserDTO.class);
+        return patch(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
     }
 
     @Override
     public UserDTO get(String username) {
-        return get(uriBuilder()
-                        .path(path)
-                        .pathSegment(username)
-                        .build(),
-                UserDTO.class);
+        return get(uriBuilder -> uriBuilder.path(path).pathSegment(username).build(), UserDTO.class);
     }
 
     @Override
     public UserDTO get(Long id, String username, String email) {
-        MultiValueMap<String, String> qParams = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("id", Objects.isNull(id) ? EMPTY : id.toString());
+        queryParams.add("username", username);
+        queryParams.add("email", email);
 
-        qParams.add("id", Objects.isNull(id) ? EMPTY : id.toString());
-        qParams.add("username", username);
-        qParams.add("email", email);
-
-        return get(uriBuilder().path(path)
-                        .queryParams(qParams)
-                        .build(),
-                UserDTO.class);
+        return get(uriBuilder -> uriBuilder.path(path).queryParams(queryParams).build(), UserDTO.class);
     }
 
     @Override
     public void enableAccount(String username) {
-        post(uriBuilder().path(path)
+        post(uriBuilder -> uriBuilder
+                        .path(path)
                         .pathSegment("{username}")
                         .pathSegment("verify-email")
                         .build(username),
@@ -83,26 +69,23 @@ public class UserConnectorImpl extends AbstractConnectorImpl implements UserConn
 
     @Override
     public void delete(String username) {
-        delete(uriBuilder().path(path).pathSegment("{username}").build(username),
-                Void.class);
+        delete(uriBuilder -> uriBuilder.path(path).pathSegment("{username}").build(username), Void.class);
     }
 
     @Override
     public List<UserDTO> getAll() {
-        return getWebClient().get()
-                .uri(uriBuilder()
+        return get(uriBuilder -> uriBuilder
                         .path(path)
                         .pathSegment("all")
-                        .build().toString())
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<UserDTO>>() {
-                })
-                .block();
+                        .build(),
+                new ParameterizedTypeReference<List<UserDTO>>() {
+                });
     }
 
     @Override
     public void changePassword(String username, ChangePasswordRequest body) {
-        patch(uriBuilder().path(path)
+        patch(uriBuilder -> uriBuilder
+                        .path(path)
                         .pathSegment("{username}")
                         .pathSegment("change-password")
                         .build(username),
