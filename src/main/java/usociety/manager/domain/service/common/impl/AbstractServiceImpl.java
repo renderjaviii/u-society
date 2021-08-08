@@ -23,7 +23,6 @@ public class AbstractServiceImpl implements AbstractService {
 
     @Autowired
     private GroupService groupService;
-
     @Autowired
     protected Clock clock;
     @Autowired
