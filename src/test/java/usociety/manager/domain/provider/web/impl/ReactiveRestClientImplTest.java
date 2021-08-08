@@ -57,7 +57,17 @@ public class ReactiveRestClientImplTest {
         Consumer<HttpHeaders> capturedHeaders = consumerArgumentCaptor.getValue();
         Assert.assertEquals("clientId", ReflectionTestUtils.getField(capturedHeaders, "arg$1"));
         Assert.assertEquals("clientSecret", ReflectionTestUtils.getField(capturedHeaders, "arg$2"));
-
+  RestClient executed = subject.create(RestClientFactoryBuilder.newBuilder()
+                .keyStorePassword("keyStorePassword")
+                .clientSecret("clientSecret")
+                .keyStoreType("keyStoreType")
+                .connectionTimeOut(12345)
+                .readTimeOut(98765)
+                .clientId("clientId")
+                .authPath("authPath")
+                .baseURL("baseURL")
+                .clock(clock)
+                .build());
 
      */
 }
