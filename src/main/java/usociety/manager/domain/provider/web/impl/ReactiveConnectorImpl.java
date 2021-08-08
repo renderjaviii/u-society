@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.function.Function;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -77,12 +78,11 @@ public class ReactiveConnectorImpl implements AbstractConnector {
         this.keyStore = keyStore;
         this.authPath = authPath;
         this.baseURL = baseURL;
-        buildWebClient();
     }
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
-        return webClient
+        return buildWebClient()
                 .mutate()
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
@@ -100,7 +100,7 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public TokenDTO getToken(String clientId, String clientSecret) {
-        return webClient
+        return buildWebClient()
                 .post()
                 .uri(uriBuilder -> uriBuilder
                         .path(authPath)
@@ -114,7 +114,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T get(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
-        return webClient.get()
+        return buildWebClient()
+                .get()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -123,7 +124,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T get(Function<UriBuilder, URI> uriFunction, ParameterizedTypeReference<T> typeReference) {
-        return webClient.get()
+        return buildWebClient()
+                .get()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(typeReference)
@@ -137,7 +139,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T post(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return webClient.post()
+        return buildWebClient()
+                .post()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -147,7 +150,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T post(Function<UriBuilder, URI> uriFunction, Object body, ParameterizedTypeReference<T> typeReference) {
-        return webClient.post()
+        return buildWebClient()
+                .post()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -162,7 +166,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T put(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return webClient.put()
+        return buildWebClient()
+                .put()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -177,7 +182,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T patch(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return webClient.patch()
+        return buildWebClient()
+                .patch()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -187,21 +193,26 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T delete(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
-        return webClient.delete()
+        return buildWebClient()
+                .delete()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .block();
     }
 
-    private void buildWebClient() {
-        webClient = WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(buildHttpClient()))
-                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                .filter(responseFilter())
-                .baseUrl(baseURL)
-                .build();
+    @Override
+    public WebClient buildWebClient() {
+        if (Objects.isNull(webClient)) {
+            webClient = WebClient.builder()
+                    .clientConnector(new ReactorClientHttpConnector(buildHttpClient()))
+                    .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
+                    .filter(responseFilter())
+                    .baseUrl(baseURL)
+                    .build();
+        }
+        return webClient;
     }
 
     private HttpClient buildHttpClient() {
