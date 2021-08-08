@@ -1,9 +1,12 @@
 package usociety.manager.domain.provider.user.impl;
 
 import static org.apache.logging.log4j.util.Strings.EMPTY;
+import static usociety.manager.domain.provider.web.RestClientFactoryBuilder.newBuilder;
 
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +20,13 @@ import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
 import usociety.manager.domain.provider.user.UserConnector;
 import usociety.manager.domain.provider.user.dto.UserDTO;
-import usociety.manager.domain.provider.web.impl.ReactiveConnectorImpl;
+import usociety.manager.domain.provider.web.RestClient;
+import usociety.manager.domain.provider.web.RestClientFactory;
 
 @Component
-public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConnector {
+public class UserConnectorImpl implements UserConnector {
 
+    private final RestClient restClient;
     private final String path;
 
     @Autowired
@@ -30,25 +35,38 @@ public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConn
                              @Value("${server.ssl.key-store-type}") String keyStoreType,
                              @Value("${web.authentication.users-path}") String path,
                              @Value("${web.read.time-out:30000}") int readTimeOut,
-                             @Value("${web.authentication.url}") String baseUrl,
-                             @Value("${server.ssl.key-store}") Resource keyStore) {
-        super(baseUrl, readTimeOut, connectionTimeOut, null, keyStore, keyStoreType, keyStorePassword);
+                             @Value("${web.authentication.url}") String baseURL,
+                             @Value("${server.ssl.key-store}") Resource keyStore,
+                             RestClientFactory restClientFactory) {
+        this.restClient = restClientFactory.create(newBuilder()
+                .baseURL(baseURL)
+                .readTimeOut(readTimeOut)
+                .connectionTimeOut(connectionTimeOut)
+                .keyStore(keyStore)
+                .keyStoreType(keyStoreType)
+                .keyStorePassword(keyStorePassword)
+                .build());
         this.path = path;
+    }
+
+    @PostConstruct
+    private void init() {
+        restClient.setUp();
     }
 
     @Override
     public UserDTO create(CreateUserRequest body) {
-        return post(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
+        return restClient.post(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
     }
 
     @Override
     public UserDTO update(UserDTO body) {
-        return patch(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
+        return restClient.patch(uriBuilder -> uriBuilder.path(path).build(), body, UserDTO.class);
     }
 
     @Override
     public UserDTO get(String username) {
-        return get(uriBuilder -> uriBuilder.path(path).pathSegment(username).build(), UserDTO.class);
+        return restClient.get(uriBuilder -> uriBuilder.path(path).pathSegment(username).build(), UserDTO.class);
     }
 
     @Override
@@ -58,12 +76,12 @@ public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConn
         queryParams.add("username", username);
         queryParams.add("email", email);
 
-        return get(uriBuilder -> uriBuilder.path(path).queryParams(queryParams).build(), UserDTO.class);
+        return restClient.get(uriBuilder -> uriBuilder.path(path).queryParams(queryParams).build(), UserDTO.class);
     }
 
     @Override
     public void enableAccount(String username) {
-        post(uriBuilder -> uriBuilder
+        restClient.post(uriBuilder -> uriBuilder
                         .path(path)
                         .pathSegment("{username}")
                         .pathSegment("verify-email")
@@ -73,12 +91,12 @@ public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConn
 
     @Override
     public void delete(String username) {
-        delete(uriBuilder -> uriBuilder.path(path).pathSegment("{username}").build(username), Void.class);
+        restClient.delete(uriBuilder -> uriBuilder.path(path).pathSegment("{username}").build(username), Void.class);
     }
 
     @Override
     public List<UserDTO> getAll() {
-        return get(uriBuilder -> uriBuilder
+        return restClient.get(uriBuilder -> uriBuilder
                         .path(path)
                         .pathSegment("all")
                         .build(),
@@ -88,7 +106,7 @@ public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConn
 
     @Override
     public void changePassword(String username, ChangePasswordRequest body) {
-        patch(uriBuilder -> uriBuilder
+        restClient.patch(uriBuilder -> uriBuilder
                         .path(path)
                         .pathSegment("{username}")
                         .pathSegment("change-password")

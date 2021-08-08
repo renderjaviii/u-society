@@ -1,6 +1,8 @@
 
 package usociety.manager.domain.exception;
 
+import static usociety.manager.domain.util.Constants.UNEXPECTED_ERROR;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,12 +10,11 @@ public class GenericException extends Exception {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericException.class);
 
-    public static final String GENERIC_ERROR_CODE = "UNEXPECTED_ERROR";
     private final String errorCode;
 
     public GenericException(String message) {
         super(message);
-        this.errorCode = GENERIC_ERROR_CODE;
+        this.errorCode = UNEXPECTED_ERROR;
     }
 
     public GenericException(String message, String errorCode) {
@@ -24,7 +25,7 @@ public class GenericException extends Exception {
     public GenericException(String message, String errorCode, Throwable throwable) {
         super(message);
         this.errorCode = errorCode;
-        LOGGER.error("Error", throwable);
+        LOGGER.error("Generic error", throwable);
     }
 
     public String getErrorCode() {

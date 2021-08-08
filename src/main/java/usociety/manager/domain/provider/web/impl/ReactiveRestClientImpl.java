@@ -25,7 +25,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -40,50 +39,56 @@ import reactor.netty.http.client.HttpClient;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.domain.exception.WebException;
 import usociety.manager.domain.provider.authentication.dto.TokenDTO;
-import usociety.manager.domain.provider.web.AbstractConnector;
+import usociety.manager.domain.provider.web.RestClient;
+import usociety.manager.domain.provider.web.RestClientFactoryBuilder;
 
-@Component
-public class ReactiveConnectorImpl implements AbstractConnector {
+public class ReactiveRestClientImpl implements RestClient {
 
-    private static final String BUILDING_CLIENT_ERROR_CODE = "ERROR_BUILDING_HTTP_CLIENT";
+    private static final String BUILDING_CLIENT_ERROR_CODE = "ERROR_SETTING_REST_CLIENT";
 
-    protected Integer connectionTimeOut;
-    protected String keyStorePassword;
-    protected String keyStoreType;
-    protected Integer readTimeOut;
-    protected Resource keyStore;
-    protected String authPath;
-    protected String baseURL;
+    private static final int DEFAULT_CONNECTION_TIME_OUT = 5000;
+    private static final int DEFAULT_READ_TIME_OUT = 30000;
+
+    private final Integer connectionTimeOut;
+    private final String keyStorePassword;
+    private final String clientSecret;
+    private final String keyStoreType;
+    private final Integer readTimeOut;
+    private final Resource keyStore;
+    private final String clientId;
+    private final String authPath;
+    private final String baseURL;
 
     private WebClient webClient;
 
-    public ReactiveConnectorImpl() {
-        super();
-    }
-
-    public ReactiveConnectorImpl(String baseURL,
-                                 Integer connectionTimeOut,
-                                 Integer readTimeOut,
-                                 String authPath,
-                                 Resource keyStore,
-                                 String keyStoreType,
-                                 String keyStorePassword) {
-        Assert.notNull(connectionTimeOut, "connectionTimeOut cannot be null");
-        Assert.notNull(readTimeOut, "readTimeOut cannot be null");
-        Assert.notNull(baseURL, "baseURL is not valid");
-        this.connectionTimeOut = connectionTimeOut;
-        this.keyStorePassword = keyStorePassword;
-        this.keyStoreType = keyStoreType;
-        this.readTimeOut = readTimeOut;
-        this.keyStore = keyStore;
-        this.authPath = authPath;
-        this.baseURL = baseURL;
+    public ReactiveRestClientImpl(RestClientFactoryBuilder builder) {
+        Assert.notNull(builder.getBaseURL(), "baseURL cannot be null");
+        connectionTimeOut = getOrDefault(builder.getConnectionTimeOut(), DEFAULT_CONNECTION_TIME_OUT);
+        readTimeOut = getOrDefault(builder.getReadTimeOut(), DEFAULT_READ_TIME_OUT);
+        keyStorePassword = builder.getKeyStorePassword();
+        keyStoreType = builder.getKeyStoreType();
+        clientSecret = builder.getClientSecret();
+        keyStore = builder.getKeyStore();
+        authPath = builder.getAuthPath();
+        clientId = builder.getClientId();
+        baseURL = builder.getBaseURL();
     }
 
     @Override
-    public TokenDTO getToken(String clientId, String clientSecret, String username, String password) {
-        return buildWebClient()
-                .mutate()
+    public void setUp() {
+        webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(buildHttpClient()))
+                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
+                .filter(responseFilter())
+                .baseUrl(baseURL)
+                .build();
+    }
+
+    @Override
+    public TokenDTO getToken(String username, String password) {
+        validateSetUp();
+        return webClient.mutate()
                 .defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                 .build()
                 .post()
@@ -99,9 +104,9 @@ public class ReactiveConnectorImpl implements AbstractConnector {
     }
 
     @Override
-    public TokenDTO getToken(String clientId, String clientSecret) {
-        return buildWebClient()
-                .post()
+    public TokenDTO getToken() {
+        validateSetUp();
+        return webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(authPath)
                         .queryParam(OAuth2Utils.GRANT_TYPE, "client_credentials")
@@ -114,8 +119,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T get(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
-        return buildWebClient()
-                .get()
+        validateSetUp();
+        return webClient.get()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(responseClazz)
@@ -124,8 +129,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T get(Function<UriBuilder, URI> uriFunction, ParameterizedTypeReference<T> typeReference) {
-        return buildWebClient()
-                .get()
+        validateSetUp();
+        return webClient.get()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(typeReference)
@@ -134,13 +139,14 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T post(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
+        validateSetUp();
         return post(uriFunction, EMPTY, responseClazz);
     }
 
     @Override
     public <T> T post(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return buildWebClient()
-                .post()
+        validateSetUp();
+        return webClient.post()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -150,8 +156,8 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T post(Function<UriBuilder, URI> uriFunction, Object body, ParameterizedTypeReference<T> typeReference) {
-        return buildWebClient()
-                .post()
+        validateSetUp();
+        return webClient.post()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -161,13 +167,14 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T put(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
+        validateSetUp();
         return put(uriFunction, EMPTY, responseClazz);
     }
 
     @Override
     public <T> T put(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return buildWebClient()
-                .put()
+        validateSetUp();
+        return webClient.put()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -177,13 +184,14 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T patch(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
+        validateSetUp();
         return patch(uriFunction, EMPTY, responseClazz);
     }
 
     @Override
     public <T> T patch(Function<UriBuilder, URI> uriFunction, Object body, Class<T> responseClazz) {
-        return buildWebClient()
-                .patch()
+        validateSetUp();
+        return webClient.patch()
                 .uri(uriFunction)
                 .bodyValue(body)
                 .retrieve()
@@ -193,26 +201,12 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     @Override
     public <T> T delete(Function<UriBuilder, URI> uriFunction, Class<T> responseClazz) {
-        return buildWebClient()
-                .delete()
+        validateSetUp();
+        return webClient.delete()
                 .uri(uriFunction)
                 .retrieve()
                 .bodyToMono(responseClazz)
                 .block();
-    }
-
-    @Override
-    public WebClient buildWebClient() {
-        if (Objects.isNull(webClient)) {
-            webClient = WebClient.builder()
-                    .clientConnector(new ReactorClientHttpConnector(buildHttpClient()))
-                    .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                    .filter(responseFilter())
-                    .baseUrl(baseURL)
-                    .build();
-        }
-        return webClient;
     }
 
     private HttpClient buildHttpClient() {
@@ -239,7 +233,7 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
             return SslContextBuilder.forClient().trustManager(trustManagerFactory).build();
         } catch (Exception e) {
-            throw new WebException("Error setting SSL context", BUILDING_CLIENT_ERROR_CODE);
+            throw new WebException("Error setting SSL context", BUILDING_CLIENT_ERROR_CODE, e);
         }
     }
 
@@ -252,6 +246,16 @@ public class ReactiveConnectorImpl implements AbstractConnector {
             }
             return Mono.just(response);
         });
+    }
+
+    public <T> T getOrDefault(T value, T defaultValue) {
+        return Objects.isNull(value) ? defaultValue : value;
+    }
+
+    private void validateSetUp() {
+        if (Objects.isNull(webClient)) {
+            throw new UnsupportedOperationException("init method must be invoked");
+        }
     }
 
 }

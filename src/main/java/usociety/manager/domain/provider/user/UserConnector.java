@@ -5,9 +5,8 @@ import java.util.List;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
 import usociety.manager.domain.provider.user.dto.UserDTO;
-import usociety.manager.domain.provider.web.AbstractConnector;
 
-public interface UserConnector extends AbstractConnector {
+public interface UserConnector {
 
     UserDTO create(CreateUserRequest body);
 

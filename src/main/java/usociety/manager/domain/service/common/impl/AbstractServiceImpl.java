@@ -1,6 +1,6 @@
 package usociety.manager.domain.service.common.impl;
 
-import static usociety.manager.domain.util.Constants.USER_NOT_FOUND_ERROR_CODE;
+import static usociety.manager.domain.util.Constants.USER_NOT_FOUND_ERROR;
 
 import java.time.Clock;
 import java.util.Objects;
@@ -40,7 +40,7 @@ public class AbstractServiceImpl implements AbstractService {
         UserApi user = userService.get(username);
         if (Objects.isNull(user)) {
             String errorMessage = String.format("User with username: %s does not exist", username);
-            throw new GenericException(errorMessage, USER_NOT_FOUND_ERROR_CODE);
+            throw new GenericException(errorMessage, USER_NOT_FOUND_ERROR);
         }
         return user;
     }
