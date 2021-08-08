@@ -40,7 +40,7 @@ import usociety.manager.domain.service.user.UserService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/users")
+@RequestMapping(path = "v1/services/users")
 public class UserController extends AbstractController {
 
     private final UserService userService;

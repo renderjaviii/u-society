@@ -22,7 +22,7 @@ import usociety.manager.domain.service.payment.PaymentService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/payments")
+@RequestMapping(path = "v1/services/payments")
 public class PaymentController extends AbstractController {
 
     private final PaymentService paymentService;

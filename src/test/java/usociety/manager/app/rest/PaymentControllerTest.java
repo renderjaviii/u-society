@@ -32,7 +32,7 @@ import usociety.manager.domain.service.payment.PaymentService;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentControllerTest extends TestUtils {
 
-    private static final String BASE_PATH = "/services/payments";
+    private static final String BASE_PATH = "/v1/services/payments";
 
     @Mock
     private SecurityContext securityContext;

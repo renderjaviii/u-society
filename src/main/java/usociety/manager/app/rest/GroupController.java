@@ -35,7 +35,7 @@ import usociety.manager.domain.service.group.GroupService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/groups")
+@RequestMapping(path = "v1/services/groups")
 public class GroupController extends AbstractController {
 
     private final GroupService groupService;
@@ -57,7 +57,7 @@ public class GroupController extends AbstractController {
         return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
     }
 
-    @ApiOperation(value = "Get.")
+    @ApiOperation(value = "Get by id.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
@@ -95,7 +95,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.update(getUser(), id, request));
     }
 
-    @ApiOperation(value = "Get user groups.")
+    @ApiOperation(value = "Get user's groups.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of groups in where user is member."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
@@ -129,7 +129,7 @@ public class GroupController extends AbstractController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getByFilters(
             @RequestParam("name") String name,
             @RequestParam("categoryId") Long categoryId
@@ -137,7 +137,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.getByFilters(name, categoryId));
     }
 
-    @ApiOperation(value = "Join to group.")
+    @ApiOperation(value = "Join group.")
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Request to join group sent."),
             @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),

@@ -26,7 +26,7 @@ import usociety.manager.domain.service.otp.OtpService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/otps")
+@RequestMapping(path = "v1/services/otps")
 public class OtpController extends AbstractController {
 
     private final OtpService otpService;

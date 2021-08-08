@@ -19,7 +19,7 @@ import usociety.manager.domain.service.category.CategoryService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/categories")
+@RequestMapping(path = "v1/services/categories")
 public class CategoryController extends AbstractController {
 
     private final CategoryService categoryService;

@@ -29,7 +29,7 @@ import usociety.manager.domain.service.message.MessageService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/messages")
+@RequestMapping(path = "v1/services/messages")
 public class MessageController extends AbstractController {
 
     private final MessageService messageService;
@@ -61,7 +61,7 @@ public class MessageController extends AbstractController {
             @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
             @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
             @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @GetMapping(path = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{groupId}/group", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<MessageApi>> getByFilter(
             @PathVariable("groupId") Long groupId,
             @RequestParam(value = "page", defaultValue = "0") int page,

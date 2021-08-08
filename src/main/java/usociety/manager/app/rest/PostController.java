@@ -33,7 +33,7 @@ import usociety.manager.domain.service.post.PostService;
 
 @Validated
 @RestController
-@RequestMapping(path = "services/posts")
+@RequestMapping(path = "v1/services/posts")
 public class PostController extends AbstractController {
 
     private final PostService postService;

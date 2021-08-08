@@ -29,7 +29,7 @@ import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
 public class CategoryControllerTest {
 
     private static final CustomObjectMapper mapper = new CustomObjectMapperImpl();
-    private static final String BASE_PATH = "/services/categories";
+    private static final String BASE_PATH = "/v1/services/categories";
 
     @Mock
     private CategoryService categoryService;

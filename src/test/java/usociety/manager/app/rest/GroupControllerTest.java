@@ -77,7 +77,7 @@ public class GroupControllerTest extends TestUtils {
                 .name("Group name")
                 .build();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/groups")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/groups")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -102,7 +102,7 @@ public class GroupControllerTest extends TestUtils {
 
         long groupId = 1L;
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get("/services/groups/{id}", groupId))
+                .get("/v1/services/groups/{id}", groupId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -123,7 +123,7 @@ public class GroupControllerTest extends TestUtils {
 
         String slug = "fake-group-name";
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get("/services/groups/{slug}/slug", slug))
+                .get("/v1/services/groups/{slug}/slug", slug))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -146,7 +146,7 @@ public class GroupControllerTest extends TestUtils {
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .put("/services/groups/{id}", GroupApiFixture.id)
+                .put("/v1/services/groups/{id}", GroupApiFixture.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -164,7 +164,7 @@ public class GroupControllerTest extends TestUtils {
                 .thenReturn(Collections.singletonList(GroupApiFixture.defaultValue));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get("/services/groups/{username}/all", USERNAME))
+                .get("/v1/services/groups/{username}/all", USERNAME))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -182,7 +182,7 @@ public class GroupControllerTest extends TestUtils {
                 .build();
 
         mockMvc.perform(MockMvcRequestBuilders
-                .patch("/services/groups/{id}/update-membership", GroupApiFixture.id)
+                .patch("/v1/services/groups/{id}/update-membership", GroupApiFixture.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -197,7 +197,7 @@ public class GroupControllerTest extends TestUtils {
 
         String name = "pattern";
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get("/services/groups/all")
+                .get("/v1/services/groups")
                 .param("name", name)
                 .param("categoryId", "1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -212,7 +212,7 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldJoinToGroupCorrectly() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/services/groups/{id}/join", GroupApiFixture.id))
+                .post("/v1/services/groups/{id}/join", GroupApiFixture.id))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(groupService).join(USERNAME, GroupApiFixture.id);
@@ -221,7 +221,7 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldFailGettingAllUserGroupsIfIfTokenDoesNotBelongToHim() throws Exception {
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get("/services/groups/{username}/all", "fake-user"))
+                .get("/v1/services/groups/{username}/all", "fake-user"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn();
 
@@ -238,7 +238,7 @@ public class GroupControllerTest extends TestUtils {
                 .description("Group description")
                 .build();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/groups")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/groups")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())

@@ -23,12 +23,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private String signingKey;
 
     private static final RequestMatcher PUBLIC_ENDPOINTS_MATCHERS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/services/users/**", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/services/users", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/services/users/enable-account", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/services/users/**/verify", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/services/categories", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/services/users/login", HttpMethod.POST.name()));
+            new AntPathRequestMatcher("v1/services/users/**", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("v1/services/users", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("v1/services/users/enable-account", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("v1/services/users/**/verify", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("v1/services/categories", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("v1/services/users/login", HttpMethod.POST.name()));
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -40,7 +40,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .requestMatchers(PUBLIC_ENDPOINTS_MATCHERS).permitAll()
                 .and()
                 .authorizeRequests()
-                .requestMatchers(new AntPathRequestMatcher("/services/**")).authenticated();
+                .requestMatchers(new AntPathRequestMatcher("**/services/**")).authenticated();
     }
 
     @Bean

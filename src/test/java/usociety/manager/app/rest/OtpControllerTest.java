@@ -32,7 +32,7 @@ import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
 public class OtpControllerTest extends TestUtils {
 
     private static final CustomObjectMapper mapper = new CustomObjectMapperImpl();
-    private static final String BASE_PATH = "/services/otps";
+    private static final String BASE_PATH = "/v1/services/otps";
 
     @Mock
     private HttpServletRequest httpServletRequest;

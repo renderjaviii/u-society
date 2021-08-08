@@ -73,7 +73,7 @@ public class UserControllerTest extends TestUtils {
         ChangePasswordRequest request = new ChangePasswordRequest("1234ABC", "T3$t123abc");
         String otpCode = "2468";
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/services/users/{username}/change-password", USERNAME)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/v1/services/users/{username}/change-password", USERNAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request))
                 .param("otpCode", otpCode))
@@ -84,7 +84,7 @@ public class UserControllerTest extends TestUtils {
 
     @Test
     public void shouldDeleteUserCorrectly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/services/users/{username}", USERNAME))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/services/users/{username}", USERNAME))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).delete(USERNAME);
@@ -95,7 +95,7 @@ public class UserControllerTest extends TestUtils {
         Mockito.when(userService.update(any(), any())).thenReturn(UserApiFixture.defaultValue);
 
         UpdateUserRequest request = new UpdateUserRequest("New name", EMPTY, Collections.emptySet());
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/services/users")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/v1/services/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -112,7 +112,7 @@ public class UserControllerTest extends TestUtils {
         Mockito.when(userService.login(any())).thenReturn(loginResponse);
 
         LoginRequest request = new LoginRequest(UserApiFixture.username, "12345ABC");
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/users/login")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -126,7 +126,7 @@ public class UserControllerTest extends TestUtils {
 
     @Test
     public void shouldVerifyEmailCorrectly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/services/users/{email}/verify", EMAIL))
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/users/{email}/verify", EMAIL))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         Mockito.verify(userService).verify(EMAIL);
@@ -145,7 +145,7 @@ public class UserControllerTest extends TestUtils {
                 .otpCode("12345")
                 .build();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/users")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -160,7 +160,7 @@ public class UserControllerTest extends TestUtils {
     @Test
     public void shouldEnableAccountCorrectly() throws Exception {
         String otpCode = "98765";
-        mockMvc.perform(MockMvcRequestBuilders.post("/services/users/{email}/enable-account", EMAIL)
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/users/{email}/enable-account", EMAIL)
                 .param("otpCode", otpCode))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
@@ -171,7 +171,7 @@ public class UserControllerTest extends TestUtils {
     public void shouldGetUserByUsernameCorrectly() throws Exception {
         Mockito.when(userService.get(Mockito.any())).thenReturn(UserApiFixture.defaultValue);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/services/users/" + USERNAME))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/v1/services/users/" + USERNAME))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -184,7 +184,7 @@ public class UserControllerTest extends TestUtils {
     @Test
     public void shouldFailDeletingUserIfTokenDoesNotBelongToHim() throws Exception {
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .delete("/services/users/{username}", "fake-username"))
+                .delete("/v1/services/users/{username}", "fake-username"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn();
 
@@ -201,7 +201,7 @@ public class UserControllerTest extends TestUtils {
         String otpCode = "2468";
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .patch("/services/users/{username}/change-password", "fake-username")
+                .patch("/v1/services/users/{username}/change-password", "fake-username")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request))
                 .param("otpCode", otpCode))
@@ -222,7 +222,7 @@ public class UserControllerTest extends TestUtils {
                 .email("example.com")
                 .build();
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/services/users")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/v1/services/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
