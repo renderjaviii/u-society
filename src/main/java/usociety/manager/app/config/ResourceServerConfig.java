@@ -22,7 +22,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Value("${config.access-token.signing-key}")
     private String signingKey;
 
-    private static final RequestMatcher ENDPOINTS_WITHOUT_AUTH = new OrRequestMatcher(
+    private static final RequestMatcher PUBLIC_ENDPOINTS_MATCHERS = new OrRequestMatcher(
             new AntPathRequestMatcher("/services/users/**", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/services/users", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/services/users/enable-account", HttpMethod.POST.name()),
@@ -34,11 +34,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors()
-                .and()
+                .and().cors()
+                .and().csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(ENDPOINTS_WITHOUT_AUTH).permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS_MATCHERS).permitAll()
                 .and()
                 .authorizeRequests()
                 .requestMatchers(new AntPathRequestMatcher("/services/**")).authenticated();
