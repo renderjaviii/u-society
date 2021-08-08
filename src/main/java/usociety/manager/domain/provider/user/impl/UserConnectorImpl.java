@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -24,11 +25,14 @@ public class UserConnectorImpl extends ReactiveConnectorImpl implements UserConn
     private final String path;
 
     @Autowired
-    public UserConnectorImpl(@Value("${web.connection.time-out:5000}") int connectionTimeOut,
+    public UserConnectorImpl(@Value("${server.ssl.key-store-password}") String keyStorePassword,
+                             @Value("${web.connection.time-out:5000}") int connectionTimeOut,
+                             @Value("${server.ssl.key-store-type}") String keyStoreType,
                              @Value("${web.authentication.users-path}") String path,
                              @Value("${web.read.time-out:30000}") int readTimeOut,
-                             @Value("${web.authentication.url}") String baseUrl) {
-        super(baseUrl, null, readTimeOut, connectionTimeOut);
+                             @Value("${web.authentication.url}") String baseUrl,
+                             @Value("${server.ssl.key-store}") Resource keyStore) {
+        super(baseUrl, readTimeOut, connectionTimeOut, null, keyStore, keyStoreType, keyStorePassword);
         this.path = path;
     }
 

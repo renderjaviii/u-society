@@ -10,7 +10,7 @@
     </parent>
     <groupId>u-society</groupId>
     <artifactId>manager</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>us-society-manager</name>
     <description>U Society - Manager API.</description>
 

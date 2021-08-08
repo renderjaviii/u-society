@@ -8,13 +8,20 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.security.KeyStore;
 import java.time.Duration;
 import java.util.function.Function;
 
-import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.stereotype.Component;
@@ -26,7 +33,6 @@ import org.springframework.web.util.UriBuilder;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
@@ -40,10 +46,13 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     private static final String BUILDING_CLIENT_ERROR_CODE = "ERROR_BUILDING_HTTP_CLIENT";
 
-    private Integer connectionTimeOut;
-    private Integer readTimeOut;
-    private String authPath;
-    private String baseURL;
+    protected Integer connectionTimeOut;
+    protected String keyStorePassword;
+    protected String keyStoreType;
+    protected Integer readTimeOut;
+    protected Resource keyStore;
+    protected String authPath;
+    protected String baseURL;
 
     private WebClient webClient;
 
@@ -51,12 +60,21 @@ public class ReactiveConnectorImpl implements AbstractConnector {
         super();
     }
 
-    public ReactiveConnectorImpl(String baseURL, String authPath, Integer readTimeOut, Integer connectionTimeOut) {
+    public ReactiveConnectorImpl(String baseURL,
+                                 Integer connectionTimeOut,
+                                 Integer readTimeOut,
+                                 String authPath,
+                                 Resource keyStore,
+                                 String keyStoreType,
+                                 String keyStorePassword) {
         Assert.notNull(connectionTimeOut, "connectionTimeOut cannot be null");
         Assert.notNull(readTimeOut, "readTimeOut cannot be null");
         Assert.notNull(baseURL, "baseURL is not valid");
         this.connectionTimeOut = connectionTimeOut;
+        this.keyStorePassword = keyStorePassword;
+        this.keyStoreType = keyStoreType;
         this.readTimeOut = readTimeOut;
+        this.keyStore = keyStore;
         this.authPath = authPath;
         this.baseURL = baseURL;
         buildWebClient();
@@ -199,10 +217,17 @@ public class ReactiveConnectorImpl implements AbstractConnector {
 
     private SslContext getSSLContext() {
         try {
-            return SslContextBuilder.forClient()
-                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
-                    .build();
-        } catch (SSLException e) {
+            Path truststorePath = Paths.get(keyStore.getURI());
+            InputStream truststoreInputStream = Files.newInputStream(truststorePath, StandardOpenOption.READ);
+
+            KeyStore truststore = KeyStore.getInstance(keyStoreType);
+            truststore.load(truststoreInputStream, keyStorePassword.toCharArray());
+
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            trustManagerFactory.init(truststore);
+
+            return SslContextBuilder.forClient().trustManager(trustManagerFactory).build();
+        } catch (Exception e) {
             throw new WebException("Error setting SSL context", BUILDING_CLIENT_ERROR_CODE);
         }
     }
