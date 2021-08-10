@@ -24,10 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import usociety.manager.app.api.ApiError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
@@ -38,6 +36,7 @@ import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.exception.UserValidationException;
 import usociety.manager.domain.service.user.UserService;
 
+@Tag(name = "User controller")
 @Validated
 @RestController
 @RequestMapping(path = "v1/services/users")
@@ -50,27 +49,14 @@ public class UserController extends AbstractController {
         this.userService = userService;
     }
 
-    @ApiOperation(value = "Create.")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "User created."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @Operation(summary = "Create")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> create(@Valid @RequestBody CreateUserRequest request)
             throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
-    @ApiOperation(value = "Verify user data and send otp.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "User verified and OTP sent."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Verify data and send OTP")
     @PostMapping(path = "/{email}/verify")
     public ResponseEntity<Void> verify(
             @Email @NotEmpty @PathVariable(name = "email") final String email
@@ -79,12 +65,7 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Enable user through OTP.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Account enabled."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Enable user account through OTP")
     @PostMapping(path = "/{email}/enable-account")
     public ResponseEntity<Void> enableAccount(
             @Email @NotEmpty @PathVariable(name = "email") final String email,
@@ -94,36 +75,21 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Get.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get")
     @GetMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> get(@PathVariable(value = "username") final String username)
             throws GenericException {
         return ResponseEntity.ok(userService.get(username));
     }
 
-    @ApiOperation(value = "Update.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User updated."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Update")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
         return ResponseEntity.ok(userService.update(getUser(), request));
     }
 
-    @ApiOperation(value = "Login.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Token data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Login")
     @PostMapping(path = "/login",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request)
@@ -132,12 +98,7 @@ public class UserController extends AbstractController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
-    @ApiOperation(value = "Delete.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "User deleted."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Delete")
     @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username)
             throws UserValidationException {
@@ -146,12 +107,7 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Change password.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Password changed."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Change password")
     @PatchMapping(path = "/{username}/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(
             @PathVariable(value = "username") final String username,

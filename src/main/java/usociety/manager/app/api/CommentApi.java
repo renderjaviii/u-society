@@ -7,24 +7,20 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel("Comment")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CommentApi extends BaseObject {
 
-    @ApiModelProperty(notes = "User")
     @JsonProperty
     private UserApi user;
 
+    @Schema(description = "Plan text value")
     @NotEmpty
-    @ApiModelProperty(notes = "Value")
     @JsonProperty
     private String value;
 
-    @ApiModelProperty(notes = "Creation date")
     @JsonProperty
     private LocalDateTime creationDate;
 
@@ -71,6 +67,7 @@ public class CommentApi extends BaseObject {
         private LocalDateTime creationDate;
 
         private Builder() {
+            super();
         }
 
         public Builder user(UserApi user) {

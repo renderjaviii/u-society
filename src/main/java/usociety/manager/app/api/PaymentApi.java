@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.ExtraValidation;
 import usociety.manager.app.util.validator.AlphanumericConstraint;
@@ -28,7 +26,6 @@ import usociety.manager.app.util.validator.PaymentCreationConstraint;
 import usociety.manager.domain.enums.CardTypeEnum;
 import usociety.manager.domain.enums.DocumentTypeEnum;
 
-@ApiModel("Payment")
 @PaymentCreationConstraint(groups = ExtraValidation.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
@@ -42,22 +39,18 @@ public abstract class PaymentApi extends BaseObject {
     @NotNull
     @Positive
     @Digits(integer = 17, fraction = 2)
-    @ApiModelProperty(notes = "Amount")
     @JsonProperty
     private BigDecimal amount;
 
     @NotBlank
     @Pattern(regexp = "[\\d+]{7,11}")
-    @ApiModelProperty(notes = "Document number")
     @JsonProperty
     private String documentNumber;
 
     @NotNull
-    @ApiModelProperty(notes = "Document type")
     @JsonProperty
     private DocumentTypeEnum documentType;
 
-    @ApiModelProperty(notes = "Created at")
     @JsonProperty
     private LocalDateTime createdAt;
 
@@ -107,34 +100,28 @@ public abstract class PaymentApi extends BaseObject {
         return super.hashCode();
     }
 
-    @ApiModel("Card payment data")
     public static class CardPaymentApi extends PaymentApi {
 
         @NotNull
-        @ApiModelProperty(notes = "Card type")
         @JsonProperty
         private CardTypeEnum cardType;
 
         @NotEmpty
         @Pattern(regexp = "[\\d+]{16}")
-        @ApiModelProperty(notes = "Card number")
         @JsonProperty
         private String cardNumber;
 
         @Pattern(regexp = "[\\d+]{4}")
-        @ApiModelProperty(notes = "Card CVV")
         @JsonProperty
         private String cvv;
 
         @NotEmpty(groups = ExtraValidation.class)
         @AlphanumericConstraint
-        @ApiModelProperty(notes = "Name on the card")
         @JsonProperty
         private String nameOnTheCard;
 
         @Min(1)
         @Max(36)
-        @ApiModelProperty(notes = "Quotes")
         @JsonProperty
         private Integer quotes;
 
@@ -257,18 +244,15 @@ public abstract class PaymentApi extends BaseObject {
 
     }
 
-    @ApiModel("PSE payment data")
     public static class PSEPaymentApi extends PaymentApi {
 
         @NotEmpty
         @Email
-        @ApiModelProperty(notes = "PSE Email")
         @JsonProperty
         private String pseEmail;
 
         @NotNull
         @Min(1)
-        @ApiModelProperty(notes = "PSE Bank code")
         @JsonProperty
         private Integer pseBankCode;
 

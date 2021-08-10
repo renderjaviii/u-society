@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import usociety.manager.TestUtils;
 import usociety.manager.app.api.OtpApi;
-import usociety.manager.app.handler.RestExceptionHandler;
+import usociety.manager.app.handler.GlobalControllerExceptionHandler;
 import usociety.manager.domain.service.otp.OtpService;
 import usociety.manager.domain.util.mapper.CustomObjectMapper;
 import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
@@ -49,7 +49,7 @@ public class OtpControllerTest extends TestUtils {
         ReflectionTestUtils.setField(subject, "httpServletRequest", httpServletRequest);
 
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
-                .setControllerAdvice(new RestExceptionHandler(), new RestExceptionHandler())
+                .setControllerAdvice(new GlobalControllerExceptionHandler(), new GlobalControllerExceptionHandler())
                 .build();
     }
 

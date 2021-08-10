@@ -1,8 +1,9 @@
 package usociety.manager;
 
-import static springfox.documentation.builders.PathSelectors.regex;
+import static java.lang.Boolean.TRUE;
 
 import java.time.Clock;
+import java.util.Arrays;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,23 +13,20 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.github.slugify.Slugify;
 
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 
 @EnableAsync
 @EnableCaching
-@EnableSwagger2
 @SpringBootApplication
 public class Application {
-
-    private static final String BASE_PACKAGE = Application.class.getPackage().getName();
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -53,110 +51,23 @@ public class Application {
     }
 
     @Bean
-    public Docket swaggerUsers() {
-        final String title = "Users";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/users/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(TRUE);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean
-    public Docket swaggerOTP() {
-        final String title = "OTP";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/otp/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    @Bean
-    public Docket swaggerCategory() {
-        final String title = "Category";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/categories/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    @Bean
-    public Docket swaggerGroup() {
-        final String title = "Group";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/groups/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    @Bean
-    public Docket swaggerMessage() {
-        final String title = "Message";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/messages/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    @Bean
-    public Docket swaggerPost() {
-        final String title = "Post";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/posts/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    @Bean
-    public Docket swaggerPayments() {
-        final String title = "Payments";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName(title)
-                .select()
-                .paths(regex("/services/payments/*.*"))
-                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
-                .build()
-                .apiInfo(buildApiInfo(title))
-                .pathMapping("/");
-    }
-
-    private ApiInfo buildApiInfo(String title) {
-        return new ApiInfoBuilder()
-                .title(String.format("USociety REST Manager - %s.", title))
-                .description("REST Middleware Manager.")
-                .version("2.0")
-                .build();
+    public OpenAPI customOpenAPI() {
+        Info info = new Info()
+                .title("RESTful Manager")
+                .description("RESTful orchestrator - OpenAPI");
+        return new OpenAPI().components(new Components()).info(info);
     }
 
 }
-

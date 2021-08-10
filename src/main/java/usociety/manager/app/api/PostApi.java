@@ -4,16 +4,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
-@ApiModel("Post")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(value = "public")
 public class PostApi extends BaseObject {
@@ -28,8 +29,10 @@ public class PostApi extends BaseObject {
     private LocalDateTime creationDate;
 
     @JsonProperty
-    private boolean isPublic;
+    private Boolean isPublic;
 
+    @Schema(description = "Additional data")
+    @Valid
     @JsonProperty
     private PostAdditionalData content;
 
@@ -42,9 +45,11 @@ public class PostApi extends BaseObject {
     @JsonProperty
     private String description;
 
+    @Schema(description = "Survey's selected option")
     @JsonProperty
     private Integer selectedOptionId;
 
+    @Schema(description = "User's selected reaction")
     @JsonProperty
     private ReactTypeEnum selectedReaction;
 
@@ -67,16 +72,12 @@ public class PostApi extends BaseObject {
         return creationDate;
     }
 
-    public boolean isPublic() {
+    public Boolean isPublic() {
         return isPublic;
     }
 
     public PostAdditionalData getContent() {
         return content;
-    }
-
-    public void setContent(PostAdditionalData content) {
-        this.content = content;
     }
 
     public Map<ReactTypeEnum, Integer> getReacts() {
@@ -156,7 +157,7 @@ public class PostApi extends BaseObject {
         private Long id;
         private LocalDateTime expirationDate;
         private LocalDateTime creationDate;
-        private boolean isPublic;
+        private Boolean isPublic;
         private PostAdditionalData content;
         private Map<ReactTypeEnum, Integer> reacts;
         private List<CommentApi> comments;
@@ -183,7 +184,7 @@ public class PostApi extends BaseObject {
             return this;
         }
 
-        public Builder isPublic(boolean isPublic) {
+        public Builder isPublic(Boolean isPublic) {
             this.isPublic = isPublic;
             return this;
         }

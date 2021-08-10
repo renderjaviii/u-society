@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import usociety.manager.app.api.ApiError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.PaymentApi;
 import usociety.manager.domain.service.payment.PaymentService;
 
+@Tag(name = "Payment controller")
 @Validated
 @RestController
 @RequestMapping(path = "v1/services/payments")
@@ -32,12 +31,7 @@ public class PaymentController extends AbstractController {
         this.paymentService = paymentService;
     }
 
-    @ApiOperation(value = "Create payment.")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Payment created."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Create")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Valid @RequestBody PaymentApi payment) {
         paymentService.create(getUser(), payment);

@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import usociety.manager.app.api.CategoryApi;
-import usociety.manager.app.handler.RestExceptionHandler;
+import usociety.manager.app.handler.GlobalControllerExceptionHandler;
 import usociety.manager.domain.service.category.CategoryService;
 import usociety.manager.domain.util.mapper.CustomObjectMapper;
 import usociety.manager.domain.util.mapper.impl.CustomObjectMapperImpl;
@@ -43,7 +43,7 @@ public class CategoryControllerTest {
     @Before
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
-                .setControllerAdvice(new RestExceptionHandler())
+                .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
 
         categoryList = Arrays.asList(

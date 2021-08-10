@@ -3,11 +3,9 @@ package usociety.manager.domain.provider.authentication.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel("Token DTO")
 public class TokenDTO extends BaseObject {
 
     @JsonProperty("access_token")

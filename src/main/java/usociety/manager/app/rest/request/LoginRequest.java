@@ -5,10 +5,8 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "Request to user login.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginRequest extends BaseObject {
 

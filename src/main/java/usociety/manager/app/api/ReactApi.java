@@ -3,16 +3,14 @@ package usociety.manager.app.api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.ReactTypeEnum;
 
-@ApiModel("React")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ReactApi extends BaseObject {
 
     @JsonProperty
-    private int amount;
+    private Integer amount;
 
     @JsonProperty
     private ReactTypeEnum value;
@@ -30,7 +28,7 @@ public class ReactApi extends BaseObject {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 
@@ -54,13 +52,14 @@ public class ReactApi extends BaseObject {
 
     public static final class Builder {
 
-        private int amount;
+        private Integer amount;
         private ReactTypeEnum value;
 
         private Builder() {
+            super();
         }
 
-        public Builder amount(int amount) {
+        public Builder amount(Integer amount) {
             this.amount = amount;
             return this;
         }

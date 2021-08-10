@@ -20,7 +20,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatabasePropsReader implements BeanPostProcessor {
+public class DatabasePropsReaderProcessor implements BeanPostProcessor {
 
     private static final String QUERY_FORMAT = "SELECT name, value FROM %s";
 
@@ -30,7 +30,7 @@ public class DatabasePropsReader implements BeanPostProcessor {
     private final ConfigurableEnvironment environment;
 
     @Autowired
-    public DatabasePropsReader(ConfigurableEnvironment environment) {
+    public DatabasePropsReaderProcessor(ConfigurableEnvironment environment) {
         this.environment = environment;
     }
 

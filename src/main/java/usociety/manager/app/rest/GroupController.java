@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import usociety.manager.app.api.ApiError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserGroupApi;
 import usociety.manager.app.rest.request.CreateOrUpdateGroupRequest;
@@ -33,6 +31,7 @@ import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.group.GroupService;
 
+@Tag(name = "Group controller")
 @Validated
 @RestController
 @RequestMapping(path = "v1/services/groups")
@@ -45,48 +44,28 @@ public class GroupController extends AbstractController {
         this.groupService = groupService;
     }
 
-    @ApiOperation(value = "Create.")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Group data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Create")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateOrUpdateGroupRequest request)
             throws GenericException {
         return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
     }
 
-    @ApiOperation(value = "Get by id.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get by ID")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
             throws GenericException {
         return ResponseEntity.ok(groupService.get(getUser(), id));
     }
 
-    @ApiOperation(value = "Get by slug.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get by slug")
     @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") String slug)
             throws GenericException {
         return ResponseEntity.ok(groupService.getBySlug(getUser(), slug));
     }
 
-    @ApiOperation(value = "Update.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Group data updated."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Update")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> update(
             @NotNull @PathVariable(name = "id") Long id,
@@ -95,12 +74,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.update(getUser(), id, request));
     }
 
-    @ApiOperation(value = "Get user's groups.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of groups in where user is member."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get user's groups")
     @GetMapping(path = "/{username}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getAllUserGroups(@PathVariable(name = "username") String username)
             throws GenericException {
@@ -108,12 +82,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.getAllUserGroups(username));
     }
 
-    @ApiOperation(value = "Update membership.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Membership updated."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Update membership")
     @PatchMapping(path = "/{id}/update-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateMembership(
             @PathVariable("id") Long id,
@@ -123,12 +92,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Get all by filters.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Groups data."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get by filters")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getByFilters(
             @RequestParam("name") String name,
@@ -137,12 +101,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.getByFilters(name, categoryId));
     }
 
-    @ApiOperation(value = "Join group.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Request to join group sent."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Join group")
     @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException, MessagingException {

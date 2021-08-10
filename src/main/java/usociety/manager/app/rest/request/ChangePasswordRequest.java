@@ -5,12 +5,10 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.validator.PasswordCreationConstraint;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel("Request to change password.")
 public class ChangePasswordRequest extends BaseObject {
 
     @NotEmpty

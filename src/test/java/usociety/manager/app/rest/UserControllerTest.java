@@ -31,7 +31,7 @@ import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.TokenApiFixture;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.api.UserApiFixture;
-import usociety.manager.app.handler.RestExceptionHandler;
+import usociety.manager.app.handler.GlobalControllerExceptionHandler;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
 import usociety.manager.app.rest.request.CreateUserRequest;
 import usociety.manager.app.rest.request.LoginRequest;
@@ -59,7 +59,7 @@ public class UserControllerTest extends TestUtils {
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
-                .setControllerAdvice(new RestExceptionHandler())
+                .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
 
         when(securityContext.getAuthentication()).thenReturn(auth2Authentication);

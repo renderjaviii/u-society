@@ -20,10 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import usociety.manager.app.api.ApiError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
 import usociety.manager.app.rest.request.CreatePostRequest;
@@ -31,6 +29,7 @@ import usociety.manager.domain.enums.ReactTypeEnum;
 import usociety.manager.domain.exception.GenericException;
 import usociety.manager.domain.service.post.PostService;
 
+@Tag(name = "Post controller")
 @Validated
 @RestController
 @RequestMapping(path = "v1/services/posts")
@@ -43,27 +42,16 @@ public class PostController extends AbstractController {
         this.postService = postService;
     }
 
-    @ApiOperation(value = "Create post.")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Post created."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Send")
     @PostMapping(path = "/{groupId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostApi> sendGroupMessage(
             @NotNull @PathVariable(value = "groupId") Long groupId,
             @Valid @RequestBody CreatePostRequest request
-    )
-            throws GenericException {
+    ) throws GenericException {
         return new ResponseEntity<>(postService.create(getUser(), groupId, request), CREATED);
     }
 
-    @ApiOperation(value = "Get all posts by group.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Posts."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Get all by group")
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
             @NotNull @PathVariable("groupId") Long groupId,
@@ -73,12 +61,7 @@ public class PostController extends AbstractController {
         return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page, pageSize));
     }
 
-    @ApiOperation(value = "React into a post.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Post react saved."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "React into a post")
     @PostMapping(path = "/{id}/react", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(
             @NotNull @PathVariable("id") Long id,
@@ -88,12 +71,7 @@ public class PostController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Comment into to a post.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Post comment saved."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Comment into a post")
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> comment(
             @NotNull @PathVariable("id") Long id,
@@ -103,18 +81,12 @@ public class PostController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Vote in survey.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Survey vote saved."),
-            @ApiResponse(code = 400, message = "Input data error.", response = ApiError.class),
-            @ApiResponse(code = 401, message = "Unauthorized.", response = ApiError.class),
-            @ApiResponse(code = 406, message = "Internal validation error.", response = ApiError.class),
-            @ApiResponse(code = 500, message = "Internal server error.", response = ApiError.class) })
+    @Operation(summary = "Vote in survey")
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
             @NotNull @PathVariable("id") Long id,
             @NotNull @PositiveOrZero @RequestParam("option") Integer vote
-    )
-            throws GenericException {
+    ) throws GenericException {
         postService.vote(getUser(), id, vote);
         return ResponseEntity.noContent().build();
     }

@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import usociety.manager.TestUtils;
 import usociety.manager.app.api.ApiError;
 import usociety.manager.app.api.PaymentApi;
-import usociety.manager.app.handler.RestExceptionHandler;
+import usociety.manager.app.handler.GlobalControllerExceptionHandler;
 import usociety.manager.domain.enums.CardTypeEnum;
 import usociety.manager.domain.enums.DocumentTypeEnum;
 import usociety.manager.domain.service.payment.PaymentService;
@@ -47,7 +47,7 @@ public class PaymentControllerTest extends TestUtils {
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
-                .setControllerAdvice(new RestExceptionHandler())
+                .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
 
         when(securityContext.getAuthentication()).thenReturn(auth2Authentication);

@@ -36,7 +36,7 @@ import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.GroupApiFixture;
 import usociety.manager.app.api.UserApiFixture;
 import usociety.manager.app.api.UserGroupApi;
-import usociety.manager.app.handler.RestExceptionHandler;
+import usociety.manager.app.handler.GlobalControllerExceptionHandler;
 import usociety.manager.app.rest.request.CreateOrUpdateGroupRequest;
 import usociety.manager.app.rest.response.GetGroupResponse;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
@@ -58,7 +58,7 @@ public class GroupControllerTest extends TestUtils {
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(subject)
-                .setControllerAdvice(new RestExceptionHandler())
+                .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
 
         when(securityContext.getAuthentication()).thenReturn(auth2Authentication);

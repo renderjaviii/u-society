@@ -5,11 +5,9 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel("Request to comment post.")
 public class CommentPostRequest extends BaseObject {
 
     @NotEmpty

@@ -6,13 +6,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "User Api")
-@JsonRootName(value = "user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserApi extends BaseObject {
 

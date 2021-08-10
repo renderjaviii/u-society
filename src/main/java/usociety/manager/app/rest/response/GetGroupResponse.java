@@ -5,13 +5,11 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
-@ApiModel(value = "Get group response.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetGroupResponse extends BaseObject {
 
@@ -28,7 +26,7 @@ public class GetGroupResponse extends BaseObject {
     private UserGroupStatusEnum membershipStatus;
 
     @JsonProperty
-    private boolean isAdmin;
+    private Boolean isAdmin;
 
     public GetGroupResponse() {
         super();
@@ -62,7 +60,7 @@ public class GetGroupResponse extends BaseObject {
         return membershipStatus;
     }
 
-    public boolean isAdmin() {
+    public Boolean isAdmin() {
         return isAdmin;
     }
 
@@ -82,7 +80,7 @@ public class GetGroupResponse extends BaseObject {
         private List<UserApi> activeMembers;
         private List<UserApi> pendingMembers;
         private UserGroupStatusEnum membershipStatus;
-        private boolean isAdmin;
+        private Boolean isAdmin;
 
         private Builder() {
             super();
@@ -108,7 +106,7 @@ public class GetGroupResponse extends BaseObject {
             return this;
         }
 
-        public Builder isAdmin(boolean isAdmin) {
+        public Builder isAdmin(Boolean isAdmin) {
             this.isAdmin = isAdmin;
             return this;
         }

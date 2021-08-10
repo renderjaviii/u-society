@@ -7,6 +7,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import usociety.manager.app.api.MessageApi;
@@ -56,12 +57,11 @@ public class MessageServiceImpl extends AbstractServiceImpl implements MessageSe
     }
 
     @Override
-    public List<MessageApi> getGroupMessages(String username, Long groupId, int page, int pageSize)
-            throws GenericException {
+    public List<MessageApi> getGroupMessages(String username, Long groupId, Pageable pageable) throws GenericException {
         validateIfUserIsMember(username, groupId, GETTING_GROUP_MESSAGES_ERROR_CODE);
 
-        List<Message> messages = messageRepository
-                .findAllByGroupIdOrderByCreationDateDesc(groupId, PageableUtils.paginate(page, pageSize));
+        List<Message> messages = messageRepository.findAllByGroupIdOrderByCreationDateDesc(groupId,
+                PageableUtils.paginate(pageable.getPageNumber(), pageable.getPageSize()));
 
         List<MessageApi> response = new ArrayList<>();
         for (Message message : messages) {

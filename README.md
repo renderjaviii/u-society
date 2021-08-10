@@ -22,7 +22,7 @@ This microservice has the function of the resource server, so, if it’s the hea
 - _JWT_ (Java Web Tokens, open standard for creating signed and encrypted data)  
 - _Spring Security_ (It provides the authentication and authorization mechanisms)  
 - _Webflux_ (Reactive REST client used to interconnect all the microservices' ecosystem)  
-- _Swagger UI_ (Used to document the API)  
+- _SpringDoc OpenAPI_ (User for automating the generation of API documentation)  
 - _Spring mail_ (It provides the mail support)  
 - _Gmail SMTP_ (Email provider used to send emails)  
 - _Apache tomcat_ (Web server container)  
@@ -90,11 +90,11 @@ This microservice has the function of the resource server, so, if it’s the hea
 > - _When you run the database's docker container, it will be populated using the seeders files:  `src/main/resources/data.sql`  and  `src/main/resources/import.sql`  (to avoid it, remove the entry points)_.
 
 ### Usage
-Refer to the Swagger documentation: `https://localhost:8443/manager/swagger-ui.html`.
+Refer to the Swagger documentation: `https://localhost:8443/manager/swagger-ui/index.html`.
  
-If you want to interact with the API, please download [Postman](https://www.postman.com/) (or whatever API client that you prefer), this tool will help us to consume the endpoints when the user's [bearer token](https://datatracker.ietf.org/doc/html/rfc6750) is required.
+If you want to interact with the API, please download [Postman](https://www.postman.com/) (or whatever API client that you prefer), this tool will help us to consume the endpoints, e.g., when the user's [bearer token](https://datatracker.ietf.org/doc/html/rfc6750) is required.
 
-> Please, have in mind that a _**self-signed SSL certificate**_ was configured to fit out _HTTPS security communication_, so, you may need to add it into the keystore (or ignore the security warning).
+> Please, have in mind that a _**self-signed SSL certificate**_ was configured to fit out _HTTPS security communication_, so, you may need to add it into the CA store (or ignore the security warning).
 
 ## Application bootstrapping
 

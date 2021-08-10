@@ -1,13 +1,9 @@
 package usociety.manager.app.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel("Token Api")
-@JsonRootName(value = "token")
 public class TokenApi extends BaseObject {
 
     @JsonProperty

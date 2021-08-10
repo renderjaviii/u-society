@@ -7,41 +7,32 @@ import javax.validation.constraints.Pattern;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "Request to create user")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateUserRequest extends BaseObject {
 
     @NotBlank
-    @ApiModelProperty(notes = "Name", required = true)
     @JsonProperty
     private String name;
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z\\d_.]+")
-    @ApiModelProperty(notes = "Username", required = true)
     @JsonProperty
     private String username;
 
     @NotBlank
     @Email
-    @ApiModelProperty(notes = "Email", required = true)
     @JsonProperty
     private String email;
 
-    @ApiModelProperty(notes = "Photo")
     @JsonProperty
     private String photo;
 
     @NotBlank
-    @ApiModelProperty(notes = "Password", required = true)
     @JsonProperty
     private String password;
 
-    @ApiModelProperty(notes = "OTP code", required = true)
     @JsonProperty
     private String otpCode;
 

@@ -5,11 +5,9 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.UserGroupStatusEnum;
 
-@ApiModel("User group information.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserGroupApi extends BaseObject {
 

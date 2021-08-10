@@ -9,14 +9,12 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CommentApi;
 import usociety.manager.app.api.ReactApi;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.validator.PostCreationConstraint;
 import usociety.manager.domain.service.post.dto.PostAdditionalData;
 
-@ApiModel("Create post request.")
 @PostCreationConstraint
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CreatePostRequest extends BaseObject {

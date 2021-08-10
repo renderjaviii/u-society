@@ -2,20 +2,17 @@ package usociety.manager.app.rest.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.api.TokenApi;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel("Login response info.")
 public class LoginResponse extends BaseObject {
 
-    @ApiModelProperty(notes = "User information")
     @JsonProperty
     private UserApi user;
 
-    @ApiModelProperty(notes = "Authorization token")
+    @Schema(description = "JWT")
     @JsonProperty
     private TokenApi token;
 

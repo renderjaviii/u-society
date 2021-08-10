@@ -5,11 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel("Group")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class GroupApi extends BaseObject {
 
@@ -22,7 +19,6 @@ public class GroupApi extends BaseObject {
     @JsonProperty
     private String description;
 
-    @ApiModelProperty("Base 64 photo")
     @JsonProperty
     private String photo;
 

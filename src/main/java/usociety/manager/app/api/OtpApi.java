@@ -3,13 +3,9 @@ package usociety.manager.app.api;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "OTP Api")
-@JsonRootName(value = "otp")
 public class OtpApi extends BaseObject {
 
     @JsonProperty

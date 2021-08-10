@@ -5,19 +5,20 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel("Survey option representation.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SurveyOption extends BaseObject {
 
     @JsonProperty
     private Integer id;
 
+    @Schema(description = "Votes amount")
     @JsonProperty
     private Integer amount;
 
+    @Schema(description = "Choice", example = "First choice")
     @NotEmpty
     @JsonProperty
     private String value;

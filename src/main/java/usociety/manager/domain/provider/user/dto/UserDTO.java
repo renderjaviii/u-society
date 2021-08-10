@@ -7,10 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "User DTO")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName(value = "user")
 public class UserDTO extends BaseObject {

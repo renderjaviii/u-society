@@ -1,27 +1,21 @@
 package usociety.manager.app.api;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.util.BaseObject;
 
-@ApiModel(value = "Api Error")
 public class ApiError extends BaseObject {
 
-    @ApiModelProperty(notes = "Description")
     @JsonProperty
     private String description;
 
-    @ApiModelProperty(notes = "Status code", example = "400")
     @JsonProperty
     private String statusCode;
 
-    @ApiModelProperty(notes = "Error description", hidden = true)
-    @JsonInclude(NON_NULL)
+    @Schema(hidden = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(value = "error_description")
     private String errorDescription;
 

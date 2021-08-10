@@ -7,17 +7,17 @@ import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.domain.enums.PostTypeEnum;
 
-@ApiModel("Post additional data based on the type.")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PostAdditionalData extends BaseObject {
 
     @JsonProperty
     private PostTypeEnum type;
 
+    @Schema(description = "Post's value", example = "Survey title")
     @JsonProperty
     private String value;
 

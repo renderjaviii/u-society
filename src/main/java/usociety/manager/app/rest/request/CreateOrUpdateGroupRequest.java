@@ -10,12 +10,10 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
 import usociety.manager.app.api.CategoryApi;
 import usociety.manager.app.util.BaseObject;
 import usociety.manager.app.util.validator.AlphanumericConstraint;
 
-@ApiModel(value = "Create or update group request.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateOrUpdateGroupRequest extends BaseObject {
 

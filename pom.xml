@@ -19,7 +19,7 @@
         <mysql-connector.version>8.0.19</mysql-connector.version>
         <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
         <spring-security-jwt.version>1.1.0.RELEASE</spring-security-jwt.version>
-        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+        <springdoc.version>1.5.10</springdoc.version>
         <spring-boot-starter-test.version>2.1.6.RELEASE</spring-boot-starter-test.version>
         <jackson-databind.version>2.10.3</jackson-databind.version>
         <commons-lang3.version>3.9</commons-lang3.version>
@@ -45,7 +45,7 @@
             **/test/**/*.*, **/app/config/*.*, **/*Message*.java, **/*Post*.java, **/*RestClient*.java
         </sonar.coverage.exclusions>
         <sonar.exclusions>
-            **/Application.java, **/exception/*.*, **/RestExceptionHandler.java
+            **/Application.java, **/exception/*.*, **/GlobalControllerExceptionHandler.java
         </sonar.exclusions>
         <sonar.cpd.exclusions>
             **/*Api.java, **/*DTO.java, **/domain/model/**/*.*
@@ -88,14 +88,15 @@
         </dependency>
 
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-swagger.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-swagger.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>
