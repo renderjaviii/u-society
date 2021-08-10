@@ -21,6 +21,7 @@ import com.github.slugify.Slugify;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 
 @EnableAsync
@@ -66,7 +67,9 @@ public class Application {
     public OpenAPI customOpenAPI() {
         Info info = new Info()
                 .title("RESTful Manager")
-                .description("RESTful orchestrator - OpenAPI");
+                .description("RESTful orchestrator - OpenAPI")
+                .contact(new Contact().name("Javier Ardila").url("https://github.com/renderjaviii"))
+                .version("1.0");
         return new OpenAPI().components(new Components()).info(info);
     }
 
