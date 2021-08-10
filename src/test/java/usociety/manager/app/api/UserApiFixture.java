@@ -16,7 +16,7 @@ import usociety.manager.domain.enums.UserTypeEnum;
 
 public class UserApiFixture {
 
-    public static UserApi defaultValue;
+    private static UserApi defaultValue;
 
     public static List<CategoryApi> categoryList;
     public static LocalDateTime lastAccessAt;
@@ -62,6 +62,10 @@ public class UserApiFixture {
                 .id(id)
                 .build();
 
+    }
+
+    public static UserApi value() {
+        return defaultValue;
     }
 
 }

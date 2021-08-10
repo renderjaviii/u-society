@@ -67,7 +67,7 @@ public class GroupControllerTest extends TestUtils {
 
     @Test
     public void shouldCreateGroupCorrectly() throws Exception {
-        Mockito.when(groupService.create(any(), any())).thenReturn(GroupApiFixture.defaultValue);
+        Mockito.when(groupService.create(any(), any())).thenReturn(GroupApiFixture.value());
 
         CreateOrUpdateGroupRequest request = CreateOrUpdateGroupRequest.newBuilder()
                 .category(new CategoryApi(1L, "Category name"))
@@ -84,7 +84,7 @@ public class GroupControllerTest extends TestUtils {
                 .andReturn();
 
         GroupApi executed = readMvcResultValue(mvcResult, GroupApi.class);
-        Assert.assertEquals(GroupApiFixture.defaultValue, executed);
+        Assert.assertEquals(GroupApiFixture.value(), executed);
 
         Mockito.verify(groupService).create(USERNAME, request);
     }
@@ -92,10 +92,10 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldGetGroupCorrectly() throws Exception {
         GetGroupResponse response = GetGroupResponse.newBuilder()
-                .activeMembers(Collections.singletonList(UserApiFixture.defaultValue))
+                .activeMembers(Collections.singletonList(UserApiFixture.value()))
                 .membershipStatus(UserGroupStatusEnum.ACTIVE)
                 .pendingMembers(Collections.emptyList())
-                .group(GroupApiFixture.defaultValue)
+                .group(GroupApiFixture.value())
                 .isAdmin(Boolean.TRUE)
                 .build();
         Mockito.when(groupService.get(any(), any())).thenReturn(response);
@@ -116,7 +116,7 @@ public class GroupControllerTest extends TestUtils {
     public void shouldGetGroupBySlugCorrectly() throws Exception {
         GetGroupResponse response = GetGroupResponse.newBuilder()
                 .membershipStatus(UserGroupStatusEnum.PENDING)
-                .group(GroupApiFixture.defaultValue)
+                .group(GroupApiFixture.value())
                 .isAdmin(Boolean.FALSE)
                 .build();
         Mockito.when(groupService.getBySlug(any(), any())).thenReturn(response);
@@ -135,7 +135,7 @@ public class GroupControllerTest extends TestUtils {
 
     @Test
     public void shouldUpdateGroupCorrectly() throws Exception {
-        Mockito.when(groupService.update(any(), any(), any())).thenReturn(GroupApiFixture.defaultValue);
+        Mockito.when(groupService.update(any(), any(), any())).thenReturn(GroupApiFixture.value());
 
         CreateOrUpdateGroupRequest request = CreateOrUpdateGroupRequest.newBuilder()
                 .category(new CategoryApi(1L, "Category name"))
@@ -153,7 +153,7 @@ public class GroupControllerTest extends TestUtils {
                 .andReturn();
 
         GroupApi executed = readMvcResultValue(mvcResult, GroupApi.class);
-        Assert.assertEquals(GroupApiFixture.defaultValue, executed);
+        Assert.assertEquals(GroupApiFixture.value(), executed);
 
         Mockito.verify(groupService).update(USERNAME, GroupApiFixture.id, request);
     }
@@ -161,7 +161,7 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldGetAllUserGroupsCorrectly() throws Exception {
         Mockito.when(groupService.getAllUserGroups(any()))
-                .thenReturn(Collections.singletonList(GroupApiFixture.defaultValue));
+                .thenReturn(Collections.singletonList(GroupApiFixture.value()));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                 .get("/v1/services/groups/{username}/all", USERNAME))
@@ -169,7 +169,7 @@ public class GroupControllerTest extends TestUtils {
                 .andReturn();
 
         List<GroupApi> executed = readGroupListResponse(mvcResult);
-        Assert.assertEquals(Collections.singletonList(GroupApiFixture.defaultValue), executed);
+        Assert.assertEquals(Collections.singletonList(GroupApiFixture.value()), executed);
 
         Mockito.verify(groupService).getAllUserGroups(USERNAME);
     }
@@ -177,7 +177,7 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldUpdateMembershipCorrectly() throws Exception {
         UserGroupApi request = UserGroupApi.newBuilder()
-                .member(UserApiFixture.defaultValue)
+                .member(UserApiFixture.value())
                 .status(UserGroupStatusEnum.REJECTED)
                 .build();
 
@@ -193,7 +193,7 @@ public class GroupControllerTest extends TestUtils {
     @Test
     public void shouldGetAllGroupsUsingFiltersCorrectly() throws Exception {
         Mockito.when(groupService.getByFilters(any(), any()))
-                .thenReturn(Collections.nCopies(7, GroupApiFixture.defaultValue));
+                .thenReturn(Collections.nCopies(7, GroupApiFixture.value()));
 
         String name = "pattern";
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
@@ -204,7 +204,7 @@ public class GroupControllerTest extends TestUtils {
                 .andReturn();
 
         List<GroupApi> executed = readGroupListResponse(mvcResult);
-        Assert.assertEquals(Collections.nCopies(7, GroupApiFixture.defaultValue), executed);
+        Assert.assertEquals(Collections.nCopies(7, GroupApiFixture.value()), executed);
 
         Mockito.verify(groupService).getByFilters(name, 1L);
     }

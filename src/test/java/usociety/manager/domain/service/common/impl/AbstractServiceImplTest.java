@@ -39,9 +39,9 @@ public class AbstractServiceImplTest {
 
     @Test
     public void shouldGetUserCorrectly() throws GenericException {
-        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.value());
         UserApi executed = subject.getUser(UserApiFixture.username);
-        Assert.assertEquals(UserApiFixture.defaultValue, executed);
+        Assert.assertEquals(UserApiFixture.value(), executed);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 

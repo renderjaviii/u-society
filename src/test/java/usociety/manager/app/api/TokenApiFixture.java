@@ -2,7 +2,7 @@ package usociety.manager.app.api;
 
 public class TokenApiFixture {
 
-    public static TokenApi defaultValue;
+    private static TokenApi defaultValue;
 
     public static String refreshToken = "REFRESH_TOKEN_VALUE";
     public static String accessToken = "ACCESS_TOKEN_VALUE";
@@ -21,4 +21,9 @@ public class TokenApiFixture {
                 .jti(jti)
                 .build();
     }
+
+    public static TokenApi value() {
+        return defaultValue;
+    }
+
 }

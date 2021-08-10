@@ -74,7 +74,7 @@ public class GroupMembershipHelperImplTest {
         subject.update(UserApi.newBuilder().id(adminUserId).build(),
                 GroupApiFixture.id,
                 UserGroupApi.newBuilder()
-                        .member(UserApiFixture.defaultValue)
+                        .member(UserApiFixture.value())
                         .status(UserGroupStatusEnum.ACTIVE)
                         .build());
 
@@ -130,7 +130,7 @@ public class GroupMembershipHelperImplTest {
             subject.update(UserApi.newBuilder().id(123L).build(),
                     GroupApiFixture.id,
                     UserGroupApi.newBuilder()
-                            .member(UserApiFixture.defaultValue)
+                            .member(UserApiFixture.value())
                             .status(UserGroupStatusEnum.ACTIVE)
                             .build());
         } catch (GenericException e) {
@@ -161,7 +161,7 @@ public class GroupMembershipHelperImplTest {
                         .id(adminUserId)
                         .build());
 
-        subject.join(UserApiFixture.defaultValue, GroupApiFixture.id);
+        subject.join(UserApiFixture.value(), GroupApiFixture.id);
 
         Mockito.verify(groupRepository).findById(GroupApiFixture.id);
         Mockito.verify(userGroupRepository).findByGroupIdAndUserId(GroupApiFixture.id, UserApiFixture.id);
@@ -186,7 +186,7 @@ public class GroupMembershipHelperImplTest {
     @Test(expected = GenericException.class)
     public void shouldFailJoiningGroupIfItDoesNotExist() throws GenericException {
         try {
-            subject.join(UserApiFixture.defaultValue, GroupApiFixture.id);
+            subject.join(UserApiFixture.value(), GroupApiFixture.id);
         } catch (GenericException e) {
             Assert.assertEquals(GROUP_NOT_FOUND, e.getErrorCode());
             throw e;
@@ -206,7 +206,7 @@ public class GroupMembershipHelperImplTest {
                 .thenReturn(Optional.of(new UserGroup()));
 
         try {
-            subject.join(UserApiFixture.defaultValue, GroupApiFixture.id);
+            subject.join(UserApiFixture.value(), GroupApiFixture.id);
         } catch (GenericException e) {
             Assert.assertEquals("User has already required to join", e.getMessage());
             Assert.assertEquals("ERROR_JOINING_GROUP", e.getErrorCode());

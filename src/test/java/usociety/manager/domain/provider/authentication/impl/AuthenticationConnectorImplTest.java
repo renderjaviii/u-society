@@ -70,7 +70,7 @@ public class AuthenticationConnectorImplTest {
         LoginRequest request = new LoginRequest(username, password);
         TokenApi executed = subject.login(request);
 
-        Assert.assertEquals(TokenApiFixture.defaultValue, executed);
+        Assert.assertEquals(TokenApiFixture.value(), executed);
         Mockito.verify(restClientFactory).create(RestClientFactoryBuilder.newBuilder()
                 .keyStorePassword(KEY_STORE_PASSWORD)
                 .keyStoreType(KEY_STORE_TYPE)

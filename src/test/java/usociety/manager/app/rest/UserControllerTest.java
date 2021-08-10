@@ -65,7 +65,7 @@ public class UserControllerTest extends TestUtils {
         when(securityContext.getAuthentication()).thenReturn(auth2Authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        loginResponse = new LoginResponse(UserApiFixture.defaultValue, TokenApiFixture.defaultValue);
+        loginResponse = new LoginResponse(UserApiFixture.value(), TokenApiFixture.value());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class UserControllerTest extends TestUtils {
 
     @Test
     public void shouldUpdateUserCorrectly() throws Exception {
-        Mockito.when(userService.update(any(), any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(userService.update(any(), any())).thenReturn(UserApiFixture.value());
 
         UpdateUserRequest request = new UpdateUserRequest("New name", EMPTY, Collections.emptySet());
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/v1/services/users")
@@ -103,7 +103,7 @@ public class UserControllerTest extends TestUtils {
 
         UserApi executed = readMvcResultValue(mvcResult, UserApi.class);
 
-        Assert.assertEquals(UserApiFixture.defaultValue, executed);
+        Assert.assertEquals(UserApiFixture.value(), executed);
         Mockito.verify(userService).update(USERNAME, request);
     }
 
@@ -169,7 +169,7 @@ public class UserControllerTest extends TestUtils {
 
     @Test
     public void shouldGetUserByUsernameCorrectly() throws Exception {
-        Mockito.when(userService.get(Mockito.any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(userService.get(Mockito.any())).thenReturn(UserApiFixture.value());
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/v1/services/users/" + USERNAME))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -177,7 +177,7 @@ public class UserControllerTest extends TestUtils {
 
         UserApi executed = readMvcResultValue(mvcResult, UserApi.class);
 
-        Assert.assertEquals(UserApiFixture.defaultValue, executed);
+        Assert.assertEquals(UserApiFixture.value(), executed);
         Mockito.verify(userService).get(USERNAME);
     }
 

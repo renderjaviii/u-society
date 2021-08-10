@@ -62,7 +62,7 @@ public class SurveyServiceImplTest {
         ReflectionTestUtils.setField(subject, "userService", userService);
         ReflectionTestUtils.setField(subject, "clock", clock);
 
-        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.value());
         Mockito.when(clock.instant())
                 .thenReturn(LocalDateTime.of(2021, 8, 5, 0, 0).toInstant(ZoneOffset.UTC));
         Mockito.when(clock.getZone()).thenReturn(ZoneId.of("GMT"));

@@ -8,7 +8,7 @@ import com.github.javafaker.Faker;
 
 public class GroupApiFixture {
 
-    public static GroupApi defaultValue;
+    private static GroupApi defaultValue;
 
     public static List<String> objectives;
     public static CategoryApi category;
@@ -42,4 +42,9 @@ public class GroupApiFixture {
                 .id(id)
                 .build();
     }
+
+    public static GroupApi value() {
+        return defaultValue;
+    }
+
 }

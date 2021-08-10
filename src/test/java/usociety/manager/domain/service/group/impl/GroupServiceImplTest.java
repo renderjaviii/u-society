@@ -52,7 +52,7 @@ public class GroupServiceImplTest {
     @Before
     public void setUp() throws GenericException {
         ReflectionTestUtils.setField(subject, "userService", userService);
-        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(userService.get(any())).thenReturn(UserApiFixture.value());
 
         createOrUpdateGroupRequest = CreateOrUpdateGroupRequest.newBuilder()
                 .category(new CategoryApi(1L, "Category name"))
@@ -64,51 +64,51 @@ public class GroupServiceImplTest {
 
         getGroupResponse = GetGroupResponse.newBuilder()
                 .membershipStatus(UserGroupStatusEnum.PENDING)
-                .group(GroupApiFixture.defaultValue)
+                .group(GroupApiFixture.value())
                 .isAdmin(FALSE)
                 .build();
     }
 
     @Test
     public void shouldCreateGroupCorrectly() throws GenericException {
-        Mockito.when(createUpdateGroupHelper.create(any(), any())).thenReturn(GroupApiFixture.defaultValue);
+        Mockito.when(createUpdateGroupHelper.create(any(), any())).thenReturn(GroupApiFixture.value());
 
         GroupApi executed = subject.create(UserApiFixture.username, createOrUpdateGroupRequest);
 
-        Assert.assertEquals(GroupApiFixture.defaultValue, executed);
-        Mockito.verify(createUpdateGroupHelper).create(UserApiFixture.defaultValue, createOrUpdateGroupRequest);
+        Assert.assertEquals(GroupApiFixture.value(), executed);
+        Mockito.verify(createUpdateGroupHelper).create(UserApiFixture.value(), createOrUpdateGroupRequest);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
     @Test
     public void shouldUpdateGroupCorrectly() throws GenericException {
-        Mockito.when(createUpdateGroupHelper.update(any(), any(), any())).thenReturn(GroupApiFixture.defaultValue);
+        Mockito.when(createUpdateGroupHelper.update(any(), any(), any())).thenReturn(GroupApiFixture.value());
 
         GroupApi executed = subject.update(UserApiFixture.username, GroupApiFixture.id, createOrUpdateGroupRequest);
 
-        Assert.assertEquals(GroupApiFixture.defaultValue, executed);
+        Assert.assertEquals(GroupApiFixture.value(), executed);
         Mockito.verify(createUpdateGroupHelper)
-                .update(UserApiFixture.defaultValue, GroupApiFixture.id, createOrUpdateGroupRequest);
+                .update(UserApiFixture.value(), GroupApiFixture.id, createOrUpdateGroupRequest);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
     @Test
     public void shouldJoinGroupCorrectly() throws GenericException {
         subject.join(UserApiFixture.username, GroupApiFixture.id);
-        Mockito.verify(groupMembershipHelper).join(UserApiFixture.defaultValue, GroupApiFixture.id);
+        Mockito.verify(groupMembershipHelper).join(UserApiFixture.value(), GroupApiFixture.id);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
     @Test
     public void shouldUpdateGroupMembershipCorrectly() throws GenericException {
         UserGroupApi request = UserGroupApi.newBuilder()
-                .member(UserApiFixture.defaultValue)
+                .member(UserApiFixture.value())
                 .status(UserGroupStatusEnum.ACTIVE)
                 .build();
 
         subject.updateMembership(UserApiFixture.username, GroupApiFixture.id, request);
 
-        Mockito.verify(groupMembershipHelper).update(UserApiFixture.defaultValue, GroupApiFixture.id, request);
+        Mockito.verify(groupMembershipHelper).update(UserApiFixture.value(), GroupApiFixture.id, request);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
@@ -131,7 +131,7 @@ public class GroupServiceImplTest {
         GetGroupResponse executed = subject.get(UserApiFixture.username, GroupApiFixture.id);
 
         Assert.assertEquals(getGroupResponse, executed);
-        Mockito.verify(getGroupHelper).byUserAndId(UserApiFixture.defaultValue, GroupApiFixture.id);
+        Mockito.verify(getGroupHelper).byUserAndId(UserApiFixture.value(), GroupApiFixture.id);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
@@ -141,20 +141,20 @@ public class GroupServiceImplTest {
 
         GetGroupResponse executed = subject.getBySlug(UserApiFixture.username, GroupApiFixture.slug);
         Assert.assertEquals(getGroupResponse, executed);
-        Mockito.verify(getGroupHelper).byUserAndSlug(UserApiFixture.defaultValue, GroupApiFixture.slug);
+        Mockito.verify(getGroupHelper).byUserAndSlug(UserApiFixture.value(), GroupApiFixture.slug);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
     @Test
     public void shouldGetByFiltersGroupCorrectly() throws GenericException {
         Mockito.when(getGroupHelper.byFilters(any(), any()))
-                .thenReturn(Collections.singletonList(GroupApiFixture.defaultValue));
+                .thenReturn(Collections.singletonList(GroupApiFixture.value()));
 
         String groupName = "Group name";
         long categoryId = 41L;
         List<GroupApi> executed = subject.getByFilters(groupName, categoryId);
 
-        Assert.assertEquals(Collections.singletonList(GroupApiFixture.defaultValue), executed);
+        Assert.assertEquals(Collections.singletonList(GroupApiFixture.value()), executed);
         Mockito.verify(getGroupHelper).byFilters(groupName, categoryId);
         Mockito.verifyNoInteractions(userService);
     }
@@ -162,12 +162,12 @@ public class GroupServiceImplTest {
     @Test
     public void shouldGetAllUserGroupsCorrectly() throws GenericException {
         Mockito.when(getGroupHelper.allUserGroups(any()))
-                .thenReturn(Collections.nCopies(3, GroupApiFixture.defaultValue));
+                .thenReturn(Collections.nCopies(3, GroupApiFixture.value()));
 
         List<GroupApi> executed = subject.getAllUserGroups(UserApiFixture.username);
 
-        Assert.assertEquals(Collections.nCopies(3, GroupApiFixture.defaultValue), executed);
-        Mockito.verify(getGroupHelper).allUserGroups(UserApiFixture.defaultValue);
+        Assert.assertEquals(Collections.nCopies(3, GroupApiFixture.value()), executed);
+        Mockito.verify(getGroupHelper).allUserGroups(UserApiFixture.value());
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 
@@ -177,7 +177,7 @@ public class GroupServiceImplTest {
         subject.validateIfUserIsMember(UserApiFixture.username, GroupApiFixture.id, customError);
 
         Mockito.verify(getGroupHelper)
-                .validateIfUserIsMember(UserApiFixture.defaultValue, GroupApiFixture.id, customError);
+                .validateIfUserIsMember(UserApiFixture.value(), GroupApiFixture.id, customError);
         Mockito.verify(userService).get(UserApiFixture.username);
     }
 

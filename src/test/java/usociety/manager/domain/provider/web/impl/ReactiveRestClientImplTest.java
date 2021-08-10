@@ -37,7 +37,7 @@ public class ReactiveRestClientImplTest {
         LoginRequest request = new LoginRequest(username, password);
         TokenApi executed = subject.login(request);
 
-        Assert.assertEquals(TokenApiFixture.defaultValue, executed);
+        Assert.assertEquals(TokenApiFixture.value(), executed);
 
         //Only for testing, when ReactiveConnector is loaded on Nexus, It should be removed.
         Mockito.verify(builder).defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);

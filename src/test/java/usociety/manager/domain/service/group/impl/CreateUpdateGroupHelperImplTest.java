@@ -104,7 +104,7 @@ public class CreateUpdateGroupHelperImplTest {
         Mockito.when(cloudStorageService.uploadImage(any())).thenReturn("group-image-url");
         Mockito.when(groupRepository.save(any())).thenReturn(groupEntity);
 
-        GroupApi executed = subject.create(UserApiFixture.defaultValue, createGroupRequest);
+        GroupApi executed = subject.create(UserApiFixture.value(), createGroupRequest);
 
         Assert.assertEquals(groupApi, executed);
 
@@ -141,7 +141,7 @@ public class CreateUpdateGroupHelperImplTest {
         Assert.assertEquals(UserApiFixture.id, savedUserGroup.getUserId());
         Assert.assertEquals(groupEntity, savedUserGroup.getGroup());
 
-        inOrder.verify(sendAsyncEmailDelegate).execute(UserApiFixture.defaultValue, groupEntity, category);
+        inOrder.verify(sendAsyncEmailDelegate).execute(UserApiFixture.value(), groupEntity, category);
     }
 
     @Test(expected = GenericException.class)
@@ -152,7 +152,7 @@ public class CreateUpdateGroupHelperImplTest {
         Mockito.when(groupRepository.save(any())).thenThrow(new RuntimeException("SQL integrity violation"));
 
         try {
-            subject.create(UserApiFixture.defaultValue, createGroupRequest);
+            subject.create(UserApiFixture.value(), createGroupRequest);
         } catch (GenericException e) {
             Assert.assertEquals("ERROR_CREATING_GROUP", e.getErrorCode());
             Mockito.verify(cloudStorageService).delete(fileUrl);
@@ -166,7 +166,7 @@ public class CreateUpdateGroupHelperImplTest {
         Mockito.when(groupRepository.findByName(any())).thenReturn(Optional.of(groupEntity));
 
         try {
-            subject.create(UserApiFixture.defaultValue, createGroupRequest);
+            subject.create(UserApiFixture.value(), createGroupRequest);
         } catch (GenericException e) {
             Assert.assertEquals("ERROR_CREATING_GROUP", e.getErrorCode());
             Mockito.verifyNoInteractions(sendAsyncEmailDelegate,
@@ -196,7 +196,7 @@ public class CreateUpdateGroupHelperImplTest {
         Mockito.when(slugify.slugify(any())).thenReturn("new-group-name");
         Mockito.when(groupRepository.save(any())).thenReturn(groupEntity);
 
-        GroupApi executed = subject.update(UserApiFixture.defaultValue,
+        GroupApi executed = subject.update(UserApiFixture.value(),
                 GroupApiFixture.id,
                 CreateOrUpdateGroupRequest.newBuilder()
                         .category(new CategoryApi(1L, EMPTY))
@@ -242,7 +242,7 @@ public class CreateUpdateGroupHelperImplTest {
     @Test(expected = GenericException.class)
     public void shouldFailUpdatingGroupIfItDoesNotExist() throws GenericException {
         try {
-            subject.update(UserApiFixture.defaultValue, GroupApiFixture.id, new CreateOrUpdateGroupRequest());
+            subject.update(UserApiFixture.value(), GroupApiFixture.id, new CreateOrUpdateGroupRequest());
         } catch (GenericException e) {
             Assert.assertEquals(GROUP_NOT_FOUND, e.getErrorCode());
             Mockito.verifyNoInteractions(userGroupRepository, categoryService, cloudStorageService);
@@ -255,7 +255,7 @@ public class CreateUpdateGroupHelperImplTest {
     public void shouldFailUpdatingGroupIfUserIsNotAnActiveMember() throws GenericException {
         Mockito.when(groupRepository.findById(any())).thenReturn(Optional.of(groupEntity));
         try {
-            subject.update(UserApiFixture.defaultValue, GroupApiFixture.id, new CreateOrUpdateGroupRequest());
+            subject.update(UserApiFixture.value(), GroupApiFixture.id, new CreateOrUpdateGroupRequest());
         } catch (GenericException e) {
             Assert.assertEquals("ERROR_UPDATING_MEMBERSHIP", e.getErrorCode());
             Mockito.verifyNoInteractions(categoryService, cloudStorageService);
@@ -273,7 +273,7 @@ public class CreateUpdateGroupHelperImplTest {
                         .id(31L)
                         .build()));
         try {
-            subject.update(UserApiFixture.defaultValue, GroupApiFixture.id, new CreateOrUpdateGroupRequest());
+            subject.update(UserApiFixture.value(), GroupApiFixture.id, new CreateOrUpdateGroupRequest());
         } catch (GenericException e) {
             Assert.assertEquals(FORBIDDEN_ACCESS, e.getErrorCode());
             Mockito.verifyNoInteractions(categoryService, cloudStorageService);

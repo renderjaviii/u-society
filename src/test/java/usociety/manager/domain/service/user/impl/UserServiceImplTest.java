@@ -90,8 +90,8 @@ public class UserServiceImplTest {
     @Test
     public void shouldCreateUserCorrectly() throws GenericException {
         Mockito.reset(userConnector);
-        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.defaultValue);
-        Mockito.when(createUserDelegate.execute(any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.value());
+        Mockito.when(createUserDelegate.execute(any())).thenReturn(UserApiFixture.value());
 
         CreateUserRequest request = CreateUserRequest.newBuilder()
                 .password(UserApiFixture.password)
@@ -103,7 +103,7 @@ public class UserServiceImplTest {
 
         LoginResponse executed = subject.create(request);
 
-        Assert.assertEquals(new LoginResponse(UserApiFixture.defaultValue, TokenApiFixture.defaultValue), executed);
+        Assert.assertEquals(new LoginResponse(UserApiFixture.value(), TokenApiFixture.value()), executed);
 
         InOrder inOrder = Mockito.inOrder(userConnector, authenticationConnector, createUserDelegate);
         inOrder.verify(userConnector).get(null, username, email);
@@ -174,7 +174,7 @@ public class UserServiceImplTest {
     public void shouldMakeUserLoginCorrectly() {
         userApi.setCategoryList(UserApiFixture.categoryList);
 
-        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.defaultValue);
+        Mockito.when(authenticationConnector.login(any())).thenReturn(TokenApiFixture.value());
 
         Category category = new Category(UserApiFixture.category.getId(), UserApiFixture.category.getName());
         Mockito.when(userCategoryRepository.findAllByUserId(any()))
@@ -183,7 +183,7 @@ public class UserServiceImplTest {
         LoginRequest loginRequest = new LoginRequest(username, UserApiFixture.password);
         LoginResponse executed = subject.login(loginRequest);
 
-        Assert.assertEquals(new LoginResponse(userApi, TokenApiFixture.defaultValue), executed);
+        Assert.assertEquals(new LoginResponse(userApi, TokenApiFixture.value()), executed);
 
         InOrder inOrder = Mockito.inOrder(userConnector, authenticationConnector, userCategoryRepository);
         inOrder.verify(userConnector).get(username);
@@ -220,12 +220,12 @@ public class UserServiceImplTest {
 
     @Test
     public void shouldUpdateUserCorrectly() throws GenericException {
-        Mockito.when(updateUserDelegate.execute(any(), any())).thenReturn(UserApiFixture.defaultValue);
+        Mockito.when(updateUserDelegate.execute(any(), any())).thenReturn(UserApiFixture.value());
 
         UpdateUserRequest request = new UpdateUserRequest("Another Name", null, Collections.singleton(3L));
         UserApi executed = subject.update(username, request);
 
-        Assert.assertEquals(UserApiFixture.defaultValue, executed);
+        Assert.assertEquals(UserApiFixture.value(), executed);
         Mockito.verify(updateUserDelegate, Mockito.only()).execute(username, request);
     }
 
