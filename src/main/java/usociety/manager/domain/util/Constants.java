@@ -7,7 +7,6 @@ public class Constants {
     }
 
     public static final String GETTING_GROUP_ERROR = "ERROR_GETTING_GROUP";
-    public static final String INVALID_CREDENTIALS = "INVALID_CREDENTIALS";
     public static final String USER_IS_NOT_MEMBER = "USER_IS_NOT_MEMBER";
     public static final String USER_NOT_FOUND_ERROR = "USER_NOT_FOUND";
     public static final String FORBIDDEN_ACCESS = "FORBIDDEN_ACCESS";

@@ -46,7 +46,7 @@ import usociety.manager.domain.exception.WebException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String INTERNAL_ERROR_MESSAGE = "internal server error";
+    private static final String INTERNAL_ERROR_MESSAGE = "Internal server error";
     private static final String INTERNAL_ERROR = "INTERNAL_SERVER_ERROR";
     private static final String BAD_REQUEST_ERROR = "BAD_REQUEST";
     private static final String FIELD_ERROR_FORMAT = "%s %s: %s";

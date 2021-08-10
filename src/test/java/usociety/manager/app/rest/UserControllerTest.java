@@ -4,7 +4,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.when;
-import static usociety.manager.domain.util.Constants.INVALID_CREDENTIALS;
+import static usociety.manager.domain.exception.UserValidationException.INVALID_CREDENTIALS;
 
 import java.util.Collections;
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.PostApi;
 import usociety.manager.app.rest.request.CommentPostRequest;
@@ -42,7 +43,7 @@ public class PostController extends AbstractController {
         this.postService = postService;
     }
 
-    @Operation(summary = "Send")
+    @Operation(summary = "Send", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(path = "/{groupId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostApi> sendGroupMessage(
             @NotNull @PathVariable(value = "groupId") Long groupId,
@@ -51,7 +52,7 @@ public class PostController extends AbstractController {
         return new ResponseEntity<>(postService.create(getUser(), groupId, request), CREATED);
     }
 
-    @Operation(summary = "Get all by group")
+    @Operation(summary = "Get all by group", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{groupId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PostApi>> getAllByGroup(
             @NotNull @PathVariable("groupId") Long groupId,
@@ -61,7 +62,7 @@ public class PostController extends AbstractController {
         return ResponseEntity.ok(postService.getAllByUserAndGroup(getUser(), groupId, page, pageSize));
     }
 
-    @Operation(summary = "React into a post")
+    @Operation(summary = "React into a post", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/{id}/react", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> react(
             @NotNull @PathVariable("id") Long id,
@@ -71,7 +72,7 @@ public class PostController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Comment into a post")
+    @Operation(summary = "Comment into a post", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> comment(
             @NotNull @PathVariable("id") Long id,
@@ -81,7 +82,7 @@ public class PostController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Vote in survey")
+    @Operation(summary = "Vote in survey", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/{id}/vote")
     public ResponseEntity<Void> interactWithSurvey(
             @NotNull @PathVariable("id") Long id,

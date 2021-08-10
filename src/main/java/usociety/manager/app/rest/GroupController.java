@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.GroupApi;
 import usociety.manager.app.api.UserGroupApi;
@@ -44,28 +45,28 @@ public class GroupController extends AbstractController {
         this.groupService = groupService;
     }
 
-    @Operation(summary = "Create")
+    @Operation(summary = "Create", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> create(@Valid @RequestBody CreateOrUpdateGroupRequest request)
             throws GenericException {
         return new ResponseEntity<>(groupService.create(getUser(), request), CREATED);
     }
 
-    @Operation(summary = "Get by ID")
+    @Operation(summary = "Get by ID", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> get(@PathVariable(name = "id") Long id)
             throws GenericException {
         return ResponseEntity.ok(groupService.get(getUser(), id));
     }
 
-    @Operation(summary = "Get by slug")
+    @Operation(summary = "Get by slug", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{slug}/slug", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetGroupResponse> getBySlug(@PathVariable(name = "slug") String slug)
             throws GenericException {
         return ResponseEntity.ok(groupService.getBySlug(getUser(), slug));
     }
 
-    @Operation(summary = "Update")
+    @Operation(summary = "Update", responses = @ApiResponse(responseCode = "200"))
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApi> update(
             @NotNull @PathVariable(name = "id") Long id,
@@ -74,7 +75,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.update(getUser(), id, request));
     }
 
-    @Operation(summary = "Get user's groups")
+    @Operation(summary = "Get user's groups", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{username}/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getAllUserGroups(@PathVariable(name = "username") String username)
             throws GenericException {
@@ -82,7 +83,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.getAllUserGroups(username));
     }
 
-    @Operation(summary = "Update membership")
+    @Operation(summary = "Update membership", responses = @ApiResponse(responseCode = "204"))
     @PatchMapping(path = "/{id}/update-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateMembership(
             @PathVariable("id") Long id,
@@ -92,7 +93,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get by filters")
+    @Operation(summary = "Get by filters", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GroupApi>> getByFilters(
             @RequestParam("name") String name,
@@ -101,7 +102,7 @@ public class GroupController extends AbstractController {
         return ResponseEntity.ok(groupService.getByFilters(name, categoryId));
     }
 
-    @Operation(summary = "Join group")
+    @Operation(summary = "Join group", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "{id}/join")
     public ResponseEntity<Void> jointToGroup(@PathVariable("id") Long id)
             throws GenericException, MessagingException {

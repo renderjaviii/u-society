@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.PaymentApi;
 import usociety.manager.domain.service.payment.PaymentService;
@@ -31,7 +32,7 @@ public class PaymentController extends AbstractController {
         this.paymentService = paymentService;
     }
 
-    @Operation(summary = "Create")
+    @Operation(summary = "Create", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Valid @RequestBody PaymentApi payment) {
         paymentService.create(getUser(), payment);

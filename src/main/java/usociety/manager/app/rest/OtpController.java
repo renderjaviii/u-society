@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.OtpApi;
 import usociety.manager.domain.exception.GenericException;
@@ -37,13 +38,13 @@ public class OtpController extends AbstractController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
-    @Operation(summary = "Create and send")
+    @Operation(summary = "Create and send", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OtpApi> create(@RequestParam(name = "email") @Email @NotEmpty final String email) {
         return new ResponseEntity<>(otpService.create(email), CREATED);
     }
 
-    @Operation(summary = "Validate")
+    @Operation(summary = "Validate", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/validate")
     public ResponseEntity<Void> validate(
             @Email @NotEmpty @RequestParam(name = "email") final String email

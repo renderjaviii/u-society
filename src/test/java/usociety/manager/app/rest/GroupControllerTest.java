@@ -2,7 +2,7 @@ package usociety.manager.app.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static usociety.manager.domain.util.Constants.INVALID_CREDENTIALS;
+import static usociety.manager.domain.exception.UserValidationException.INVALID_CREDENTIALS;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;

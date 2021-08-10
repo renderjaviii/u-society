@@ -1,7 +1,6 @@
 package usociety.manager.app.rest;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.UserApi;
 import usociety.manager.app.rest.request.ChangePasswordRequest;
@@ -49,14 +49,14 @@ public class UserController extends AbstractController {
         this.userService = userService;
     }
 
-    @Operation(summary = "Create")
+    @Operation(summary = "Create", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> create(@Valid @RequestBody CreateUserRequest request)
             throws GenericException, MessagingException {
         return new ResponseEntity<>(userService.create(request), CREATED);
     }
 
-    @Operation(summary = "Verify data and send OTP")
+    @Operation(summary = "Verify data and send OTP", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/{email}/verify")
     public ResponseEntity<Void> verify(
             @Email @NotEmpty @PathVariable(name = "email") final String email
@@ -65,7 +65,7 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Enable user account through OTP")
+    @Operation(summary = "Enable user account through OTP", responses = @ApiResponse(responseCode = "204"))
     @PostMapping(path = "/{email}/enable-account")
     public ResponseEntity<Void> enableAccount(
             @Email @NotEmpty @PathVariable(name = "email") final String email,
@@ -75,30 +75,30 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get")
+    @Operation(summary = "Get", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> get(@PathVariable(value = "username") final String username)
             throws GenericException {
         return ResponseEntity.ok(userService.get(username));
     }
 
-    @Operation(summary = "Update")
+    @Operation(summary = "Update", responses = @ApiResponse(responseCode = "200"))
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserApi> update(@Valid @RequestBody UpdateUserRequest request)
             throws GenericException {
         return ResponseEntity.ok(userService.update(getUser(), request));
     }
 
-    @Operation(summary = "Login")
+    @Operation(summary = "Login", responses = @ApiResponse(responseCode = "200"))
     @PostMapping(path = "/login",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request)
             throws GenericException {
-        return new ResponseEntity<>(userService.login(request), OK);
+        return ResponseEntity.ok(userService.login(request));
     }
 
     @PreAuthorize("hasAuthority('ADMIN_PRIVILEGE')")
-    @Operation(summary = "Delete")
+    @Operation(summary = "Delete", responses = @ApiResponse(responseCode = "204"))
     @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable(value = "username") final String username)
             throws UserValidationException {
@@ -107,7 +107,7 @@ public class UserController extends AbstractController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Change password")
+    @Operation(summary = "Change password", responses = @ApiResponse(responseCode = "204"))
     @PatchMapping(path = "/{username}/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(
             @PathVariable(value = "username") final String username,

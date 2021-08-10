@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import usociety.manager.app.api.MessageApi;
 import usociety.manager.domain.exception.GenericException;
@@ -38,7 +39,7 @@ public class MessageController extends AbstractController {
         this.messageService = messageService;
     }
 
-    @Operation(summary = "Send to group")
+    @Operation(summary = "Send to group", responses = @ApiResponse(responseCode = "201"))
     @PostMapping(path = "/{groupId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> sendGroupMessage(
             @NotNull @PathVariable(value = "groupId") Long groupId,
@@ -48,7 +49,7 @@ public class MessageController extends AbstractController {
         return new ResponseEntity<>(CREATED);
     }
 
-    @Operation(summary = "Get all by group")
+    @Operation(summary = "Get all by group", responses = @ApiResponse(responseCode = "200"))
     @GetMapping(path = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<MessageApi>> getByFilter(
             @PathVariable("groupId") Long groupId,
